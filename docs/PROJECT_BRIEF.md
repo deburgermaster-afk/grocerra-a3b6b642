@@ -1,4 +1,4 @@
-# DesiPantry — South Asian Groceries & Catering Delivery (Australia)
+# Sogrow — South Asian Groceries & Catering Delivery (Australia)
 
 Internal Reevake product. Fresh halal meat, authentic South Asian groceries and catering, delivered on demand. Launch region: Melbourne metro (then Sydney and Brisbane). Target launch: 1 December 2026. Stage: MVP planning and architecture.
 
@@ -39,4 +39,4 @@ Customer pays the platform; store share, commission and delivery cost recorded s
 Phases: validation → design → core build → payments and delivery → grocery and catering operations → testing and store submission → pilot (3–5 stores) → public launch. Go-to-market: win supply first (3–5 pilot stores), waitlist of 1,000–3,000 pre-launch, LAUNCH20 offer, community-led marketing (mosques, temples, university societies, festivals), Melbourne micro-influencers, AUD 20–40/day ads limited to delivery-zone suburbs.
 
 ## Open decisions to close
-Brand name/tagline/logo; catering lead time, minimums, deposits and hot-food delivery; Connect account type and merchant of record; legal pack (ACL, Privacy Act, food safety, halal claims); budget and unit economics beyond gross revenue; team RACI. The 8-week runway to 1 December is shorter than the document's 13-week phase plan: treat 1 December as a pilot launch with 3–5 stores unless scope is cut further.
+Brand tagline and logo (name decided: Sogrow); catering lead time, minimums, deposits and hot-food delivery; Connect account type and merchant of record; legal pack (ACL, Privacy Act, food safety, halal claims); budget and unit economics beyond gross revenue; team RACI. The 8-week runway to 1 December is shorter than the document's 13-week phase plan: treat 1 December as a pilot launch with 3–5 stores unless scope is cut further.

@@ -1,6 +1,6 @@
-# DesiPantry architecture
+# Sogrow architecture
 
-The source of truth is the **DesiPantry app stack** blueprint in Reevake (Blueprints tab). This file is a snapshot for the repository.
+The source of truth is the **Sogrow app stack** blueprint in Reevake (Blueprints tab). This file is a snapshot for the repository.
 
 ## Components
 

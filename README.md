@@ -1,4 +1,4 @@
-# DesiPantry
+# Sogrow
 
 South Asian groceries, halal meat and catering delivered on demand in Melbourne. Internal Reevake product; pilot launch target **1 December 2026**.
 
