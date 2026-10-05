@@ -1,0 +1,17 @@
+node_modules/
+.env
+.env.*
+!.env.example
+.next/
+dist/
+build/
+.dart_tool/
+.flutter-plugins*
+*.iml
+.idea/
+.vscode/
+ios/Pods/
+coverage/
+.DS_Store
+.reevake/
+CLAUDE.local.md
