@@ -375,6 +375,30 @@ class _SignInScreenState extends State<SignInScreen> {
                               : Text(signingUp ? 'Create account' : 'Sign in'),
                         ),
 
+                        // Dev/demo escape hatch (not in Figma): lets a reviewer
+                        // reach the app shell without credentials. Only wired
+                        // when the demo bypass flag is on.
+                        if (AppConfig.bypassAuthentication) ...<Widget>[
+                          const SizedBox(height: 12),
+                          OutlinedButton(
+                            onPressed: () => Navigator.of(context)
+                                .pushNamedAndRemoveUntil(HomeShell.routeName, (_) => false),
+                            style: OutlinedButton.styleFrom(
+                              minimumSize: const Size.fromHeight(56),
+                              foregroundColor: const Color(0xFF111114),
+                              side: const BorderSide(color: Color(0xFFE6E6E6)),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(28),
+                              ),
+                              textStyle: const TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                            child: const Text('Explore as guest'),
+                          ),
+                        ],
+
                         // Push the legal line to the Figma y=776 baseline.
                         // Centred across the full 358px column: at 326.1px the
                         // string is a fraction too wide for a 326px box and
