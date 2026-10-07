@@ -11,6 +11,7 @@ import 'features/auth/presentation/onboarding_screen.dart';
 import 'features/auth/presentation/sign_in_screen.dart';
 import 'features/auth/presentation/splash_screen.dart';
 import 'features/catering/presentation/catering_routes.dart';
+import 'features/orders/presentation/orders_routes.dart';
 import 'features/search/presentation/search_routes.dart';
 import 'features/shell/presentation/home_shell.dart';
 import 'features/shop/presentation/shop_routes.dart';
@@ -63,6 +64,7 @@ class GrocerraApp extends StatelessWidget {
         // passes can be built independently without editing this file.
         ...shopRoutes,
         ...cateringRoutes,
+        ...ordersRoutes,
         ...searchRoutes,
         ...supportRoutes,
         ...accountRoutes,
