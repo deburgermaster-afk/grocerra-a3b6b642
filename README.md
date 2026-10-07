@@ -22,3 +22,11 @@ South Asian groceries, halal meat and catering delivered on demand in Melbourne.
 2. Work on a branch named after the task, and keep the PR focused on it.
 3. Put `Reevake-Task: <taskId>` in the PR description and submit the PR link from your agent or the task page.
 4. Never commit secrets. Your agent loads project secrets (Stripe, courier and maps keys) at run time from Reevake.
+
+## Environments, secrets and deploys
+
+- Each app lists the variables it needs in its own `.env.example` (names only, never real values).
+- Your agent gets **development** values from ReevTask for the task it's working on. Production values are owner-only, kept in Reevake › Project secrets and on the hosts.
+- Merging to `main` deploys automatically: Vercel (web portals), Railway (API), Cloudflare Pages (Flutter web). Every PR gets a preview.
+
+Full guide: [docs/ENVIRONMENTS_AND_SECRETS.md](docs/ENVIRONMENTS_AND_SECRETS.md)
