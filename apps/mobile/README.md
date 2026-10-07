@@ -13,12 +13,26 @@ catering delivered on demand (Melbourne pilot, 1 December 2026).
 
 ```powershell
 $env:Path += ";C:\flutter\bin"
-cd C:\Users\whiffler\Desktop\GROCERRA\user_app
+cd C:\Users\whiffler\Desktop\GROCERRA\apps\mobile
 flutter pub get
 flutter analyze
 flutter test
 flutter run            # Chrome or a connected Android/iOS device
 ```
+
+## Deployment
+
+The app lives at `apps/mobile/` because that is the path the approved blueprint
+assigns it, and it is the root directory of the `grocerra-app` Vercel project.
+
+- `vercel.json` — runs `vercel-build.sh` and publishes `build/web`.
+- `vercel-build.sh` — the Vercel image has no Flutter SDK, so the script pins
+  the same toolchain this project is developed against (3.47.6), then runs
+  `pub get` + `flutter build web --release`.
+- Supabase settings reach the bundle as `--dart-define`s read from either
+  `config/vercel.defines.json` or Vercel project env vars
+  (`SUPABASE_URL` / `SUPABASE_PUBLISHABLE_KEY`). Public values only — no
+  secret is ever baked into the web bundle.
 
 ## Layout
 

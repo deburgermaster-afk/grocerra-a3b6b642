@@ -1,0 +1,3 @@
+# Shell scripts must reach Vercel with LF line endings — a CRLF checkout
+# makes `bash vercel-build.sh` fail on the first line.
+*.sh text eol=lf
