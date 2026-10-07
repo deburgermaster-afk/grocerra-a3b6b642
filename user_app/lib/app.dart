@@ -1,3 +1,5 @@
+import 'dart:ui' as ui;
+
 import 'package:flutter/material.dart';
 
 import 'core/config/app_config.dart';
@@ -24,13 +26,24 @@ class GrocerraApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // The route this session actually started on. On web that is the
+    // deep-linked path (`/auth`, `/home`, ...); on mobile it is `/`.
+    final String startRoute = ui.PlatformDispatcher.instance.defaultRouteName;
+
     return MaterialApp(
       title: AppConfig.appName,
       debugShowCheckedModeBanner: false,
       theme: AppTheme.light(),
-      initialRoute: SplashScreen.routeName,
+      initialRoute: startRoute,
       routes: <String, WidgetBuilder>{
-        SplashScreen.routeName: (_) => const SplashScreen(),
+        // Flutter stacks every prefix of a deep link, so `/` is always
+        // built even when the URL is `/auth`. Only render the
+        // auto-advancing splash when it is the genuine entry point,
+        // otherwise a deep link flashes the splash and then navigates
+        // away from the screen that was requested.
+        SplashScreen.routeName: (_) => startRoute == SplashScreen.routeName
+            ? const SplashScreen()
+            : const ColoredBox(color: Color(0xFFFFFFFF)),
         OnboardingScreen.routeName: (_) => const OnboardingScreen(),
         SignInScreen.routeName: (_) => const SignInScreen(),
         LocationPermissionScreen.routeName: (_) => const LocationPermissionScreen(),

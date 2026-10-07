@@ -1,3 +1,5 @@
+import 'dart:math' as math;
+
 import 'package:flutter/material.dart';
 
 import '../../../core/config/app_config.dart';
@@ -16,6 +18,10 @@ import 'location_permission_screen.dart';
 ///   * `Forgot password?`     -> Supabase API gateway (reset email)
 ///   * `Sign in` submit       -> opens `Groceries & Catering Home`
 ///   * `Create account` submit-> opens `Location Permission`
+///
+/// Geometry below is transcribed from the approved Figma frame `A5 · Sign in`
+/// (390x844): 16px gutters, a uniform 14px vertical rhythm, 56px buttons on a
+/// 28 radius, 52px inputs on a 16 radius, and Inter throughout.
 class SignInScreen extends StatefulWidget {
   const SignInScreen({super.key, this.mode = AuthMode.signIn});
 
@@ -28,6 +34,12 @@ class SignInScreen extends StatefulWidget {
 }
 
 enum AuthMode { signIn, createAccount }
+
+/// Figma frames carry a 47px status bar. Where the platform reports no inset
+/// (web), reserve that space anyway so the content sits where it does in the
+/// approved design instead of jamming against the window edge.
+double topInsetFor(BuildContext context) =>
+    math.max(MediaQuery.of(context).padding.top, 47);
 
 class _SignInScreenState extends State<SignInScreen> {
   late AuthMode _mode = widget.mode;
@@ -153,200 +165,218 @@ class _SignInScreenState extends State<SignInScreen> {
   @override
   Widget build(BuildContext context) {
     final bool signingUp = _mode == AuthMode.createAccount;
+    final double topInset = topInsetFor(context);
 
     return Scaffold(
       backgroundColor: const Color(0xFFFFFFFF),
       body: SafeArea(
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.fromLTRB(16, 16, 16, 32),
-          child: Form(
-            key: _formKey,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: <Widget>[
-                const Text(
-                  AppConfig.appName,
-                  style: TextStyle(
-                    color: Color(0xFF111114),
-                    fontSize: 20,
-                    fontWeight: FontWeight.w700,
-                    letterSpacing: 4,
-                  ),
+        top: false,
+        child: LayoutBuilder(
+          builder: (BuildContext context, BoxConstraints constraints) {
+            return SingleChildScrollView(
+              // 9px under the reserved status bar puts the wordmark on the
+              // Figma y=56 line; 53px at the foot lands the legal line at
+              // Figma y=776.
+              padding: EdgeInsets.fromLTRB(16, topInset + 9, 16, 53),
+              child: ConstrainedBox(
+                constraints: BoxConstraints(
+                  minHeight: constraints.maxHeight - (topInset + 9) - 53,
                 ),
-                const SizedBox(height: 14),
-                Text(
-                  signingUp ? 'Create account' : 'Welcome back',
-                  style: const TextStyle(
-                    color: Color(0xFF111114),
-                    fontSize: 32,
-                    fontWeight: FontWeight.w800,
-                    letterSpacing: -0.8,
-                  ),
-                ),
-                const SizedBox(height: 24),
-
-                // Segmented Sign in / Create account control.
-                _ModeSegment(
-                  mode: _mode,
-                  onChanged: _switchMode,
-                ),
-                const SizedBox(height: 16),
-
-                FilledButton(
-                  onPressed: _busy ? null : () => _oauth(AuthService.signInWithApple),
-                  child: const Text('Continue with Apple'),
-                ),
-                const SizedBox(height: 12),
-                OutlinedButton(
-                  onPressed: _busy ? null : () => _oauth(AuthService.signInWithGoogle),
-                  style: OutlinedButton.styleFrom(
-                    minimumSize: const Size.fromHeight(54),
-                    foregroundColor: const Color(0xFF111114),
-                    side: const BorderSide(color: Color(0xFFE4E4E8)),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(28),
-                    ),
-                    textStyle: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
-                  ),
-                  child: const Text('Continue with Google'),
-                ),
-                const SizedBox(height: 20),
-
-                const _Divider(label: 'or'),
-                const SizedBox(height: 20),
-
-                if (signingUp) ...<Widget>[
-                  const _FieldLabel('Full name'),
-                  TextFormField(
-                    controller: _name,
-                    textCapitalization: TextCapitalization.words,
-                    autofillHints: const <String>[AutofillHints.name],
-                    validator: (String? value) =>
-                        (value == null || value.trim().length < 2)
-                            ? 'Enter your name'
-                            : null,
-                    decoration: const InputDecoration(hintText: 'Your name'),
-                  ),
-                  const SizedBox(height: 16),
-                ],
-
-                const _FieldLabel('Email'),
-                TextFormField(
-                  controller: _email,
-                  keyboardType: TextInputType.emailAddress,
-                  textInputAction: TextInputAction.next,
-                  autofillHints: const <String>[AutofillHints.email],
-                  validator: (String? value) {
-                    final String v = (value ?? '').trim();
-                    if (v.isEmpty || !v.contains('@') || !v.contains('.')) {
-                      return 'Enter a valid email address';
-                    }
-                    return null;
-                  },
-                  decoration: const InputDecoration(hintText: 'you@example.com'),
-                ),
-                const SizedBox(height: 16),
-
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: <Widget>[
-                    const _FieldLabel('Password'),
-                    if (!signingUp)
-                      GestureDetector(
-                        onTap: _busy ? null : _forgotPassword,
-                        child: const Text(
-                          'Forgot password?',
+                child: IntrinsicHeight(
+                  child: Form(
+                    key: _formKey,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: <Widget>[
+                        const Text(
+                          AppConfig.appName,
                           style: TextStyle(
-                            color: Color(0xFF111114),
-                            fontSize: 13,
+                            color: Color(0xFF000000),
+                            fontSize: 18,
                             fontWeight: FontWeight.w700,
+                            letterSpacing: 2.52, // Figma: 14% of 18
                           ),
                         ),
-                      ),
-                  ],
-                ),
-                TextFormField(
-                  controller: _password,
-                  obscureText: _obscurePassword,
-                  textInputAction: TextInputAction.done,
-                  autofillHints: signingUp
-                      ? const <String>[AutofillHints.newPassword]
-                      : const <String>[AutofillHints.password],
-                  validator: (String? value) {
-                    final String v = value ?? '';
-                    if (signingUp) {
-                      if (v.length < 8) return 'At least 8 characters';
-                    } else if (v.isEmpty) {
-                      return 'Enter your password';
-                    }
-                    return null;
-                  },
-                  onFieldSubmitted: (_) => _submit(),
-                  decoration: InputDecoration(
-                    hintText: signingUp ? 'At least 8 characters' : 'Enter your password',
-                    suffixIcon: signingUp
-                        ? TextButton(
-                            onPressed: () => setState(() => _obscurePassword = !_obscurePassword),
-                            child: Text(
-                              _obscurePassword ? 'Show' : 'Hide',
-                              style: const TextStyle(
-                                color: Color(0xFF111114),
-                                fontSize: 14,
-                                fontWeight: FontWeight.w700,
-                              ),
+                        const SizedBox(height: 9),
+                        Text(
+                          signingUp ? 'Create account' : 'Welcome back',
+                          style: const TextStyle(
+                            color: Color(0xFF000000),
+                            fontSize: 30,
+                            fontWeight: FontWeight.w700,
+                            letterSpacing: -0.6, // Figma: -2% of 30
+                          ),
+                        ),
+                        const SizedBox(height: 28),
+
+                        _ModeSegment(mode: _mode, onChanged: _switchMode),
+                        const SizedBox(height: 14),
+
+                        FilledButton(
+                          onPressed: _busy ? null : () => _oauth(AuthService.signInWithApple),
+                          child: const Text('Continue with Apple'),
+                        ),
+                        const SizedBox(height: 14),
+
+                        OutlinedButton(
+                          onPressed: _busy ? null : () => _oauth(AuthService.signInWithGoogle),
+                          style: OutlinedButton.styleFrom(
+                            minimumSize: const Size.fromHeight(56),
+                            foregroundColor: const Color(0xFF000000),
+                            side: const BorderSide(color: Color(0xFFE6E6E6)),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(28),
                             ),
-                          )
-                        : null,
+                            textStyle: const TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                          child: const Text('Continue with Google'),
+                        ),
+                        const SizedBox(height: 14),
+
+                        const _Divider(label: 'or'),
+                        const SizedBox(height: 14),
+
+                        if (signingUp) ...<Widget>[
+                          const _FieldLabel('Full name'),
+                          TextFormField(
+                            controller: _name,
+                            textCapitalization: TextCapitalization.words,
+                            autofillHints: const <String>[AutofillHints.name],
+                            validator: (String? value) =>
+                                (value == null || value.trim().length < 2)
+                                    ? 'Enter your name'
+                                    : null,
+                            decoration: const InputDecoration(hintText: 'Your name'),
+                          ),
+                          const SizedBox(height: 14),
+                        ],
+
+                        const _FieldLabel('Email'),
+                        TextFormField(
+                          controller: _email,
+                          keyboardType: TextInputType.emailAddress,
+                          textInputAction: TextInputAction.next,
+                          autofillHints: const <String>[AutofillHints.email],
+                          validator: (String? value) {
+                            final String v = (value ?? '').trim();
+                            if (v.isEmpty || !v.contains('@') || !v.contains('.')) {
+                              return 'Enter a valid email address';
+                            }
+                            return null;
+                          },
+                          decoration: const InputDecoration(hintText: 'you@example.com'),
+                        ),
+                        const SizedBox(height: 14),
+
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: <Widget>[
+                            const _FieldLabel('Password', bottom: 0),
+                            if (!signingUp)
+                              GestureDetector(
+                                onTap: _busy ? null : _forgotPassword,
+                                child: const Text(
+                                  'Forgot password?',
+                                  style: TextStyle(
+                                    color: Color(0xFF000000),
+                                    fontSize: 12,
+                                    fontWeight: FontWeight.w600,
+                                  ),
+                                ),
+                              ),
+                          ],
+                        ),
+                        const SizedBox(height: 6),
+                        TextFormField(
+                          controller: _password,
+                          obscureText: _obscurePassword,
+                          textInputAction: TextInputAction.done,
+                          autofillHints: signingUp
+                              ? const <String>[AutofillHints.newPassword]
+                              : const <String>[AutofillHints.password],
+                          validator: (String? value) {
+                            final String v = value ?? '';
+                            if (signingUp) {
+                              if (v.length < 8) return 'At least 8 characters';
+                            } else if (v.isEmpty) {
+                              return 'Enter your password';
+                            }
+                            return null;
+                          },
+                          onFieldSubmitted: (_) => _submit(),
+                          decoration: InputDecoration(
+                            hintText: signingUp ? 'At least 8 characters' : 'Enter your password',
+                            suffixIcon: signingUp
+                                ? TextButton(
+                                    onPressed: () =>
+                                        setState(() => _obscurePassword = !_obscurePassword),
+                                    child: Text(
+                                      _obscurePassword ? 'Show' : 'Hide',
+                                      style: const TextStyle(
+                                        color: Color(0xFF000000),
+                                        fontSize: 14,
+                                        fontWeight: FontWeight.w600,
+                                      ),
+                                    ),
+                                  )
+                                : null,
+                          ),
+                        ),
+
+                        if (_notice != null) ...<Widget>[
+                          const SizedBox(height: 14),
+                          Container(
+                            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                            decoration: BoxDecoration(
+                              color: const Color(0xFFF3F3F3),
+                              borderRadius: BorderRadius.circular(16),
+                            ),
+                            child: Text(
+                              _notice!,
+                              textAlign: TextAlign.center,
+                              style: const TextStyle(fontSize: 13, color: Color(0xFF000000)),
+                            ),
+                          ),
+                        ],
+
+                        const SizedBox(height: 14),
+                        // Figma `Button · Sign in` is a solid black 56px CTA.
+                        FilledButton(
+                          onPressed: _busy ? null : _submit,
+                          child: _busy
+                              ? const SizedBox(
+                                  width: 20,
+                                  height: 20,
+                                  child: CircularProgressIndicator(strokeWidth: 2),
+                                )
+                              : Text(signingUp ? 'Create account' : 'Sign in'),
+                        ),
+
+                        // Push the legal line to the Figma y=776 baseline.
+                        // Centred across the full 358px column: at 326.1px the
+                        // string is a fraction too wide for a 326px box and
+                        // would wrap, whereas centring here puts it at x=32 -
+                        // exactly where the Figma text node sits - on one line.
+                        const Spacer(),
+                        const Text(
+                          'By continuing you agree to our Terms and Privacy Policy.',
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                            fontSize: 12,
+                            fontWeight: FontWeight.w500,
+                            color: Color(0xFF6B6B6B),
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
                 ),
-                if (signingUp) const SizedBox(height: 8),
-
-                if (_notice != null) ...<Widget>[
-                  const SizedBox(height: 14),
-                  Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-                    decoration: BoxDecoration(
-                      color: const Color(0xFFF1F1F3),
-                      borderRadius: BorderRadius.circular(16),
-                    ),
-                    child: Text(
-                      _notice!,
-                      textAlign: TextAlign.center,
-                      style: const TextStyle(fontSize: 13, color: Color(0xFF111114)),
-                    ),
-                  ),
-                ],
-
-                const SizedBox(height: 24),
-                FilledButton(
-                  onPressed: _busy ? null : _submit,
-                  style: FilledButton.styleFrom(
-                    backgroundColor: const Color(0xFFEFEFF1),
-                    foregroundColor: const Color(0xFF111114),
-                    minimumSize: const Size.fromHeight(54),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(28),
-                    ),
-                    textStyle: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
-                  ),
-                  child: _busy
-                      ? const SizedBox(
-                          width: 20,
-                          height: 20,
-                          child: CircularProgressIndicator(strokeWidth: 2),
-                        )
-                      : Text(signingUp ? 'Create account' : 'Sign in'),
-                ),
-
-                const SizedBox(height: 64),
-                const Text(
-                  'By continuing you agree to our Terms and Privacy Policy.',
-                  textAlign: TextAlign.center,
-                  style: TextStyle(fontSize: 13, color: Color(0xFF9A9AA3)),
-                ),
-              ],
-            ),
-          ),
+              ),
+            );
+          },
         ),
       ),
     );
@@ -361,11 +391,12 @@ class _ModeSegment extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // Figma `Segmented`: 48 tall, r24, 4px inset, `#f3f3f3` track.
     return Container(
-      height: 52,
+      height: 48,
       decoration: BoxDecoration(
-        color: const Color(0xFFF1F1F3),
-        borderRadius: BorderRadius.circular(26),
+        color: const Color(0xFFF3F3F3),
+        borderRadius: BorderRadius.circular(24),
       ),
       padding: const EdgeInsets.all(4),
       child: Row(
@@ -375,6 +406,7 @@ class _ModeSegment extends StatelessWidget {
             selected: mode == AuthMode.signIn,
             onTap: () => onChanged(AuthMode.signIn),
           ),
+          const SizedBox(width: 4),
           _SegmentButton(
             label: 'Create account',
             selected: mode == AuthMode.createAccount,
@@ -399,6 +431,8 @@ class _SegmentButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // Figma segment: 40 tall on a 20 radius; both states use 14/600 text and
+    // pure black - selection is carried by the fill alone.
     return Expanded(
       child: GestureDetector(
         onTap: onTap,
@@ -407,16 +441,16 @@ class _SegmentButton extends StatelessWidget {
           height: double.infinity,
           alignment: Alignment.center,
           decoration: BoxDecoration(
-            color: selected ? const Color(0xFF111114) : Colors.transparent,
-            borderRadius: BorderRadius.circular(22),
+            color: selected ? const Color(0xFF000000) : Colors.transparent,
+            borderRadius: BorderRadius.circular(20),
           ),
           child: Text(
             label,
-            style: TextStyle(
-              color: selected ? const Color(0xFFFFFFFF) : const Color(0xFF111114),
-              fontSize: 15,
-              fontWeight: selected ? FontWeight.w700 : FontWeight.w600,
-            ),
+            style: const TextStyle(
+              color: Color(0xFF000000),
+              fontSize: 14,
+              fontWeight: FontWeight.w600,
+            ).copyWith(color: selected ? const Color(0xFFFFFFFF) : const Color(0xFF000000)),
           ),
         ),
       ),
@@ -431,34 +465,48 @@ class _Divider extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Row(
-      children: <Widget>[
-        const Expanded(child: Divider(color: Color(0xFFE4E4E8))),
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 14),
-          child: Text(
-            label,
-            style: const TextStyle(fontSize: 13, color: Color(0xFF9A9AA3)),
+    // Figma `Divider · or`: 161px hairlines either side of a 12px `or`,
+    // with a 12px gap and a 15px total height.
+    return SizedBox(
+      height: 15,
+      child: Row(
+        children: <Widget>[
+          const Expanded(child: Divider(color: Color(0xFFE6E6E6))),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 12),
+            child: Text(
+              label,
+              style: const TextStyle(
+                fontSize: 12,
+                fontWeight: FontWeight.w500,
+                color: Color(0xFF6B6B6B),
+              ),
+            ),
           ),
-        ),
-        const Expanded(child: Divider(color: Color(0xFFE4E4E8))),
-      ],
+          const Expanded(child: Divider(color: Color(0xFFE6E6E6))),
+        ],
+      ),
     );
   }
 }
 
 class _FieldLabel extends StatelessWidget {
-  const _FieldLabel(this.text);
+  const _FieldLabel(this.text, {this.bottom = 6});
 
   final String text;
+  final double bottom;
 
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.only(bottom: 6),
+      padding: EdgeInsets.only(bottom: bottom),
       child: Text(
         text,
-        style: const TextStyle(fontSize: 13, color: Color(0xFF7A7A85)),
+        style: const TextStyle(
+          fontSize: 12,
+          fontWeight: FontWeight.w500,
+          color: Color(0xFF6B6B6B),
+        ),
       ),
     );
   }

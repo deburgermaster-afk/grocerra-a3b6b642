@@ -2,18 +2,28 @@ import 'package:flutter/material.dart';
 
 /// Grocerra design tokens.
 ///
-/// Taken from the Reevake blueprint `User App - Frontend` screen images:
-/// white / soft-grey surfaces, near-black text and buttons, and a restrained
-/// green accent used for links, badges and the active tab.
+/// Values are read directly off the approved Figma frames
+/// (`GROCERRA - APP - Flow`), not approximated: every colour below is a hex
+/// value that appears in a Figma paint, and Inter is the family used
+/// throughout those frames.
 abstract final class AppColors {
   static const Color accent = Color(0xFF16A34A);
   static const Color accentDark = Color(0xFF0F7B4F);
-  static const Color ink = Color(0xFF111114);
-  static const Color inkMuted = Color(0xFF7A7A85);
+
+  /// Body / heading ink. Figma text paints are pure black.
+  static const Color ink = Color(0xFF000000);
+
+  /// Secondary text, field labels and placeholders (`#6b6b6b` in Figma).
+  static const Color inkMuted = Color(0xFF6B6B6B);
+
   static const Color canvas = Color(0xFFF7F7F8);
   static const Color surface = Color(0xFFFFFFFF);
-  static const Color surfaceAlt = Color(0xFFEFEFF1);
-  static const Color hairline = Color(0xFFE4E4E8);
+
+  /// Input fills, segmented-control track and nav indicators (`#f3f3f3`).
+  static const Color surfaceAlt = Color(0xFFF3F3F3);
+
+  /// Hairline strokes - button outlines and dividers (`#e6e6e6`).
+  static const Color hairline = Color(0xFFE6E6E6);
   static const Color danger = Color(0xFFDC2626);
 }
 
@@ -35,6 +45,9 @@ abstract final class AppTheme {
 
     return ThemeData(
       useMaterial3: true,
+      // The approved Figma screens are set in Inter; declaring it here makes
+      // every text style inherit it without repeating `fontFamily` per node.
+      fontFamily: 'Inter',
       colorScheme: scheme,
       scaffoldBackgroundColor: AppColors.canvas,
       splashFactory: InkSparkle.splashFactory,
@@ -50,11 +63,12 @@ abstract final class AppTheme {
           letterSpacing: -0.5,
         ),
       ),
+      // Figma buttons are 56 tall with a 28 radius and a 16/600 label.
       filledButtonTheme: FilledButtonThemeData(
         style: FilledButton.styleFrom(
           backgroundColor: AppColors.ink,
           foregroundColor: AppColors.surface,
-          minimumSize: const Size.fromHeight(54),
+          minimumSize: const Size.fromHeight(56),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(28),
           ),
@@ -64,16 +78,22 @@ abstract final class AppTheme {
           ),
         ),
       ),
+      // Figma inputs are 52 tall, r16, `#f3f3f3`, 16px side padding with a
+      // 16/500 `#6b6b6b` placeholder.
       inputDecorationTheme: InputDecorationTheme(
         filled: true,
         fillColor: AppColors.surfaceAlt,
-        hintStyle: const TextStyle(color: AppColors.inkMuted),
+        hintStyle: const TextStyle(
+          color: AppColors.inkMuted,
+          fontSize: 16,
+          fontWeight: FontWeight.w500,
+        ),
         contentPadding: const EdgeInsets.symmetric(
-          horizontal: 20,
-          vertical: 16,
+          horizontal: 16,
+          vertical: 16.5,
         ),
         border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(28),
+          borderRadius: BorderRadius.circular(16),
           borderSide: BorderSide.none,
         ),
       ),
@@ -113,11 +133,12 @@ abstract final class AppTheme {
         space: 1,
       ),
       textTheme: const TextTheme(
+        // Figma `Welcome back` / screen titles: 30/700, -2% tracking.
         headlineMedium: TextStyle(
           color: AppColors.ink,
           fontSize: 30,
-          fontWeight: FontWeight.w800,
-          letterSpacing: -0.8,
+          fontWeight: FontWeight.w700,
+          letterSpacing: -0.6,
         ),
         titleLarge: TextStyle(
           color: AppColors.ink,
@@ -132,6 +153,12 @@ abstract final class AppTheme {
         ),
         bodyMedium: TextStyle(color: AppColors.ink, fontSize: 15),
         bodySmall: TextStyle(color: AppColors.inkMuted, fontSize: 13),
+        // Field labels, captions and legal lines: 12/500 `#6b6b6b`.
+        labelMedium: TextStyle(
+          color: AppColors.inkMuted,
+          fontSize: 12,
+          fontWeight: FontWeight.w500,
+        ),
         labelLarge: TextStyle(
           color: AppColors.accent,
           fontSize: 15,
