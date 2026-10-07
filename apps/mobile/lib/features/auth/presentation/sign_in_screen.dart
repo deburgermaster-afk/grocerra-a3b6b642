@@ -83,11 +83,26 @@ class _SignInScreenState extends State<SignInScreen> {
   }
 
   Future<void> _submit() async {
-    if (!_formKey.currentState!.validate()) return;
+    // Development/demo bypass - see `AppConfig.demoMode`. While the Supabase
+    // auth backend is unconfigured the primary button continues the approved
+    // flow instead of checking credentials. No UI changes and no session is
+    // minted; passing `--dart-define=GROCERRA_DEMO_MODE=false` (or configuring
+    // Supabase) restores the real path below untouched.
+    final bool demo = AppConfig.bypassAuthentication;
+    if (!demo && !_formKey.currentState!.validate()) return;
     setState(() {
       _busy = true;
       _notice = null;
     });
+
+    if (demo) {
+      // Show the approved loading state for a beat, then continue.
+      await Future<void>.delayed(const Duration(milliseconds: 450));
+      if (!mounted) return;
+      setState(() => _busy = false);
+      _continue();
+      return;
+    }
 
     final AuthResult result = _mode == AuthMode.signIn
         ? await AuthService.signIn(
@@ -113,6 +128,11 @@ class _SignInScreenState extends State<SignInScreen> {
       return;
     }
 
+    _continue();
+  }
+
+  /// Leaves the sign-in screen the way a successful auth does.
+  void _continue() {
     if (_mode == AuthMode.createAccount) {
       Navigator.of(context).pushReplacement(
         MaterialPageRoute<void>(builder: (_) => const LocationPermissionScreen()),

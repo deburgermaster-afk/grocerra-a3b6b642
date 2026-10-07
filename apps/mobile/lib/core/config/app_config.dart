@@ -33,9 +33,29 @@ abstract final class AppConfig {
     defaultValue: '',
   );
 
+  /// Development / demo bypass for the Sign In screen.
+  ///
+  /// The production Supabase auth backend is not configured yet, so while the
+  /// UI is being built this flag lets the primary "Sign In" button continue to
+  /// the next approved screen without valid credentials, keeping the whole flow
+  /// navigable in Chrome.
+  ///
+  /// It is **not** a production authentication feature: it only short-circuits
+  /// the sign-in step, it never mints a session, and it must be turned off for
+  /// any real build with `--dart-define=GROCERRA_DEMO_MODE=false`. The real
+  /// Supabase implementation in [signIn] stays intact and is used whenever this
+  /// flag is off, so nothing has to be rebuilt to restore it.
+  static const bool demoMode = bool.fromEnvironment(
+    'GROCERRA_DEMO_MODE',
+    defaultValue: true,
+  );
+
   static const Duration httpTimeout = Duration(seconds: 20);
 
   /// True when the Supabase gateway has been configured for this build.
   static bool get isSupabaseConfigured =>
       apiBaseUrl.isNotEmpty && supabaseAnonKey.isNotEmpty;
+
+  /// True when Sign In should skip the real credential check and continue.
+  static bool get bypassAuthentication => demoMode && !isSupabaseConfigured;
 }

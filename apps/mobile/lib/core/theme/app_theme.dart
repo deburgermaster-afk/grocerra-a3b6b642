@@ -132,39 +132,127 @@ abstract final class AppTheme {
         thickness: 1,
         space: 1,
       ),
+      // The Figma local text styles are the type scale. `height` is the Figma
+      // line height divided by the font size (Figma pins line height in px),
+      // written out so the source px stays readable.
       textTheme: const TextTheme(
-        // Figma `Welcome back` / screen titles: 30/700, -2% tracking.
+        // `Display` 42/700, 0%, 51px.
+        displayMedium: TextStyle(
+          color: AppColors.ink,
+          fontSize: 42,
+          fontWeight: FontWeight.w700,
+          height: 1.2143, // 51px
+        ),
+        // `H1` 30/700, -2% (=-0.6px), 36px - screen titles.
         headlineMedium: TextStyle(
           color: AppColors.ink,
           fontSize: 30,
           fontWeight: FontWeight.w700,
           letterSpacing: -0.6,
+          height: 1.2, // 36px
         ),
+        // `H2` 28/700, 0%, 34px - section / two-line titles.
+        headlineSmall: TextStyle(
+          color: AppColors.ink,
+          fontSize: 28,
+          fontWeight: FontWeight.w700,
+          height: 1.2143, // 34px
+        ),
+        // `H3` 20/700, 0%, 24px - in-page section headings.
         titleLarge: TextStyle(
           color: AppColors.ink,
           fontSize: 20,
           fontWeight: FontWeight.w700,
-          letterSpacing: -0.3,
+          height: 1.2, // 24px
         ),
+        // Row titles and button labels: 16/600, 19px.
         titleMedium: TextStyle(
           color: AppColors.ink,
           fontSize: 16,
           fontWeight: FontWeight.w600,
+          height: 1.1875, // 19px
         ),
-        bodyMedium: TextStyle(color: AppColors.ink, fontSize: 15),
-        bodySmall: TextStyle(color: AppColors.inkMuted, fontSize: 13),
-        // Field labels, captions and legal lines: 12/500 `#6b6b6b`.
+        // `Body - Large` 16/400, 0%, 19px.
+        bodyLarge: TextStyle(
+          color: AppColors.ink,
+          fontSize: 16,
+          fontWeight: FontWeight.w400,
+          height: 1.1875, // 19px
+        ),
+        // `Body - Medium` 14/400, 0%, 17px - default body copy.
+        bodyMedium: TextStyle(
+          color: AppColors.ink,
+          fontSize: 14,
+          fontWeight: FontWeight.w400,
+          height: 1.2143, // 17px
+        ),
+        // `Body - Small` 13/400, 0%, 16px - secondary copy.
+        bodySmall: TextStyle(
+          color: AppColors.inkMuted,
+          fontSize: 13,
+          fontWeight: FontWeight.w400,
+          height: 1.2308, // 16px
+        ),
+        // `Caption` 12/500, 0%, 15px - field labels, captions, legal lines.
         labelMedium: TextStyle(
           color: AppColors.inkMuted,
           fontSize: 12,
           fontWeight: FontWeight.w500,
+          height: 1.25, // 15px
         ),
+        // `Label` 15/600, 0%, 18px - links and emphasis.
         labelLarge: TextStyle(
           color: AppColors.accent,
           fontSize: 15,
-          fontWeight: FontWeight.w700,
+          fontWeight: FontWeight.w600,
+          height: 1.2, // 18px
         ),
       ),
     );
   }
+}
+
+/// Figma effect styles `Elevation - 1/2/3` (drop shadows, applied as box
+/// shadows so they can sit on frames that are not `Card`s).
+abstract final class AppShadows {
+  /// `Elevation - 1` - 0 4 16 rgba(0,0,0,0.08).
+  static const List<BoxShadow> e1 = <BoxShadow>[
+    BoxShadow(color: Color(0x14000000), offset: Offset(0, 4), blurRadius: 16),
+  ];
+
+  /// `Elevation - 2` - 0 8 32 rgba(0,0,0,0.12).
+  static const List<BoxShadow> e2 = <BoxShadow>[
+    BoxShadow(color: Color(0x1F000000), offset: Offset(0, 8), blurRadius: 32),
+  ];
+
+  /// `Elevation - 3` - 0 8 32 rgba(0,0,0,0.16).
+  static const List<BoxShadow> e3 = <BoxShadow>[
+    BoxShadow(color: Color(0x29000000), offset: Offset(0, 8), blurRadius: 32),
+  ];
+}
+
+/// Figma `GROCERRA - Radius` and the radii that appear on the approved user
+/// app frames. `full` maps to Figma's `full` (999) - pill / circle shapes.
+abstract final class AppRadius {
+  static const double none = 0;
+  static const double xs = 4;
+  static const double sm = 8;
+  static const double md = 12;
+  static const double lg = 16; // inputs
+  static const double xl = 20; // cards
+  static const double xxl = 24; // chips, circular icon buttons
+  static const double button = 28; // 56-tall buttons
+  static const double full = 999;
+}
+
+/// Figma `GROCERRA - Spacing` scale (4, 8, 12, 16, 24, 32, 48, 64).
+abstract final class AppSpace {
+  static const double s1 = 4;
+  static const double s2 = 8;
+  static const double s3 = 12;
+  static const double s4 = 16;
+  static const double s5 = 24;
+  static const double s6 = 32;
+  static const double s7 = 48;
+  static const double s8 = 64;
 }
