@@ -2,6 +2,11 @@ import 'package:flutter/material.dart';
 
 import 'core/config/app_config.dart';
 import 'core/theme/app_theme.dart';
+import 'features/auth/presentation/delivery_address_screen.dart';
+import 'features/auth/presentation/location_permission_screen.dart';
+import 'features/auth/presentation/onboarding_screen.dart';
+import 'features/auth/presentation/sign_in_screen.dart';
+import 'features/auth/presentation/splash_screen.dart';
 import 'features/shell/presentation/home_shell.dart';
 
 /// Root widget of the Grocerra customer app.
@@ -10,6 +15,10 @@ import 'features/shell/presentation/home_shell.dart';
 /// `User App - Frontend` (app: User app): a light, Apple-inspired UI with a
 /// restrained green accent and a floating five-tab navigation bar
 /// (Home - Browse - Catering - Orders - Profile).
+///
+/// Route table mirrors the blueprint flow:
+///   Splash -> Onboarding -> Sign In / Create account -> Location Permission
+///   -> Delivery Address -> Home
 class GrocerraApp extends StatelessWidget {
   const GrocerraApp({super.key});
 
@@ -19,7 +28,15 @@ class GrocerraApp extends StatelessWidget {
       title: AppConfig.appName,
       debugShowCheckedModeBanner: false,
       theme: AppTheme.light(),
-      home: const HomeShell(),
+      initialRoute: SplashScreen.routeName,
+      routes: <String, WidgetBuilder>{
+        SplashScreen.routeName: (_) => const SplashScreen(),
+        OnboardingScreen.routeName: (_) => const OnboardingScreen(),
+        SignInScreen.routeName: (_) => const SignInScreen(),
+        LocationPermissionScreen.routeName: (_) => const LocationPermissionScreen(),
+        DeliveryAddressScreen.routeName: (_) => const DeliveryAddressScreen(),
+        HomeShell.routeName: (_) => const HomeShell(),
+      },
     );
   }
 }

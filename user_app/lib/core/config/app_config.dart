@@ -17,5 +17,25 @@ abstract final class AppConfig {
     defaultValue: '',
   );
 
+  /// Whether Google/Apple OAuth providers have been enabled on the Supabase
+  /// project. They are **disabled today** (probed: `/auth/v1/settings`
+  /// returns an empty `external_providers` list), so the buttons surface an
+  /// explicit message instead of sending the user to a dead authorisation
+  /// page. Flip this define once the providers are configured.
+  static const bool oauthEnabled = bool.fromEnvironment(
+    'GROCERRA_OAUTH_ENABLED',
+    defaultValue: false,
+  );
+
+  /// Absolute redirect target for OAuth deep links, when enabled.
+  static const String oauthRedirectUrl = String.fromEnvironment(
+    'GROCERRA_OAUTH_REDIRECT',
+    defaultValue: '',
+  );
+
   static const Duration httpTimeout = Duration(seconds: 20);
+
+  /// True when the Supabase gateway has been configured for this build.
+  static bool get isSupabaseConfigured =>
+      apiBaseUrl.isNotEmpty && supabaseAnonKey.isNotEmpty;
 }

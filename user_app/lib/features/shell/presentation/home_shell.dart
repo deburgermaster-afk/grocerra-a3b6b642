@@ -13,6 +13,8 @@ import '../../profile/presentation/profile_screen.dart';
 class HomeShell extends StatefulWidget {
   const HomeShell({super.key});
 
+  static const String routeName = '/home';
+
   @override
   State<HomeShell> createState() => _HomeShellState();
 }
