@@ -4,7 +4,9 @@ import '../../../core/models/catalog_models.dart';
 import '../../../core/services/store_service.dart';
 import '../../../core/theme/app_theme.dart';
 import '../../../core/widgets/glowing_effects.dart';
+import '../../../core/widgets/page_transitions.dart';
 import '../../cart/presentation/cart_sheet.dart';
+import '../../catering/presentation/catering_screen.dart';
 import '../../store/presentation/store_detail_screen.dart';
 
 /// Screen #07: Browse
@@ -227,86 +229,107 @@ class _BrowseScreenState extends State<BrowseScreen> {
 
                 const SizedBox(height: 18),
 
-                // Event Catering Glowing Banner
-                GlowCard(
+                // Event Catering Banner
+                GestureDetector(
                   onTap: () {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(
-                        content: Text('Switching to Catering tab for quotes...'),
-                        duration: Duration(milliseconds: 900),
+                    Navigator.of(context).push(
+                      SmoothPageRoute<void>(
+                        builder: (_) => const CateringScreen(),
                       ),
                     );
                   },
-                  borderRadius: 22,
-                  borderWidth: 1.4,
-                  glowColor: const Color(0xFF10B981),
-                  backgroundColor: const Color(0xFF0F172A),
-                  enableBorderGlow: true,
-                  enableAmbientShadow: true,
-                  padding: const EdgeInsets.all(16),
-                  child: Row(
-                    children: <Widget>[
-                      const GlowRing(
-                        size: 56,
-                        strokeWidth: 3.0,
-                        glowColor: Color(0xFF10B981),
-                        secondaryColor: Color(0xFF064E3B),
-                        child: Icon(
-                          Icons.celebration_rounded,
+                  child: Container(
+                    decoration: BoxDecoration(
+                      color: const Color(0xFF0F172A),
+                      borderRadius: BorderRadius.circular(20),
+                      boxShadow: const <BoxShadow>[
+                        BoxShadow(
+                          color: Color(0x1F000000),
+                          blurRadius: 10,
+                          offset: Offset(0, 4),
+                        ),
+                      ],
+                    ),
+                    padding: const EdgeInsets.all(16),
+                    child: Row(
+                      children: <Widget>[
+                        Container(
+                          width: 48,
+                          height: 48,
+                          decoration: BoxDecoration(
+                            color: const Color(0xFF10B981).withValues(alpha: 0.15),
+                            shape: BoxShape.circle,
+                          ),
+                          child: const Icon(
+                            Icons.celebration_rounded,
+                            color: Color(0xFF34D399),
+                            size: 24,
+                          ),
+                        ),
+                        const SizedBox(width: 14),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: const <Widget>[
+                              Text(
+                                'Planning a Wedding or Eid Feast?',
+                                style: TextStyle(
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.w800,
+                                  fontSize: 15,
+                                  letterSpacing: -0.3,
+                                ),
+                              ),
+                              SizedBox(height: 2),
+                              Text(
+                                'Request custom quotes from authentic Melbourne caterers.',
+                                style: TextStyle(
+                                  color: Color(0xFF94A3B8),
+                                  fontSize: 12,
+                                  height: 1.25,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        const Icon(
+                          Icons.arrow_forward_ios_rounded,
+                          size: 14,
                           color: Color(0xFF34D399),
-                          size: 24,
                         ),
-                      ),
-                      const SizedBox(width: 14),
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: const <Widget>[
-                            Text(
-                              'Planning a Wedding or Eid Feast?',
-                              style: TextStyle(
-                                color: Colors.white,
-                                fontWeight: FontWeight.w800,
-                                fontSize: 15,
-                                letterSpacing: -0.3,
-                              ),
-                            ),
-                            SizedBox(height: 2),
-                            Text(
-                              'Request custom quotes from authentic Melbourne caterers.',
-                              style: TextStyle(
-                                color: Color(0xFF94A3B8),
-                                fontSize: 12,
-                                height: 1.25,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                      const Icon(
-                        Icons.arrow_forward_ios_rounded,
-                        size: 14,
-                        color: Color(0xFF34D399),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
                 ),
 
                 const SizedBox(height: 24),
 
                 // Category Grid Header
-                const Text(
-                  'All Departments',
-                  style: TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.w800,
-                    color: AppColors.ink,
-                    letterSpacing: -0.4,
-                  ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: const <Widget>[
+                    Text(
+                      'All Departments',
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.w800,
+                        color: AppColors.ink,
+                        letterSpacing: -0.4,
+                      ),
+                    ),
+                    Text(
+                      'category grid',
+                      style: TextStyle(
+                        fontSize: 12,
+                        fontWeight: FontWeight.w600,
+                        color: Color(0xFF94A3B8),
+                      ),
+                    ),
+                  ],
                 ),
                 const SizedBox(height: 12),
 
-                // 2-Column Category Grid with Staggered Cascades & GlowCards
+                // 2-Column Category Grid
                 GridView.builder(
                   shrinkWrap: true,
                   physics: const NeverScrollableScrollPhysics(),
@@ -320,24 +343,29 @@ class _BrowseScreenState extends State<BrowseScreen> {
                   itemCount: filteredCats.length,
                   itemBuilder: (BuildContext context, int index) {
                     final Category cat = filteredCats[index];
-                    return StaggeredReveal(
-                      index: index,
-                      child: GlowCard(
-                        onTap: () {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(
-                              content: Text('Viewing ${cat.name}...'),
-                              duration: const Duration(milliseconds: 800),
-                            ),
-                          );
-                        },
-                        borderRadius: 20,
-                        borderWidth: 1.0,
-                        glowColor: const Color(0xFF10B981),
-                        backgroundColor: Colors.white,
-                        enableBorderGlow: false,
-                        enableAmbientShadow: true,
+                    return GestureDetector(
+                      onTap: () {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            content: Text('Viewing ${cat.name}...'),
+                            duration: const Duration(milliseconds: 800),
+                          ),
+                        );
+                      },
+                      child: Container(
                         padding: const EdgeInsets.all(14),
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(18),
+                          border: Border.all(color: const Color(0xFFE2E8F0)),
+                          boxShadow: const <BoxShadow>[
+                            BoxShadow(
+                              color: Color(0x06000000),
+                              blurRadius: 8,
+                              offset: Offset(0, 2),
+                            ),
+                          ],
+                        ),
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -403,62 +431,70 @@ class _BrowseScreenState extends State<BrowseScreen> {
                 ..._stores.map((Store s) {
                   return Padding(
                     padding: const EdgeInsets.only(bottom: 12),
-                    child: GlowCard(
+                    child: GestureDetector(
                       onTap: () {
                         Navigator.of(context).push(
-                          MaterialPageRoute<void>(
+                          SmoothPageRoute<void>(
                             builder: (_) => StoreDetailScreen(store: s),
                           ),
                         );
                       },
-                      borderRadius: 18,
-                      borderWidth: 1.0,
-                      glowColor: const Color(0xFF10B981),
-                      backgroundColor: Colors.white,
-                      enableBorderGlow: false,
-                      enableAmbientShadow: true,
-                      padding: const EdgeInsets.all(12),
-                      child: Row(
-                        children: <Widget>[
-                          ClipRRect(
-                            borderRadius: BorderRadius.circular(12),
-                            child: Image.network(
-                              s.heroImageUrl,
-                              width: 60,
-                              height: 60,
-                              fit: BoxFit.cover,
+                      child: Container(
+                        padding: const EdgeInsets.all(12),
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(18),
+                          border: Border.all(color: const Color(0xFFE2E8F0)),
+                          boxShadow: const <BoxShadow>[
+                            BoxShadow(
+                              color: Color(0x06000000),
+                              blurRadius: 8,
+                              offset: Offset(0, 2),
                             ),
-                          ),
-                          const SizedBox(width: 12),
-                          Expanded(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: <Widget>[
-                                Text(
-                                  s.name,
-                                  style: const TextStyle(
-                                    fontWeight: FontWeight.w800,
-                                    fontSize: 15,
-                                    color: AppColors.ink,
-                                  ),
-                                ),
-                                const SizedBox(height: 2),
-                                Text(
-                                  '${s.cuisines.join(', ')} • ${s.suburb}',
-                                  style: TextStyle(
-                                    fontSize: 12,
-                                    color: Colors.grey.shade600,
-                                  ),
-                                ),
-                              ],
+                          ],
+                        ),
+                        child: Row(
+                          children: <Widget>[
+                            ClipRRect(
+                              borderRadius: BorderRadius.circular(12),
+                              child: Image.network(
+                                s.heroImageUrl,
+                                width: 60,
+                                height: 60,
+                                fit: BoxFit.cover,
+                              ),
                             ),
-                          ),
-                          const Icon(
-                            Icons.arrow_forward_ios_rounded,
-                            size: 14,
-                            color: Colors.grey,
-                          ),
-                        ],
+                            const SizedBox(width: 12),
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: <Widget>[
+                                  Text(
+                                    s.name,
+                                    style: const TextStyle(
+                                      fontWeight: FontWeight.w800,
+                                      fontSize: 15,
+                                      color: AppColors.ink,
+                                    ),
+                                  ),
+                                  const SizedBox(height: 2),
+                                  Text(
+                                    '${s.cuisines.join(', ')} • ${s.suburb}',
+                                    style: TextStyle(
+                                      fontSize: 12,
+                                      color: Colors.grey.shade600,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                            const Icon(
+                              Icons.arrow_forward_ios_rounded,
+                              size: 14,
+                              color: Colors.grey,
+                            ),
+                          ],
+                        ),
                       ),
                     ),
                   );

@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 
 import '../../../core/config/app_config.dart';
 import '../../../core/services/auth_service.dart';
-import '../../../core/widgets/glowing_effects.dart';
 import '../../shell/presentation/home_shell.dart';
 import 'location_permission_screen.dart';
 
@@ -197,28 +196,6 @@ class _SignInScreenState extends State<SignInScreen> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.stretch,
                       children: <Widget>[
-                        Center(
-                          child: GlowRing(
-                            size: 80,
-                            strokeWidth: 3.5,
-                            glowColor: const Color(0xFF10B981),
-                            secondaryColor: const Color(0xFF064E3B),
-                            child: Container(
-                              width: 44,
-                              height: 44,
-                              decoration: const BoxDecoration(
-                                color: Color(0xFF0F172A),
-                                shape: BoxShape.circle,
-                              ),
-                              child: const Icon(
-                                Icons.shopping_bag_rounded,
-                                color: Color(0xFF34D399),
-                                size: 22,
-                              ),
-                            ),
-                          ),
-                        ),
-                        const SizedBox(height: 16),
                         const Text(
                           AppConfig.appName,
                           style: TextStyle(
@@ -373,22 +350,20 @@ class _SignInScreenState extends State<SignInScreen> {
                           ),
                         ],
 
-                        GlowButton(
-                          label: signingUp ? 'Create account' : 'Sign in',
-                          isLoading: _busy,
-                          glowColor: const Color(0xFF10B981),
-                          backgroundColor: const Color(0xFF000000),
-                          textColor: Colors.white,
-                          onTap: _submit,
+                        const SizedBox(height: 14),
+                        FilledButton(
+                          onPressed: _busy ? null : _submit,
+                          child: _busy
+                              ? const SizedBox(
+                                  width: 20,
+                                  height: 20,
+                                  child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
+                                )
+                              : Text(signingUp ? 'Create account' : 'Sign in'),
                         ),
                         const SizedBox(height: 12),
-                        GlowButton(
-                          label: 'Explore as Guest (Skip Auth)',
-                          icon: Icons.arrow_forward_rounded,
-                          glowColor: const Color(0xFF10B981),
-                          backgroundColor: const Color(0xFF064E3B),
-                          textColor: Colors.white,
-                          onTap: () {
+                        OutlinedButton(
+                          onPressed: () {
                             Navigator.of(context).pushAndRemoveUntil(
                               MaterialPageRoute<void>(
                                 builder: (_) => const HomeShell(),
@@ -396,6 +371,15 @@ class _SignInScreenState extends State<SignInScreen> {
                               (Route<dynamic> route) => false,
                             );
                           },
+                          style: OutlinedButton.styleFrom(
+                            minimumSize: const Size.fromHeight(56),
+                            foregroundColor: const Color(0xFF000000),
+                            side: const BorderSide(color: Color(0xFFE6E6E6)),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(28),
+                            ),
+                          ),
+                          child: const Text('Explore as Guest (Skip Auth)'),
                         ),
 
                         // Push the legal line to the Figma y=776 baseline.

@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../../../core/services/cart_service.dart';
 import '../../../core/theme/app_theme.dart';
-import '../../../core/widgets/glowing_effects.dart';
+import '../../../core/widgets/page_transitions.dart';
 import '../../checkout/presentation/checkout_screen.dart';
 
 /// Interactive modal bottom sheet displaying the customer's current cart,
@@ -227,20 +227,32 @@ class CartSheet extends StatelessWidget {
                             color: Colors.grey.shade600,
                           ),
                         ),
-                        GlowButton(
-                          label: 'Review & Checkout (${CartService.instance.formattedSubtotal})',
-                          icon: Icons.lock_rounded,
-                          glowColor: const Color(0xFF10B981),
-                          backgroundColor: const Color(0xFF0F172A),
-                          textColor: Colors.white,
-                          onTap: () {
+                        const SizedBox(height: 12),
+                        FilledButton.icon(
+                          onPressed: () {
                             Navigator.of(context).pop();
                             Navigator.of(context).push(
-                              MaterialPageRoute<void>(
+                              SmoothPageRoute<void>(
                                 builder: (_) => const CheckoutScreen(),
                               ),
                             );
                           },
+                          icon: const Icon(Icons.lock_rounded, size: 18),
+                          label: Text(
+                            'Review & Checkout (${CartService.instance.formattedSubtotal})',
+                          ),
+                          style: FilledButton.styleFrom(
+                            backgroundColor: const Color(0xFF0F172A),
+                            foregroundColor: Colors.white,
+                            padding: const EdgeInsets.symmetric(vertical: 16),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(16),
+                            ),
+                            textStyle: const TextStyle(
+                              fontSize: 15,
+                              fontWeight: FontWeight.w700,
+                            ),
+                          ),
                         ),
                       ],
                     ),

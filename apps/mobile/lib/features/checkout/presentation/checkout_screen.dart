@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import '../../../core/models/order_models.dart';
 import '../../../core/services/cart_service.dart';
 import '../../../core/theme/app_theme.dart';
-import '../../../core/widgets/glowing_effects.dart';
+import '../../../core/widgets/page_transitions.dart';
 import 'order_confirmation_screen.dart';
 
 /// Screen #12 & #13: Checkout & Dual Courier Dispatch Selection
@@ -13,7 +13,7 @@ import 'order_confirmation_screen.dart';
 /// - Driver tip chips ($0, $2, $4, $6 AUD)
 /// - Catch-weight +10% pre-authorization hold disclosure
 /// - Promo code redemption
-/// - Glowing "Authorize & Place Order" CTA
+/// - Clean "Authorize & Place Order" CTA
 class CheckoutScreen extends StatefulWidget {
   const CheckoutScreen({super.key});
 
@@ -22,8 +22,8 @@ class CheckoutScreen extends StatefulWidget {
 }
 
 class _CheckoutScreenState extends State<CheckoutScreen> {
-  String _selectedCourier = 'Uber Direct';
-  int _courierFeeCents = 550; // $5.50 AUD
+  final String _selectedCourier = 'Express Delivery';
+  final int _courierFeeCents = 550; // $5.50 AUD (Lowest optimal rate)
   int _tipCents = 200; // $2.00 AUD
   bool _isLeaveAtDoor = true;
   bool _isProcessing = false;
@@ -80,8 +80,8 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
       tipCents: _tipCents,
       totalCents: total,
       preAuthHoldCents: preAuthHold,
-      courierPartner: '$_selectedCourier (Lowest Rate)',
-      deliveryEtaMinutes: _selectedCourier == 'Uber Direct' ? 28 : 34,
+      courierPartner: '$_selectedCourier (Optimal Rate)',
+      deliveryEtaMinutes: 28,
       deliveryAddress: '24 Maple Street, Coburg VIC 3058',
       createdAt: DateTime.now(),
       items: cartItems
@@ -100,7 +100,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
     setState(() => _isProcessing = false);
 
     Navigator.of(context).pushReplacement(
-      MaterialPageRoute<void>(
+      SmoothPageRoute<void>(
         builder: (_) => OrderConfirmationScreen(order: order),
       ),
     );
@@ -136,22 +136,28 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
         padding: const EdgeInsets.fromLTRB(16, 8, 16, 120),
         children: <Widget>[
           // Delivery Address Card
-          GlowCard(
-            borderRadius: 20,
-            borderWidth: 1.0,
-            glowColor: const Color(0xFF10B981),
-            backgroundColor: Colors.white,
-            enableBorderGlow: false,
-            enableAmbientShadow: true,
+          Container(
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(20),
+              border: Border.all(color: const Color(0xFFE2E8F0)),
+              boxShadow: const <BoxShadow>[
+                BoxShadow(
+                  color: Color(0x06000000),
+                  blurRadius: 8,
+                  offset: Offset(0, 2),
+                ),
+              ],
+            ),
             padding: const EdgeInsets.all(16),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: <Widget>[
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: const <Widget>[
+                  children: <Widget>[
                     Row(
-                      children: <Widget>[
+                      children: const <Widget>[
                         Icon(
                           Icons.location_on_rounded,
                           color: AppColors.accentDark,
@@ -168,11 +174,20 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                         ),
                       ],
                     ),
-                    GlowBadge(
-                      label: 'HOME',
-                      glowColor: Color(0xFF10B981),
-                      backgroundColor: Color(0xFFDCFCE7),
-                      textColor: Color(0xFF065F46),
+                    Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                      decoration: BoxDecoration(
+                        color: const Color(0xFFDCFCE7),
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                      child: const Text(
+                        'HOME',
+                        style: TextStyle(
+                          color: Color(0xFF065F46),
+                          fontSize: 11,
+                          fontWeight: FontWeight.w800,
+                        ),
+                      ),
                     ),
                   ],
                 ),
@@ -217,11 +232,11 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
 
           const SizedBox(height: 16),
 
-          // Dual Courier Quote Selector (Uber Direct vs DoorDash Drive)
+          // Delivery Dispatch Quote (Auto-selected lowest & fastest rate)
           const Padding(
             padding: EdgeInsets.symmetric(horizontal: 4),
             child: Text(
-              'Courier Dispatch Selection',
+              'Delivery Dispatch',
               style: TextStyle(
                 fontSize: 16,
                 fontWeight: FontWeight.w800,
@@ -232,42 +247,36 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
           ),
           const SizedBox(height: 8),
 
-          // Uber Direct Quote Card
-          GlowCard(
-            onTap: () {
-              setState(() {
-                _selectedCourier = 'Uber Direct';
-                _courierFeeCents = 550;
-              });
-            },
-            borderRadius: 18,
-            borderWidth: 1.4,
-            glowColor: const Color(0xFF10B981),
-            backgroundColor: _selectedCourier == 'Uber Direct'
-                ? const Color(0xFF0F172A)
-                : Colors.white,
-            enableBorderGlow: _selectedCourier == 'Uber Direct',
-            enableAmbientShadow: _selectedCourier == 'Uber Direct',
-            padding: const EdgeInsets.all(14),
+          // Single Optimal Delivery Quote (Chosen automatically by backend)
+          Container(
+            padding: const EdgeInsets.all(16),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(18),
+              border: Border.all(color: const Color(0xFFE2E8F0)),
+              boxShadow: const <BoxShadow>[
+                BoxShadow(
+                  color: Color(0x06000000),
+                  blurRadius: 10,
+                  offset: Offset(0, 4),
+                ),
+              ],
+            ),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: <Widget>[
                 Row(
                   children: <Widget>[
                     Container(
-                      padding: const EdgeInsets.all(8),
+                      padding: const EdgeInsets.all(10),
                       decoration: BoxDecoration(
-                        color: _selectedCourier == 'Uber Direct'
-                            ? const Color(0xFF10B981).withValues(alpha: 0.2)
-                            : Colors.grey.shade100,
+                        color: const Color(0xFF10B981).withValues(alpha: 0.12),
                         shape: BoxShape.circle,
                       ),
-                      child: Icon(
-                        Icons.local_shipping_rounded,
-                        color: _selectedCourier == 'Uber Direct'
-                            ? const Color(0xFF34D399)
-                            : AppColors.ink,
-                        size: 20,
+                      child: const Icon(
+                        Icons.electric_bolt_rounded,
+                        color: AppColors.accentDark,
+                        size: 22,
                       ),
                     ),
                     const SizedBox(width: 12),
@@ -276,34 +285,41 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                       children: <Widget>[
                         Row(
                           children: <Widget>[
-                            Text(
-                              'Uber Direct Express',
+                            const Text(
+                              'Express Delivery',
                               style: TextStyle(
-                                fontSize: 14,
-                                fontWeight: FontWeight.w700,
-                                color: _selectedCourier == 'Uber Direct'
-                                    ? Colors.white
-                                    : AppColors.ink,
+                                fontSize: 15,
+                                fontWeight: FontWeight.w800,
+                                color: AppColors.ink,
                               ),
                             ),
                             const SizedBox(width: 6),
-                            const GlowBadge(
-                              label: 'LOWEST FEE',
-                              showPulseDot: true,
-                              glowColor: Color(0xFF10B981),
-                              backgroundColor: Color(0x3310B981),
-                              textColor: Color(0xFF34D399),
+                            Container(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 6,
+                                vertical: 2,
+                              ),
+                              decoration: BoxDecoration(
+                                color: const Color(0xFFDCFCE7),
+                                borderRadius: BorderRadius.circular(6),
+                              ),
+                              child: const Text(
+                                'BEST RATE',
+                                style: TextStyle(
+                                  fontSize: 10,
+                                  fontWeight: FontWeight.w800,
+                                  color: Color(0xFF065F46),
+                                ),
+                              ),
                             ),
                           ],
                         ),
-                        const SizedBox(height: 2),
-                        Text(
-                          '25–35 mins · Live GPS tracking',
+                        const SizedBox(height: 3),
+                        const Text(
+                          '25–35 mins · Auto-dispatched optimal rate',
                           style: TextStyle(
                             fontSize: 12,
-                            color: _selectedCourier == 'Uber Direct'
-                                ? Colors.grey.shade400
-                                : Colors.grey.shade600,
+                            color: Color(0xFF64748B),
                           ),
                         ),
                       ],
@@ -311,95 +327,11 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                   ],
                 ),
                 Text(
-                  '\$5.50 AUD',
-                  style: TextStyle(
-                    fontSize: 15,
+                  '\$${(_courierFeeCents / 100).toStringAsFixed(2)} AUD',
+                  style: const TextStyle(
+                    fontSize: 16,
                     fontWeight: FontWeight.w800,
-                    color: _selectedCourier == 'Uber Direct'
-                        ? const Color(0xFF34D399)
-                        : AppColors.ink,
-                  ),
-                ),
-              ],
-            ),
-          ),
-
-          const SizedBox(height: 10),
-
-          // DoorDash Drive Quote Card
-          GlowCard(
-            onTap: () {
-              setState(() {
-                _selectedCourier = 'DoorDash Drive';
-                _courierFeeCents = 620;
-              });
-            },
-            borderRadius: 18,
-            borderWidth: 1.4,
-            glowColor: const Color(0xFFEF4444),
-            backgroundColor: _selectedCourier == 'DoorDash Drive'
-                ? const Color(0xFF0F172A)
-                : Colors.white,
-            enableBorderGlow: _selectedCourier == 'DoorDash Drive',
-            enableAmbientShadow: _selectedCourier == 'DoorDash Drive',
-            padding: const EdgeInsets.all(14),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: <Widget>[
-                Row(
-                  children: <Widget>[
-                    Container(
-                      padding: const EdgeInsets.all(8),
-                      decoration: BoxDecoration(
-                        color: _selectedCourier == 'DoorDash Drive'
-                            ? const Color(0xFFEF4444).withValues(alpha: 0.2)
-                            : Colors.grey.shade100,
-                        shape: BoxShape.circle,
-                      ),
-                      child: Icon(
-                        Icons.delivery_dining_rounded,
-                        color: _selectedCourier == 'DoorDash Drive'
-                            ? const Color(0xFFF87171)
-                            : AppColors.ink,
-                        size: 20,
-                      ),
-                    ),
-                    const SizedBox(width: 12),
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: <Widget>[
-                        Text(
-                          'DoorDash Drive',
-                          style: TextStyle(
-                            fontSize: 14,
-                            fontWeight: FontWeight.w700,
-                            color: _selectedCourier == 'DoorDash Drive'
-                                ? Colors.white
-                                : AppColors.ink,
-                          ),
-                        ),
-                        const SizedBox(height: 2),
-                        Text(
-                          '30–40 mins · Insulated thermal bag',
-                          style: TextStyle(
-                            fontSize: 12,
-                            color: _selectedCourier == 'DoorDash Drive'
-                                ? Colors.grey.shade400
-                                : Colors.grey.shade600,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
-                Text(
-                  '\$6.20 AUD',
-                  style: TextStyle(
-                    fontSize: 15,
-                    fontWeight: FontWeight.w800,
-                    color: _selectedCourier == 'DoorDash Drive'
-                        ? const Color(0xFFF87171)
-                        : AppColors.ink,
+                    color: AppColors.accentDark,
                   ),
                 ),
               ],
@@ -428,27 +360,18 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
               return Expanded(
                 child: Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 4),
-                  child: ScalePressable(
+                  child: GestureDetector(
                     onTap: () => setState(() => _tipCents = tip),
                     child: Container(
                       padding: const EdgeInsets.symmetric(vertical: 10),
                       decoration: BoxDecoration(
-                        color: isSel ? const Color(0xFF0F172A) : Colors.white,
-                        borderRadius: BorderRadius.circular(14),
+                        color: isSel ? AppColors.accentDark : Colors.white,
+                        borderRadius: BorderRadius.circular(12),
                         border: Border.all(
                           color: isSel
-                              ? const Color(0xFF10B981)
+                              ? AppColors.accentDark
                               : const Color(0xFFE2E8F0),
                         ),
-                        boxShadow: isSel
-                            ? <BoxShadow>[
-                                BoxShadow(
-                                  color: const Color(0xFF10B981)
-                                      .withValues(alpha: 0.25),
-                                  blurRadius: 8,
-                                ),
-                              ]
-                            : null,
                       ),
                       child: Center(
                         child: Text(
@@ -471,21 +394,20 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
 
           // Catch-weight Pre-authorization Hold Disclosure
           if (CartService.instance.hasCatchWeightItems)
-            GlowCard(
-              borderRadius: 18,
-              borderWidth: 1.2,
-              glowColor: const Color(0xFF10B981),
-              backgroundColor: const Color(0xFFF0FDF4),
-              enableBorderGlow: false,
-              enableAmbientShadow: false,
+            Container(
               padding: const EdgeInsets.all(14),
+              decoration: BoxDecoration(
+                color: const Color(0xFFF0FDF4),
+                borderRadius: BorderRadius.circular(16),
+                border: Border.all(color: const Color(0xFFBBF7D0)),
+              ),
               child: Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: const <Widget>[
-                  PulseGlowDot(
-                    color: Color(0xFF10B981),
-                    size: 8,
-                    rippleRadius: 18,
+                  Icon(
+                    Icons.scale_rounded,
+                    color: Color(0xFF059669),
+                    size: 20,
                   ),
                   SizedBox(width: 10),
                   Expanded(
@@ -541,7 +463,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                 ),
               ),
               const SizedBox(width: 8),
-              ScalePressable(
+              GestureDetector(
                 onTap: _applyPromo,
                 child: Container(
                   padding: const EdgeInsets.symmetric(
@@ -567,14 +489,20 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
           const SizedBox(height: 20),
 
           // Order Pricing Summary
-          GlowCard(
-            borderRadius: 20,
-            borderWidth: 1.0,
-            glowColor: const Color(0xFF10B981),
-            backgroundColor: Colors.white,
-            enableBorderGlow: false,
-            enableAmbientShadow: true,
+          Container(
             padding: const EdgeInsets.all(16),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(18),
+              border: Border.all(color: const Color(0xFFE2E8F0)),
+              boxShadow: const <BoxShadow>[
+                BoxShadow(
+                  color: Color(0x06000000),
+                  blurRadius: 10,
+                  offset: Offset(0, 4),
+                ),
+              ],
+            ),
             child: Column(
               children: <Widget>[
                 _SummaryLine(
@@ -583,7 +511,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                 ),
                 const SizedBox(height: 8),
                 _SummaryLine(
-                  label: 'Courier Delivery ($_selectedCourier)',
+                  label: 'Express Courier (Optimal Rate)',
                   value: '\$${(_courierFeeCents / 100).toStringAsFixed(2)}',
                 ),
                 if (_tipCents > 0) ...<Widget>[
@@ -637,20 +565,44 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
         ],
       ),
 
-      // Bottom Primary Glowing Payment Button
-      bottomNavigationBar: Container(
-        color: Colors.white,
-        padding: const EdgeInsets.fromLTRB(16, 12, 16, 28),
-        child: GlowButton(
-          label: _isProcessing
-              ? 'Authorizing via Stripe...'
-              : 'Pay with Apple Pay · \$${(finalAuthorized / 100).toStringAsFixed(2)}',
-          icon: Icons.lock_rounded,
-          isLoading: _isProcessing,
-          glowColor: const Color(0xFF10B981),
-          backgroundColor: const Color(0xFF0F172A),
-          textColor: Colors.white,
-          onTap: _placeOrder,
+      // Bottom Primary Payment Button
+      bottomNavigationBar: SafeArea(
+        child: Container(
+          color: Colors.white,
+          padding: const EdgeInsets.fromLTRB(16, 12, 16, 16),
+          child: SizedBox(
+            height: 52,
+            width: double.infinity,
+            child: FilledButton.icon(
+              onPressed: _isProcessing ? null : _placeOrder,
+              icon: _isProcessing
+                  ? const SizedBox(
+                      width: 18,
+                      height: 18,
+                      child: CircularProgressIndicator(
+                        strokeWidth: 2,
+                        color: Colors.white,
+                      ),
+                    )
+                  : const Icon(Icons.lock_rounded, size: 18),
+              label: Text(
+                _isProcessing
+                    ? 'Authorizing via Stripe...'
+                    : 'Pay with Apple Pay · \$${(finalAuthorized / 100).toStringAsFixed(2)}',
+                style: const TextStyle(
+                  fontSize: 15,
+                  fontWeight: FontWeight.w700,
+                ),
+              ),
+              style: FilledButton.styleFrom(
+                backgroundColor: const Color(0xFF0F172A),
+                foregroundColor: Colors.white,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(14),
+                ),
+              ),
+            ),
+          ),
         ),
       ),
     );

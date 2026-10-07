@@ -2,11 +2,11 @@ import 'package:flutter/material.dart';
 
 import '../../../core/models/order_models.dart';
 import '../../../core/theme/app_theme.dart';
-import '../../../core/widgets/glowing_effects.dart';
+import '../../../core/widgets/page_transitions.dart';
 import 'tracking_screen.dart';
 
 /// Screen #41: Orders
-/// Shows active ongoing orders with glowing live radar cards, pending catering quote requests,
+/// Shows active ongoing orders with clean live tracking cards, pending catering quote requests,
 /// and past order history with re-order shortcuts.
 class OrdersScreen extends StatefulWidget {
   const OrdersScreen({super.key});
@@ -113,14 +113,17 @@ class _OrdersScreenState extends State<OrdersScreen> {
           // Active Orders Section
           if (_activeOrders.isNotEmpty) ...<Widget>[
             Row(
-              children: const <Widget>[
-                PulseGlowDot(
-                  color: Color(0xFF10B981),
-                  size: 8,
-                  rippleRadius: 18,
+              children: <Widget>[
+                Container(
+                  width: 10,
+                  height: 10,
+                  decoration: const BoxDecoration(
+                    color: Color(0xFF10B981),
+                    shape: BoxShape.circle,
+                  ),
                 ),
-                SizedBox(width: 8),
-                Text(
+                const SizedBox(width: 8),
+                const Text(
                   'Active Delivery en Route',
                   style: TextStyle(
                     fontSize: 16,
@@ -190,20 +193,18 @@ class _ActiveOrderCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return GlowCard(
-      onTap: () {
-        Navigator.of(context).push(
-          MaterialPageRoute<void>(
-            builder: (_) => TrackingScreen(order: order),
+    return Container(
+      decoration: BoxDecoration(
+        color: const Color(0xFF0F172A),
+        borderRadius: BorderRadius.circular(20),
+        boxShadow: const <BoxShadow>[
+          BoxShadow(
+            color: Color(0x1A0F172A),
+            blurRadius: 14,
+            offset: Offset(0, 4),
           ),
-        );
-      },
-      borderRadius: 22,
-      borderWidth: 1.4,
-      glowColor: const Color(0xFF10B981),
-      backgroundColor: const Color(0xFF0F172A),
-      enableBorderGlow: true,
-      enableAmbientShadow: true,
+        ],
+      ),
       padding: const EdgeInsets.all(18),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -213,12 +214,15 @@ class _ActiveOrderCard extends StatelessWidget {
             children: <Widget>[
               Row(
                 children: <Widget>[
-                  const GlowRing(
-                    size: 44,
-                    strokeWidth: 2.8,
-                    glowColor: Color(0xFF10B981),
-                    secondaryColor: Color(0xFF064E3B),
-                    child: Icon(
+                  Container(
+                    width: 42,
+                    height: 42,
+                    decoration: BoxDecoration(
+                      color: const Color(0xFF1E293B),
+                      shape: BoxShape.circle,
+                      border: Border.all(color: const Color(0xFF334155)),
+                    ),
+                    child: const Icon(
                       Icons.electric_bolt_rounded,
                       color: Color(0xFF34D399),
                       size: 20,
@@ -249,12 +253,24 @@ class _ActiveOrderCard extends StatelessWidget {
                   ),
                 ],
               ),
-              const GlowBadge(
-                label: 'DISPATCHED',
-                showPulseDot: true,
-                glowColor: Color(0xFF10B981),
-                backgroundColor: Color(0x3310B981),
-                textColor: Color(0xFF34D399),
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                decoration: BoxDecoration(
+                  color: const Color(0x2610B981),
+                  borderRadius: BorderRadius.circular(12),
+                  border: Border.all(
+                    color: const Color(0xFF10B981).withValues(alpha: 0.3),
+                  ),
+                ),
+                child: const Text(
+                  'DISPATCHED',
+                  style: TextStyle(
+                    color: Color(0xFF34D399),
+                    fontSize: 10,
+                    fontWeight: FontWeight.w800,
+                    letterSpacing: 0.4,
+                  ),
+                ),
               ),
             ],
           ),
@@ -291,21 +307,33 @@ class _ActiveOrderCard extends StatelessWidget {
             ],
           ),
           const SizedBox(height: 16),
-          GlowButton(
-            label: 'Track Order in Real-Time',
-            icon: Icons.navigation_rounded,
-            glowColor: const Color(0xFF10B981),
-            backgroundColor: const Color(0xFF10B981),
-            textColor: Colors.white,
-            height: 46,
-            borderRadius: 14,
-            onTap: () {
-              Navigator.of(context).push(
-                MaterialPageRoute<void>(
-                  builder: (_) => TrackingScreen(order: order),
+          SizedBox(
+            width: double.infinity,
+            height: 44,
+            child: FilledButton.icon(
+              onPressed: () {
+                Navigator.of(context).push(
+                  SmoothPageRoute<void>(
+                    builder: (_) => TrackingScreen(order: order),
+                  ),
+                );
+              },
+              icon: const Icon(Icons.navigation_rounded, size: 18),
+              label: const Text(
+                'Track Order in Real-Time',
+                style: TextStyle(
+                  fontSize: 14,
+                  fontWeight: FontWeight.w700,
                 ),
-              );
-            },
+              ),
+              style: FilledButton.styleFrom(
+                backgroundColor: const Color(0xFF10B981),
+                foregroundColor: Colors.white,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(14),
+                ),
+              ),
+            ),
           ),
         ],
       ),
@@ -316,13 +344,19 @@ class _ActiveOrderCard extends StatelessWidget {
 class _CateringRequestCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return GlowCard(
-      borderRadius: 18,
-      borderWidth: 1.0,
-      glowColor: const Color(0xFF38BDF8),
-      backgroundColor: Colors.white,
-      enableBorderGlow: false,
-      enableAmbientShadow: true,
+    return Container(
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(18),
+        border: Border.all(color: const Color(0xFFE2E8F0)),
+        boxShadow: const <BoxShadow>[
+          BoxShadow(
+            color: Color(0x06000000),
+            blurRadius: 10,
+            offset: Offset(0, 4),
+          ),
+        ],
+      ),
       padding: const EdgeInsets.all(16),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -346,11 +380,22 @@ class _CateringRequestCard extends StatelessWidget {
               ),
             ],
           ),
-          const GlowBadge(
-            label: 'QUOTE SENT',
-            glowColor: Color(0xFF38BDF8),
-            backgroundColor: Color(0xFFE0F2FE),
-            textColor: Color(0xFF0284C7),
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+            decoration: BoxDecoration(
+              color: const Color(0xFFE0F2FE),
+              borderRadius: BorderRadius.circular(12),
+              border: Border.all(color: const Color(0xFFBAE6FD)),
+            ),
+            child: const Text(
+              'QUOTE SENT',
+              style: TextStyle(
+                color: Color(0xFF0284C7),
+                fontSize: 10,
+                fontWeight: FontWeight.w800,
+                letterSpacing: 0.4,
+              ),
+            ),
           ),
         ],
       ),
@@ -367,13 +412,19 @@ class _PastOrderCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 12),
-      child: GlowCard(
-        borderRadius: 18,
-        borderWidth: 1.0,
-        glowColor: const Color(0xFF10B981),
-        backgroundColor: Colors.white,
-        enableBorderGlow: false,
-        enableAmbientShadow: true,
+      child: Container(
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(18),
+          border: Border.all(color: const Color(0xFFE2E8F0)),
+          boxShadow: const <BoxShadow>[
+            BoxShadow(
+              color: Color(0x06000000),
+              blurRadius: 10,
+              offset: Offset(0, 4),
+            ),
+          ],
+        ),
         padding: const EdgeInsets.all(14),
         child: Row(
           children: <Widget>[
@@ -423,7 +474,7 @@ class _PastOrderCard extends StatelessWidget {
                 ],
               ),
             ),
-            ScalePressable(
+            GestureDetector(
               onTap: () {
                 ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(

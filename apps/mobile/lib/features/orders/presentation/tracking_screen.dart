@@ -2,14 +2,13 @@ import 'package:flutter/material.dart';
 
 import '../../../core/models/order_models.dart';
 import '../../../core/theme/app_theme.dart';
-import '../../../core/widgets/glowing_effects.dart';
 
 /// Screen #16: Live Delivery Tracking
-/// Upgraded with Code & Chill inspired glowing animations:
-/// - Rotating & breathing GlowRing Live GPS Radar over map route
-/// - Glowing driver info card with proxy call action
-/// - PulseGlowDot radar indicators along the 5-stage delivery stepper
-/// - Catch-weight scale settlement confirmation
+/// Clean Figma styling:
+/// - Real-time map route card with driver position marker
+/// - Driver info card with proxy call action
+/// - 5-stage delivery lifecycle stepper
+/// - Order itemized summary with catch-weight hold disclosure
 class TrackingScreen extends StatelessWidget {
   const TrackingScreen({required this.order, super.key});
 
@@ -44,7 +43,7 @@ class TrackingScreen extends StatelessWidget {
       body: ListView(
         padding: const EdgeInsets.fromLTRB(16, 8, 16, 40),
         children: <Widget>[
-          // Map Visual Card with Animated Glowing Radar Ring
+          // Map Visual Card with Driver Pin Marker
           Container(
             height: 220,
             decoration: BoxDecoration(
@@ -83,24 +82,27 @@ class TrackingScreen extends StatelessWidget {
                   ),
                 ),
 
-                // Signature Rotating & Breathing Glowing Radar Ring on Driver Position
+                // Driver Position Pin
                 Center(
-                  child: GlowRing(
-                    size: 80,
-                    strokeWidth: 3.5,
-                    glowColor: const Color(0xFF10B981),
-                    secondaryColor: const Color(0xFF064E3B),
-                    child: Container(
-                      padding: const EdgeInsets.all(10),
-                      decoration: const BoxDecoration(
-                        color: Color(0xFF0F172A),
-                        shape: BoxShape.circle,
-                      ),
-                      child: const Icon(
-                        Icons.navigation_rounded,
-                        color: Color(0xFF34D399),
-                        size: 26,
-                      ),
+                  child: Container(
+                    width: 50,
+                    height: 50,
+                    decoration: BoxDecoration(
+                      color: AppColors.accentDark,
+                      shape: BoxShape.circle,
+                      border: Border.all(color: Colors.white, width: 3),
+                      boxShadow: const <BoxShadow>[
+                        BoxShadow(
+                          color: Color(0x33000000),
+                          blurRadius: 10,
+                          offset: Offset(0, 4),
+                        ),
+                      ],
+                    ),
+                    child: const Icon(
+                      Icons.navigation_rounded,
+                      color: Colors.white,
+                      size: 26,
                     ),
                   ),
                 ),
@@ -109,27 +111,55 @@ class TrackingScreen extends StatelessWidget {
                 Positioned(
                   top: 14,
                   left: 14,
-                  child: const GlowBadge(
-                    label: 'LIVE GPS DISPATCH',
-                    showPulseDot: true,
-                    glowColor: Color(0xFF10B981),
-                    backgroundColor: Color(0xCC0F172A),
-                    textColor: Colors.white,
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 10,
+                      vertical: 5,
+                    ),
+                    decoration: BoxDecoration(
+                      color: const Color(0xDD0F172A),
+                      borderRadius: BorderRadius.circular(12),
+                      border: Border.all(
+                        color: const Color(0xFF10B981).withValues(alpha: 0.5),
+                      ),
+                    ),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: <Widget>[
+                        Container(
+                          width: 8,
+                          height: 8,
+                          decoration: const BoxDecoration(
+                            color: Color(0xFF10B981),
+                            shape: BoxShape.circle,
+                          ),
+                        ),
+                        const SizedBox(width: 6),
+                        const Text(
+                          'LIVE GPS DISPATCH',
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 10,
+                            fontWeight: FontWeight.w800,
+                            letterSpacing: 0.4,
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
                 ),
 
-                // Bottom ETA Pill with glowing neon border
+                // Bottom ETA Pill
                 Positioned(
                   bottom: 14,
                   left: 14,
                   right: 14,
-                  child: GlowCard(
-                    borderRadius: 16,
-                    borderWidth: 1.2,
-                    glowColor: const Color(0xFF10B981),
-                    backgroundColor: Colors.black.withValues(alpha: 0.85),
-                    enableBorderGlow: true,
-                    enableAmbientShadow: true,
+                  child: Container(
+                    decoration: BoxDecoration(
+                      color: Colors.black.withValues(alpha: 0.85),
+                      borderRadius: BorderRadius.circular(16),
+                      border: Border.all(color: const Color(0xFF334155)),
+                    ),
                     padding: const EdgeInsets.symmetric(
                       horizontal: 16,
                       vertical: 10,
@@ -174,13 +204,19 @@ class TrackingScreen extends StatelessWidget {
           const SizedBox(height: 18),
 
           // Courier & Driver Details Card
-          GlowCard(
-            borderRadius: 20,
-            borderWidth: 1.0,
-            glowColor: const Color(0xFF10B981),
-            backgroundColor: Colors.white,
-            enableBorderGlow: false,
-            enableAmbientShadow: true,
+          Container(
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(20),
+              border: Border.all(color: const Color(0xFFE2E8F0)),
+              boxShadow: const <BoxShadow>[
+                BoxShadow(
+                  color: Color(0x06000000),
+                  blurRadius: 10,
+                  offset: Offset(0, 4),
+                ),
+              ],
+            ),
             padding: const EdgeInsets.all(16),
             child: Row(
               children: <Widget>[
@@ -227,7 +263,7 @@ class TrackingScreen extends StatelessWidget {
                     ],
                   ),
                 ),
-                ScalePressable(
+                GestureDetector(
                   onTap: () {
                     ScaffoldMessenger.of(context).showSnackBar(
                       SnackBar(
@@ -240,15 +276,9 @@ class TrackingScreen extends StatelessWidget {
                   },
                   child: Container(
                     padding: const EdgeInsets.all(10),
-                    decoration: BoxDecoration(
-                      color: const Color(0xFF0F172A),
+                    decoration: const BoxDecoration(
+                      color: Color(0xFF0F172A),
                       shape: BoxShape.circle,
-                      boxShadow: <BoxShadow>[
-                        BoxShadow(
-                          color: const Color(0xFF10B981).withValues(alpha: 0.25),
-                          blurRadius: 8,
-                        ),
-                      ],
                     ),
                     child: const Icon(
                       Icons.phone_rounded,
@@ -264,13 +294,19 @@ class TrackingScreen extends StatelessWidget {
           const SizedBox(height: 18),
 
           // Status Stepper Card
-          GlowCard(
-            borderRadius: 20,
-            borderWidth: 1.0,
-            glowColor: const Color(0xFF10B981),
-            backgroundColor: Colors.white,
-            enableBorderGlow: false,
-            enableAmbientShadow: true,
+          Container(
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(20),
+              border: Border.all(color: const Color(0xFFE2E8F0)),
+              boxShadow: const <BoxShadow>[
+                BoxShadow(
+                  color: Color(0x06000000),
+                  blurRadius: 10,
+                  offset: Offset(0, 4),
+                ),
+              ],
+            ),
             padding: const EdgeInsets.all(18),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -326,13 +362,19 @@ class TrackingScreen extends StatelessWidget {
           const SizedBox(height: 18),
 
           // Items in Order
-          GlowCard(
-            borderRadius: 20,
-            borderWidth: 1.0,
-            glowColor: const Color(0xFF10B981),
-            backgroundColor: Colors.white,
-            enableBorderGlow: false,
-            enableAmbientShadow: true,
+          Container(
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(20),
+              border: Border.all(color: const Color(0xFFE2E8F0)),
+              boxShadow: const <BoxShadow>[
+                BoxShadow(
+                  color: Color(0x06000000),
+                  blurRadius: 10,
+                  offset: Offset(0, 4),
+                ),
+              ],
+            ),
             padding: const EdgeInsets.all(18),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -358,7 +400,7 @@ class TrackingScreen extends StatelessWidget {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: <Widget>[
                               Text(
-                                '${item.quantity}x ${item.productName}',
+                                '${item.quantity}x ${item.name}',
                                 style: const TextStyle(
                                   fontWeight: FontWeight.w700,
                                   fontSize: 14,
@@ -376,7 +418,7 @@ class TrackingScreen extends StatelessWidget {
                           ),
                         ),
                         Text(
-                          item.formattedTotal,
+                          '\$${((item.unitPriceCents * item.quantity) / 100).toStringAsFixed(2)}',
                           style: const TextStyle(
                             fontWeight: FontWeight.w700,
                             fontSize: 14,
@@ -438,12 +480,14 @@ class _StepRow extends StatelessWidget {
       children: <Widget>[
         // Indicator
         if (isCurrent)
-          const Padding(
-            padding: EdgeInsets.only(top: 2, right: 12),
-            child: PulseGlowDot(
-              color: Color(0xFF10B981),
-              size: 10,
-              rippleRadius: 22,
+          Container(
+            margin: const EdgeInsets.only(top: 2, right: 12),
+            width: 20,
+            height: 20,
+            decoration: BoxDecoration(
+              color: AppColors.accentDark,
+              shape: BoxShape.circle,
+              border: Border.all(color: const Color(0xFFBBF7D0), width: 3),
             ),
           )
         else

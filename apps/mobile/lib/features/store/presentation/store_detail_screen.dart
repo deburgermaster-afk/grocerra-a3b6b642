@@ -5,6 +5,7 @@ import '../../../core/services/cart_service.dart';
 import '../../../core/services/store_service.dart';
 import '../../../core/theme/app_theme.dart';
 import '../../../core/widgets/glowing_effects.dart';
+import '../../cart/presentation/added_to_basket_sheet.dart';
 import '../../cart/presentation/cart_sheet.dart';
 
 /// Screen #09: Store Detail (Prototype: Madina Halal Meats / Dhaka Fresh Grocers).
@@ -162,12 +163,24 @@ class _StoreDetailScreenState extends State<StoreDetailScreen> {
                         ),
                       ),
                       if (widget.store.isHalalCertified)
-                        const GlowBadge(
-                          label: 'HALAL CERTIFIED',
-                          showPulseDot: true,
-                          glowColor: Color(0xFF10B981),
-                          backgroundColor: Color(0xFF064E3B),
-                          textColor: Colors.white,
+                        Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 10,
+                            vertical: 4,
+                          ),
+                          decoration: BoxDecoration(
+                            color: const Color(0xFF065F46),
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          child: const Text(
+                            'HALAL CERTIFIED',
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 10,
+                              fontWeight: FontWeight.w800,
+                              letterSpacing: 0.3,
+                            ),
+                          ),
                         ),
                     ],
                   ),
@@ -178,14 +191,20 @@ class _StoreDetailScreenState extends State<StoreDetailScreen> {
                   ),
                   const SizedBox(height: 14),
 
-                  // Delivery & Rating Badges in GlowCard
-                  GlowCard(
-                    borderRadius: 18,
-                    borderWidth: 1.0,
-                    glowColor: const Color(0xFF10B981),
-                    backgroundColor: Colors.white,
-                    enableBorderGlow: false,
-                    enableAmbientShadow: true,
+                  // Delivery & Rating Badges
+                  Container(
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(18),
+                      border: Border.all(color: const Color(0xFFE2E8F0)),
+                      boxShadow: const <BoxShadow>[
+                        BoxShadow(
+                          color: Color(0x06000000),
+                          blurRadius: 8,
+                          offset: Offset(0, 2),
+                        ),
+                      ],
+                    ),
                     padding: const EdgeInsets.symmetric(
                       horizontal: 14,
                       vertical: 12,
@@ -356,20 +375,10 @@ class _StoreDetailScreenState extends State<StoreDetailScreen> {
                           product: prod,
                           variant: variant,
                         );
-                        ScaffoldMessenger.of(context).hideCurrentSnackBar();
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(
-                            content: Text(
-                              'Added ${prod.name} (${variant.label})',
-                            ),
-                            duration: const Duration(seconds: 1),
-                            action: SnackBarAction(
-                              label: 'View Cart',
-                              textColor: const Color(0xFF34D399),
-                              onPressed: () => CartSheet.show(context),
-                            ),
-                            backgroundColor: const Color(0xFF0F172A),
-                          ),
+                        AddedToBasketSheet.show(
+                          context,
+                          product: prod,
+                          variant: variant,
                         );
                       },
                     ),
@@ -380,7 +389,7 @@ class _StoreDetailScreenState extends State<StoreDetailScreen> {
         ],
       ),
 
-      // Sleek Glowing Island Bottom Cart Bar
+      // Clean Floating Island Bottom Cart Bar
       bottomNavigationBar: ValueListenableBuilder<List<CartItem>>(
         valueListenable: CartService.instance.itemsNotifier,
         builder: (BuildContext context, List<CartItem> items, Widget? child) {
@@ -390,71 +399,75 @@ class _StoreDetailScreenState extends State<StoreDetailScreen> {
           return Container(
             color: Colors.transparent,
             padding: const EdgeInsets.fromLTRB(16, 8, 16, 24),
-            child: GlowCard(
+            child: GestureDetector(
               onTap: () => CartSheet.show(context),
-              borderRadius: 24,
-              borderWidth: 1.5,
-              glowColor: const Color(0xFF10B981),
-              backgroundColor: const Color(0xFF0F172A),
-              enableBorderGlow: true,
-              enableAmbientShadow: true,
-              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: <Widget>[
-                  Row(
-                    children: <Widget>[
-                      Container(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 8,
-                          vertical: 4,
-                        ),
-                        decoration: BoxDecoration(
-                          color: const Color(0xFF10B981).withValues(alpha: 0.25),
-                          borderRadius: BorderRadius.circular(10),
-                          border: Border.all(
-                            color: const Color(0xFF10B981).withValues(alpha: 0.5),
+              child: Container(
+                padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
+                decoration: BoxDecoration(
+                  color: const Color(0xFF0F172A),
+                  borderRadius: BorderRadius.circular(24),
+                  boxShadow: const <BoxShadow>[
+                    BoxShadow(
+                      color: Color(0x33000000),
+                      blurRadius: 16,
+                      offset: Offset(0, 6),
+                    ),
+                  ],
+                ),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: <Widget>[
+                    Row(
+                      children: <Widget>[
+                        Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 8,
+                            vertical: 4,
+                          ),
+                          decoration: BoxDecoration(
+                            color: const Color(0xFF10B981).withValues(alpha: 0.25),
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                          child: Text(
+                            '$count',
+                            style: const TextStyle(
+                              color: Color(0xFF34D399),
+                              fontWeight: FontWeight.w800,
+                              fontSize: 13,
+                            ),
                           ),
                         ),
-                        child: Text(
-                          '$count',
+                        const SizedBox(width: 12),
+                        const Text(
+                          'View Basket',
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 15,
+                            fontWeight: FontWeight.w700,
+                          ),
+                        ),
+                      ],
+                    ),
+                    Row(
+                      children: <Widget>[
+                        Text(
+                          CartService.instance.formattedSubtotal,
                           style: const TextStyle(
                             color: Color(0xFF34D399),
+                            fontSize: 16,
                             fontWeight: FontWeight.w800,
-                            fontSize: 13,
                           ),
                         ),
-                      ),
-                      const SizedBox(width: 12),
-                      const Text(
-                        'View Basket',
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 15,
-                          fontWeight: FontWeight.w700,
-                        ),
-                      ),
-                    ],
-                  ),
-                  Row(
-                    children: <Widget>[
-                      Text(
-                        CartService.instance.formattedSubtotal,
-                        style: const TextStyle(
+                        const SizedBox(width: 6),
+                        const Icon(
+                          Icons.arrow_forward_rounded,
                           color: Color(0xFF34D399),
-                          fontSize: 16,
-                          fontWeight: FontWeight.w800,
+                          size: 18,
                         ),
-                      ),
-                      const SizedBox(width: 6),
-                      const Icon(
-                        Icons.arrow_forward_rounded,
-                        color: Color(0xFF34D399),
-                        size: 18,
-                      ),
-                    ],
-                  ),
-                ],
+                      ],
+                    ),
+                  ],
+                ),
               ),
             ),
           );
@@ -476,14 +489,20 @@ class _ProductCard extends StatelessWidget {
 
     return Padding(
       padding: const EdgeInsets.only(bottom: 14),
-      child: GlowCard(
-        borderRadius: 18,
-        borderWidth: 1.0,
-        glowColor: const Color(0xFF10B981),
-        backgroundColor: Colors.white,
-        enableBorderGlow: false,
-        enableAmbientShadow: true,
+      child: Container(
         padding: const EdgeInsets.all(12),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(18),
+          border: Border.all(color: const Color(0xFFE2E8F0)),
+          boxShadow: const <BoxShadow>[
+            BoxShadow(
+              color: Color(0x06000000),
+              blurRadius: 8,
+              offset: Offset(0, 2),
+            ),
+          ],
+        ),
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
@@ -551,28 +570,18 @@ class _ProductCard extends StatelessWidget {
                             ),
                           ),
                           if (product.isCatchWeight)
-                            Row(
-                              children: const <Widget>[
-                                PulseGlowDot(
-                                  color: Color(0xFF10B981),
-                                  size: 6,
-                                  rippleRadius: 14,
-                                ),
-                                SizedBox(width: 3),
-                                Text(
-                                  'Scale weight hold (+10%)',
-                                  style: TextStyle(
-                                    fontSize: 10,
-                                    fontWeight: FontWeight.w600,
-                                    color: Color(0xFF059669),
-                                  ),
-                                ),
-                              ],
+                            const Text(
+                              'Scale weight hold (+10%)',
+                              style: TextStyle(
+                                fontSize: 10,
+                                fontWeight: FontWeight.w600,
+                                color: Color(0xFF059669),
+                              ),
                             ),
                         ],
                       ),
                       if (variant != null)
-                        ScalePressable(
+                        GestureDetector(
                           onTap: () => onAdd(variant),
                           child: Container(
                             padding: const EdgeInsets.symmetric(
@@ -582,15 +591,6 @@ class _ProductCard extends StatelessWidget {
                             decoration: BoxDecoration(
                               color: const Color(0xFF0F172A),
                               borderRadius: BorderRadius.circular(12),
-                              border: Border.all(
-                                color: const Color(0xFF10B981).withValues(alpha: 0.5),
-                              ),
-                              boxShadow: <BoxShadow>[
-                                BoxShadow(
-                                  color: const Color(0xFF10B981).withValues(alpha: 0.25),
-                                  blurRadius: 6,
-                                ),
-                              ],
                             ),
                             child: const Row(
                               mainAxisSize: MainAxisSize.min,
@@ -598,7 +598,7 @@ class _ProductCard extends StatelessWidget {
                                 Icon(
                                   Icons.add_rounded,
                                   size: 16,
-                                  color: Color(0xFF34D399),
+                                  color: Colors.white,
                                 ),
                                 SizedBox(width: 4),
                                 Text(

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../widgets/page_transitions.dart';
 
 /// Grocerra design tokens.
 ///
@@ -52,6 +53,15 @@ abstract final class AppTheme {
       colorScheme: scheme,
       scaffoldBackgroundColor: AppColors.canvas,
       splashFactory: InkSparkle.splashFactory,
+      pageTransitionsTheme: const PageTransitionsTheme(
+        builders: <TargetPlatform, PageTransitionsBuilder>{
+          TargetPlatform.android: SmoothPageTransitionsBuilder(),
+          TargetPlatform.iOS: SmoothPageTransitionsBuilder(),
+          TargetPlatform.windows: SmoothPageTransitionsBuilder(),
+          TargetPlatform.macOS: SmoothPageTransitionsBuilder(),
+          TargetPlatform.linux: SmoothPageTransitionsBuilder(),
+        },
+      ),
       appBarTheme: const AppBarTheme(
         backgroundColor: AppColors.canvas,
         foregroundColor: AppColors.ink,

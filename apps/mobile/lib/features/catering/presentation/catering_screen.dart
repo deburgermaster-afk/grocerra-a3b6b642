@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 
 import '../../../core/theme/app_theme.dart';
-import '../../../core/widgets/glowing_effects.dart';
 
 /// Screen #23: Catering Landing & Quote Request Flow
 /// Covers package discovery, headcount estimates, dietary preferences (Halal, Vegetarian),
@@ -76,34 +75,50 @@ class _CateringScreenState extends State<CateringScreen> {
       body: ListView(
         padding: const EdgeInsets.fromLTRB(16, 8, 16, 100),
         children: <Widget>[
-          // Hero Glowing Banner with Rotating GlowRing
-          GlowCard(
-            borderRadius: 24,
-            borderWidth: 1.5,
-            glowColor: const Color(0xFFF59E0B),
-            backgroundColor: const Color(0xFF0F172A),
-            enableBorderGlow: true,
-            enableAmbientShadow: true,
+          // Hero Banner
+          Container(
+            decoration: BoxDecoration(
+              color: const Color(0xFF0F172A),
+              borderRadius: BorderRadius.circular(24),
+              boxShadow: const <BoxShadow>[
+                BoxShadow(
+                  color: Color(0x1F000000),
+                  blurRadius: 12,
+                  offset: Offset(0, 4),
+                ),
+              ],
+            ),
             padding: const EdgeInsets.all(20),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: <Widget>[
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: const <Widget>[
-                    GlowBadge(
-                      label: 'EVENT FEASTS · MELBOURNE',
-                      showPulseDot: true,
-                      glowColor: Color(0xFFF59E0B),
-                      backgroundColor: Color(0x33F59E0B),
-                      textColor: Color(0xFFFBBF24),
+                  children: <Widget>[
+                    Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                      decoration: BoxDecoration(
+                        color: const Color(0xFFF59E0B).withValues(alpha: 0.2),
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: const Text(
+                        'EVENT FEASTS · MELBOURNE',
+                        style: TextStyle(
+                          color: Color(0xFFFBBF24),
+                          fontSize: 11,
+                          fontWeight: FontWeight.w800,
+                          letterSpacing: 0.3,
+                        ),
+                      ),
                     ),
-                    GlowRing(
-                      size: 52,
-                      strokeWidth: 3.0,
-                      glowColor: Color(0xFFF59E0B),
-                      secondaryColor: Color(0xFF78350F),
-                      child: Icon(
+                    Container(
+                      width: 44,
+                      height: 44,
+                      decoration: BoxDecoration(
+                        color: const Color(0xFF78350F).withValues(alpha: 0.3),
+                        shape: BoxShape.circle,
+                      ),
+                      child: const Icon(
                         Icons.restaurant_menu_rounded,
                         color: Color(0xFFFBBF24),
                         size: 22,
@@ -132,13 +147,25 @@ class _CateringScreenState extends State<CateringScreen> {
                   ),
                 ),
                 const SizedBox(height: 18),
-                GlowButton(
-                  label: 'Request a Free Custom Quote',
-                  icon: Icons.request_quote_rounded,
-                  glowColor: const Color(0xFFF59E0B),
-                  backgroundColor: const Color(0xFFD97706),
-                  textColor: Colors.white,
-                  onTap: _openQuoteRequestModal,
+                SizedBox(
+                  width: double.infinity,
+                  child: FilledButton.icon(
+                    onPressed: _openQuoteRequestModal,
+                    icon: const Icon(Icons.request_quote_rounded, size: 18),
+                    label: const Text('Request a Free Custom Quote'),
+                    style: FilledButton.styleFrom(
+                      backgroundColor: const Color(0xFFD97706),
+                      foregroundColor: Colors.white,
+                      padding: const EdgeInsets.symmetric(vertical: 14),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(16),
+                      ),
+                      textStyle: const TextStyle(
+                        fontSize: 14,
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
+                  ),
                 ),
               ],
             ),
@@ -160,137 +187,147 @@ class _CateringScreenState extends State<CateringScreen> {
 
           ...List<Widget>.generate(_packages.length, (int index) {
             final _CateringPackage pkg = _packages[index];
-            return StaggeredReveal(
-              index: index,
-              child: Padding(
-                padding: const EdgeInsets.only(bottom: 16),
-                child: GlowCard(
-                  borderRadius: 22,
-                  borderWidth: 1.2,
-                  glowColor: pkg.isHalalCertified
-                      ? const Color(0xFF10B981)
-                      : const Color(0xFFF59E0B),
-                  enableBorderGlow: false,
-                  enableAmbientShadow: true,
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: <Widget>[
-                      Stack(
-                        children: <Widget>[
-                          ClipRRect(
-                            borderRadius: const BorderRadius.vertical(
-                              top: Radius.circular(20),
-                            ),
-                            child: Image.network(
-                              pkg.imageUrl,
+            return Padding(
+              padding: const EdgeInsets.only(bottom: 16),
+              child: Container(
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(22),
+                  border: Border.all(color: const Color(0xFFE2E8F0)),
+                  boxShadow: const <BoxShadow>[
+                    BoxShadow(
+                      color: Color(0x06000000),
+                      blurRadius: 8,
+                      offset: Offset(0, 3),
+                    ),
+                  ],
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: <Widget>[
+                    Stack(
+                      children: <Widget>[
+                        ClipRRect(
+                          borderRadius: const BorderRadius.vertical(
+                            top: Radius.circular(21),
+                          ),
+                          child: Image.network(
+                            pkg.imageUrl,
+                            height: 140,
+                            width: double.infinity,
+                            fit: BoxFit.cover,
+                            errorBuilder: (
+                              BuildContext context,
+                              Object error,
+                              StackTrace? stackTrace,
+                            ) => Container(
                               height: 140,
-                              width: double.infinity,
-                              fit: BoxFit.cover,
-                              errorBuilder: (
-                                BuildContext context,
-                                Object error,
-                                StackTrace? stackTrace,
-                              ) => Container(
-                                height: 140,
-                                color: Colors.grey.shade200,
-                                child: const Icon(
-                                  Icons.restaurant_rounded,
-                                  size: 48,
-                                  color: Colors.grey,
+                              color: Colors.grey.shade200,
+                              child: const Icon(
+                                Icons.restaurant_rounded,
+                                size: 48,
+                                color: Colors.grey,
+                              ),
+                            ),
+                          ),
+                        ),
+                        if (pkg.isHalalCertified)
+                          Positioned(
+                            top: 12,
+                            left: 12,
+                            child: Container(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 10,
+                                vertical: 4,
+                              ),
+                              decoration: BoxDecoration(
+                                color: const Color(0xFF065F46),
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                              child: const Text(
+                                'HALAL CERTIFIED',
+                                style: TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 10,
+                                  fontWeight: FontWeight.w800,
+                                  letterSpacing: 0.3,
                                 ),
                               ),
                             ),
                           ),
-                          if (pkg.isHalalCertified)
-                            Positioned(
-                              top: 12,
-                              left: 12,
-                              child: const GlowBadge(
-                                label: 'HALAL CERTIFIED',
-                                showPulseDot: true,
-                                glowColor: Color(0xFF10B981),
-                                backgroundColor: Color(0xE6064E3B),
-                                textColor: Colors.white,
+                      ],
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.all(16),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: <Widget>[
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: <Widget>[
+                              Expanded(
+                                child: Text(
+                                  pkg.title,
+                                  style: const TextStyle(
+                                    fontSize: 17,
+                                    fontWeight: FontWeight.w800,
+                                    color: AppColors.ink,
+                                    letterSpacing: -0.3,
+                                  ),
+                                ),
+                              ),
+                              Text(
+                                '\$${(pkg.pricePerHeadCents / 100).toStringAsFixed(0)} / head',
+                                style: const TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.w800,
+                                  color: AppColors.accentDark,
+                                ),
+                              ),
+                            ],
+                          ),
+                          const SizedBox(height: 4),
+                          Text(
+                            'by ${pkg.caterer} • Min ${pkg.minGuests} guests',
+                            style: TextStyle(
+                              fontSize: 12,
+                              color: Colors.grey.shade600,
+                            ),
+                          ),
+                          const SizedBox(height: 8),
+                          Text(
+                            pkg.description,
+                            style: TextStyle(
+                              fontSize: 13,
+                              color: Colors.grey.shade800,
+                              height: 1.3,
+                            ),
+                          ),
+                          const SizedBox(height: 14),
+                          GestureDetector(
+                            onTap: _openQuoteRequestModal,
+                            child: Container(
+                              height: 44,
+                              decoration: BoxDecoration(
+                                color: const Color(0xFF0F172A),
+                                borderRadius: BorderRadius.circular(14),
+                              ),
+                              child: const Center(
+                                child: Text(
+                                  'Customise This Menu & Get Quote',
+                                  style: TextStyle(
+                                    color: Colors.white,
+                                    fontWeight: FontWeight.w700,
+                                    fontSize: 13,
+                                  ),
+                                ),
                               ),
                             ),
+                          ),
                         ],
                       ),
-                      Padding(
-                        padding: const EdgeInsets.all(16),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: <Widget>[
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: <Widget>[
-                                Expanded(
-                                  child: Text(
-                                    pkg.title,
-                                    style: const TextStyle(
-                                      fontSize: 17,
-                                      fontWeight: FontWeight.w800,
-                                      color: AppColors.ink,
-                                      letterSpacing: -0.3,
-                                    ),
-                                  ),
-                                ),
-                                Text(
-                                  '\$${(pkg.pricePerHeadCents / 100).toStringAsFixed(0)} / head',
-                                  style: const TextStyle(
-                                    fontSize: 16,
-                                    fontWeight: FontWeight.w800,
-                                    color: AppColors.accentDark,
-                                  ),
-                                ),
-                              ],
-                            ),
-                            const SizedBox(height: 4),
-                            Text(
-                              'by ${pkg.caterer} • Min ${pkg.minGuests} guests',
-                              style: TextStyle(
-                                fontSize: 12,
-                                color: Colors.grey.shade600,
-                              ),
-                            ),
-                            const SizedBox(height: 8),
-                            Text(
-                              pkg.description,
-                              style: TextStyle(
-                                fontSize: 13,
-                                color: Colors.grey.shade800,
-                                height: 1.3,
-                              ),
-                            ),
-                            const SizedBox(height: 14),
-                            ScalePressable(
-                              onTap: _openQuoteRequestModal,
-                              child: Container(
-                                height: 44,
-                                decoration: BoxDecoration(
-                                  color: const Color(0xFF0F172A),
-                                  borderRadius: BorderRadius.circular(14),
-                                  border: Border.all(
-                                    color: const Color(0xFF10B981)
-                                        .withValues(alpha: 0.5),
-                                  ),
-                                ),
-                                child: const Center(
-                                  child: Text(
-                                    'Customise This Menu & Get Quote',
-                                    style: TextStyle(
-                                      color: Colors.white,
-                                      fontWeight: FontWeight.w700,
-                                      fontSize: 13,
-                                    ),
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ],
-                  ),
+                    ),
+                  ],
                 ),
               ),
             );
@@ -480,13 +517,22 @@ class _CateringQuoteModalState extends State<_CateringQuoteModal> {
 
               const SizedBox(height: 18),
 
-              GlowButton(
-                label: 'Send Quote Request',
-                icon: Icons.send_rounded,
-                glowColor: const Color(0xFF10B981),
-                backgroundColor: const Color(0xFF0F172A),
-                textColor: Colors.white,
-                onTap: () {
+              FilledButton.icon(
+                icon: const Icon(Icons.send_rounded, size: 18),
+                label: const Text('Send Quote Request'),
+                style: FilledButton.styleFrom(
+                  backgroundColor: const Color(0xFF0F172A),
+                  foregroundColor: Colors.white,
+                  padding: const EdgeInsets.symmetric(vertical: 16),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(16),
+                  ),
+                  textStyle: const TextStyle(
+                    fontSize: 15,
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
+                onPressed: () {
                   Navigator.of(context).pop();
                   ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(
