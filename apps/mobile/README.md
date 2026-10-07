@@ -20,12 +20,18 @@ flutter test
 flutter run            # Chrome or a connected Android/iOS device
 ```
 
+## Web preview on Vercel
+
+Every push builds this app for the web (`flutter build web`) on Vercel, so you get a live link to try it in a browser: a preview link for branches and PRs, and the production link for `main`. The build runs `vercel-build.sh` and starts as soon as `pubspec.yaml` exists. To use the same build locally: `flutter build web --release`.
+
 ## Deployment
 
 The app lives at `apps/mobile/` because that is the path the approved blueprint
 assigns it, and it is the root directory of the `grocerra-app` Vercel project.
 
-- `vercel.json` — runs `vercel-build.sh` and publishes `build/web`.
+- `vercel.json` — skips the build while `pubspec.yaml` is absent, runs
+  `vercel-build.sh` and publishes `build/web` (with an SPA rewrite so deep
+  links resolve).
 - `vercel-build.sh` — the Vercel image has no Flutter SDK, so the script pins
   the same toolchain this project is developed against (3.47.6), then runs
   `pub get` + `flutter build web --release`.
