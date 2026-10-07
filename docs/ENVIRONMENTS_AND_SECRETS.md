@@ -8,13 +8,13 @@ How Sogrow (Grocera) is hosted, where every environment variable comes from, and
 |---|---|---|---|
 | Database, auth (OTP), storage, realtime | — | Supabase, project `grocera`, Sydney (`ap-southeast-2`) | Migrations run by the API's deploy step |
 | Dev and task databases | — | Neon, Sydney, one branch per task | Created by ReevTask when a task starts |
-| API and job worker (NestJS) | `services/api` | Railway | Push to `main` → production; PR → preview environment |
-| Merchant portal (Next.js) | `apps/merchant-portal` | Vercel, project `grocera-merchant-portal` | Push to `main` → production; PR → preview URL |
-| Admin panel (Next.js) | `apps/admin` | Vercel, project `grocera-admin` | Push to `main` → production; PR → preview URL |
-| Customer app, web build (Flutter) | `apps/mobile` | Cloudflare Pages | Push to `main` |
+| API and job worker (NestJS) | `services/api` | Cloudflare Containers (Docker image run by a Worker), Hyperdrive pooling to Supabase | Push to `main` → production; PR → preview version |
+| Merchant portal (Next.js) | `apps/merchant-portal` | Cloudflare Workers via OpenNext, Worker `grocera-merchant-portal` | Push to `main` → production; PR → preview URL |
+| Admin panel (Next.js) | `apps/admin` | Cloudflare Workers via OpenNext, Worker `grocera-admin` | Push to `main` → production; PR → preview URL |
+| Customer app, web build (Flutter) | `apps/mobile` | Cloudflare Pages, project `grocera-web` | Push to `main` → production; PR → preview URL |
 | Customer app, iOS / Android (Flutter) | `apps/mobile` | App Store / Google Play | Tagged release (`mobile-v*`) via CI |
 
-Every host is linked to this repository, so **merging to `main` deploys** and every pull request gets its own preview. Nobody deploys by hand and nobody needs host credentials to ship.
+All web and API hosting runs on **one Cloudflare account** (Workers Paid plan, about US$5/month). Every Cloudflare project uses **Workers Builds / Pages Git integration** linked to this repository, so **merging to `main` deploys** and every pull request gets its own preview. Nobody deploys by hand and nobody needs host credentials to ship.
 
 ## Three kinds of values
 
@@ -41,7 +41,7 @@ Each app has a `.env.example` listing the variable names it needs:
 | Environment | Database | Stripe / couriers | Source of the values |
 |---|---|---|---|
 | Local / task work | Neon branch for the task | Test mode / sandbox | Injected by ReevTask into your agent's run |
-| Preview (PRs) | Neon preview branch | Test mode / sandbox | Host preview env (Vercel / Railway), set by the owner |
+| Preview (PRs) | Neon preview branch | Test mode / sandbox | Cloudflare preview variables, set by the owner |
 | Production | Supabase `grocera` (Sydney) | Live | Host production env, set by the owner |
 
 ## How employees get secrets through ReevTask
@@ -65,7 +65,12 @@ What this means in practice:
 - [ ] Supabase `grocera`: copy the database password, the `sb_secret_` key and the pooler connection strings (Dashboard › Connect) into Reevake › Project secrets.
 - [ ] Supabase Auth: enable phone OTP and add the Twilio credentials in Dashboard › Authentication (they're stored by Supabase, not by the app).
 - [ ] Neon: create the `grocera` project in Sydney. Its `main` branch is the dev database; ReevTask branches it per task.
-- [ ] Railway: create the `grocera` project, connect this repo with root directory `services/api`, turn on PR environments, and paste the server variables from `services/api/.env.example`.
-- [ ] Vercel: create `grocera-merchant-portal` (root `apps/merchant-portal`) and `grocera-admin` (root `apps/admin`), region `syd1`, and add the `NEXT_PUBLIC_*` variables.
-- [ ] Cloudflare Pages: connect this repo for the Flutter web build (`apps/mobile`, output `build/web`).
+- [ ] Cloudflare: subscribe to **Workers Paid** (needed for Containers), and give the **Cloudflare Workers and Pages** GitHub app access to this repository.
+- [ ] Cloudflare › Hyperdrive: create `grocera-db` pointing at the Supabase **direct** connection string. The API Worker binds to it.
+- [ ] Cloudflare › Workers & Pages › Create › Import a repository, three times:
+  - `grocera-api`: root `services/api`, deployed with `wrangler deploy` (Worker + Container). Add the server secrets from `services/api/.env.example` as **Secrets**, not plain variables.
+  - `grocera-merchant-portal`: root `apps/merchant-portal` (OpenNext). Add the `NEXT_PUBLIC_*` variables.
+  - `grocera-admin`: root `apps/admin` (OpenNext). Add the `NEXT_PUBLIC_*` variables.
+- [ ] Cloudflare Pages `grocera-web`: root `apps/mobile`, build `flutter build web --release`, output `build/web`.
+- [ ] Turn on non-production (preview) builds for every project so pull requests get preview URLs.
 - [ ] Before the pilot: upgrade Supabase to Pro, and switch Stripe and couriers to live keys on production only.

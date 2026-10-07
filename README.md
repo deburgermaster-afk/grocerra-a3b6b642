@@ -27,6 +27,7 @@ South Asian groceries, halal meat and catering delivered on demand in Melbourne.
 
 - Each app lists the variables it needs in its own `.env.example` (names only, never real values).
 - Your agent gets **development** values from ReevTask for the task it's working on. Production values are owner-only, kept in Reevake › Project secrets and on the hosts.
-- Merging to `main` deploys automatically: Vercel (web portals), Railway (API), Cloudflare Pages (Flutter web). Every PR gets a preview.
+- Hosting runs on Cloudflare (Workers Paid, about US$5/mo): the API runs in Cloudflare Containers, the Next.js portals on Workers (OpenNext), and the Flutter web build on Pages. The database is Supabase (Sydney), and task databases are Neon branches.
+- Merging to `main` deploys automatically through Cloudflare's GitHub integration. Every PR gets a preview URL. Nobody needs Cloudflare credentials to ship.
 
 Full guide: [docs/ENVIRONMENTS_AND_SECRETS.md](docs/ENVIRONMENTS_AND_SECRETS.md)
