@@ -8,6 +8,7 @@ import 'package:flutter/material.dart';
 /// throughout those frames.
 abstract final class AppColors {
   static const Color accent = Color(0xFF16A34A);
+  static const Color accentLight = Color(0xFFDCFCE7);
   static const Color accentDark = Color(0xFF0F7B4F);
 
   /// Body / heading ink. Figma text paints are pure black.

@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 
 import '../../../core/config/app_config.dart';
 import '../../../core/services/auth_service.dart';
+import '../../../core/widgets/glowing_effects.dart';
 import '../../shell/presentation/home_shell.dart';
 import 'location_permission_screen.dart';
 
@@ -104,6 +105,14 @@ class _SignInScreenState extends State<SignInScreen> {
     setState(() => _busy = false);
 
     if (!result.ok) {
+      if (!AppConfig.isSupabaseConfigured) {
+        // Dev fallback: allow entering as demo guest when Supabase is unconfigured
+        Navigator.of(context).pushAndRemoveUntil(
+          MaterialPageRoute<void>(builder: (_) => const HomeShell()),
+          (Route<dynamic> route) => false,
+        );
+        return;
+      }
       _showNotice(result.message, error: true);
       return;
     }
@@ -188,6 +197,28 @@ class _SignInScreenState extends State<SignInScreen> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.stretch,
                       children: <Widget>[
+                        Center(
+                          child: GlowRing(
+                            size: 80,
+                            strokeWidth: 3.5,
+                            glowColor: const Color(0xFF10B981),
+                            secondaryColor: const Color(0xFF064E3B),
+                            child: Container(
+                              width: 44,
+                              height: 44,
+                              decoration: const BoxDecoration(
+                                color: Color(0xFF0F172A),
+                                shape: BoxShape.circle,
+                              ),
+                              child: const Icon(
+                                Icons.shopping_bag_rounded,
+                                color: Color(0xFF34D399),
+                                size: 22,
+                              ),
+                            ),
+                          ),
+                        ),
+                        const SizedBox(height: 16),
                         const Text(
                           AppConfig.appName,
                           style: TextStyle(
@@ -342,17 +373,29 @@ class _SignInScreenState extends State<SignInScreen> {
                           ),
                         ],
 
-                        const SizedBox(height: 14),
-                        // Figma `Button · Sign in` is a solid black 56px CTA.
-                        FilledButton(
-                          onPressed: _busy ? null : _submit,
-                          child: _busy
-                              ? const SizedBox(
-                                  width: 20,
-                                  height: 20,
-                                  child: CircularProgressIndicator(strokeWidth: 2),
-                                )
-                              : Text(signingUp ? 'Create account' : 'Sign in'),
+                        GlowButton(
+                          label: signingUp ? 'Create account' : 'Sign in',
+                          isLoading: _busy,
+                          glowColor: const Color(0xFF10B981),
+                          backgroundColor: const Color(0xFF000000),
+                          textColor: Colors.white,
+                          onTap: _submit,
+                        ),
+                        const SizedBox(height: 12),
+                        GlowButton(
+                          label: 'Explore as Guest (Skip Auth)',
+                          icon: Icons.arrow_forward_rounded,
+                          glowColor: const Color(0xFF10B981),
+                          backgroundColor: const Color(0xFF064E3B),
+                          textColor: Colors.white,
+                          onTap: () {
+                            Navigator.of(context).pushAndRemoveUntil(
+                              MaterialPageRoute<void>(
+                                builder: (_) => const HomeShell(),
+                              ),
+                              (Route<dynamic> route) => false,
+                            );
+                          },
                         ),
 
                         // Push the legal line to the Figma y=776 baseline.
