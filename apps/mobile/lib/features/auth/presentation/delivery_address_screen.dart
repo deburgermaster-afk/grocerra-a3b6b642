@@ -72,13 +72,17 @@ class _DeliveryAddressScreenState extends State<DeliveryAddressScreen> {
                     tooltip: 'Back',
                   ),
                   const SizedBox(width: 4),
-                  const Text(
-                    'Delivery address',
-                    style: TextStyle(
-                      color: Color(0xFF111114),
-                      fontSize: 24,
-                      fontWeight: FontWeight.w800,
-                      letterSpacing: -0.5,
+                  const Expanded(
+                    child: Text(
+                      'Delivery address',
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: TextStyle(
+                        color: Color(0xFF111114),
+                        fontSize: 24,
+                        fontWeight: FontWeight.w800,
+                        letterSpacing: -0.5,
+                      ),
                     ),
                   ),
                 ],

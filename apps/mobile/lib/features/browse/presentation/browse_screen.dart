@@ -308,13 +308,15 @@ class _BrowseScreenState extends State<BrowseScreen> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: const <Widget>[
-                    Text(
-                      'All Departments',
-                      style: TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.w800,
-                        color: AppColors.ink,
-                        letterSpacing: -0.4,
+                    Expanded(
+                      child: Text(
+                        'All Departments',
+                        style: TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.w800,
+                          color: AppColors.ink,
+                          letterSpacing: -0.4,
+                        ),
                       ),
                     ),
                     Text(
@@ -388,6 +390,8 @@ class _BrowseScreenState extends State<BrowseScreen> {
                               children: <Widget>[
                                 Text(
                                   cat.name,
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
                                   style: const TextStyle(
                                     fontWeight: FontWeight.w800,
                                     fontSize: 14,
@@ -471,6 +475,8 @@ class _BrowseScreenState extends State<BrowseScreen> {
                                 children: <Widget>[
                                   Text(
                                     s.name,
+                                    maxLines: 1,
+                                    overflow: TextOverflow.ellipsis,
                                     style: const TextStyle(
                                       fontWeight: FontWeight.w800,
                                       fontSize: 15,
@@ -480,6 +486,8 @@ class _BrowseScreenState extends State<BrowseScreen> {
                                   const SizedBox(height: 2),
                                   Text(
                                     '${s.cuisines.join(', ')} • ${s.suburb}',
+                                    maxLines: 1,
+                                    overflow: TextOverflow.ellipsis,
                                     style: TextStyle(
                                       fontSize: 12,
                                       color: Colors.grey.shade600,

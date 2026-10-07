@@ -111,19 +111,28 @@ class OrderConfirmationScreen extends StatelessWidget {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: <Widget>[
-                        Text(
-                          'Courier Dispatch',
-                          style: TextStyle(
-                            color: Colors.grey.shade600,
-                            fontSize: 14,
+                        const Expanded(
+                          child: Text(
+                            'Courier Dispatch',
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: TextStyle(
+                              color: Color(0xFF4B5563),
+                              fontSize: 14,
+                            ),
                           ),
                         ),
-                        Text(
-                          order.courierPartner,
-                          style: const TextStyle(
-                            color: AppColors.ink,
-                            fontWeight: FontWeight.w700,
-                            fontSize: 14,
+                        const SizedBox(width: 8),
+                        Flexible(
+                          child: Text(
+                            order.courierPartner,
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: const TextStyle(
+                              color: AppColors.ink,
+                              fontWeight: FontWeight.w700,
+                              fontSize: 14,
+                            ),
                           ),
                         ),
                       ],
@@ -132,13 +141,18 @@ class OrderConfirmationScreen extends StatelessWidget {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: <Widget>[
-                        Text(
-                          'Total Authorized (Hold)',
-                          style: TextStyle(
-                            color: Colors.grey.shade600,
-                            fontSize: 14,
+                        const Expanded(
+                          child: Text(
+                            'Total Authorized (Hold)',
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: TextStyle(
+                              color: Color(0xFF4B5563),
+                              fontSize: 14,
+                            ),
                           ),
                         ),
+                        const SizedBox(width: 8),
                         Text(
                           order.formattedTotal,
                           style: const TextStyle(

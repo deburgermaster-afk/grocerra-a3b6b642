@@ -1,5 +1,6 @@
 import 'dart:ui' as ui;
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
 import 'core/config/app_config.dart';
@@ -35,6 +36,40 @@ class GrocerraApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       theme: AppTheme.light(),
       initialRoute: startRoute,
+      builder: (BuildContext context, Widget? child) {
+        if (child == null) return const SizedBox.shrink();
+        return LayoutBuilder(
+          builder: (BuildContext ctx, BoxConstraints constraints) {
+            if (kIsWeb && constraints.maxWidth > 520) {
+              return Scaffold(
+                backgroundColor: const Color(0xFF0F172A),
+                body: Center(
+                  child: Container(
+                    constraints: const BoxConstraints(
+                      maxWidth: 430,
+                      maxHeight: 932,
+                    ),
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(40),
+                      boxShadow: const <BoxShadow>[
+                        BoxShadow(
+                          color: Color(0x66000000),
+                          blurRadius: 36,
+                          offset: Offset(0, 12),
+                        ),
+                      ],
+                    ),
+                    clipBehavior: Clip.antiAlias,
+                    child: child,
+                  ),
+                ),
+              );
+            }
+            return child;
+          },
+        );
+      },
       routes: <String, WidgetBuilder>{
         // Flutter stacks every prefix of a deep link, so `/` is always
         // built even when the URL is `/auth`. Only render the

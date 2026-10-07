@@ -222,6 +222,8 @@ class _AddedToBasketSheetState extends State<AddedToBasketSheet> {
                         const SizedBox(height: 2),
                         Text(
                           widget.variant.label,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
                           style: TextStyle(
                             fontSize: 12,
                             color: Colors.grey.shade600,
@@ -315,14 +317,19 @@ class _AddedToBasketSheetState extends State<AddedToBasketSheet> {
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: <Widget>[
-                      Text(
-                        'Basket Total ($totalCount ${totalCount == 1 ? "item" : "items"})',
-                        style: TextStyle(
-                          fontSize: 13,
-                          fontWeight: FontWeight.w600,
-                          color: Colors.grey.shade800,
+                      Expanded(
+                        child: Text(
+                          'Basket Total ($totalCount ${totalCount == 1 ? "item" : "items"})',
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: TextStyle(
+                            fontSize: 13,
+                            fontWeight: FontWeight.w600,
+                            color: Colors.grey.shade800,
+                          ),
                         ),
                       ),
+                      const SizedBox(width: 8),
                       Text(
                         subtotal,
                         style: const TextStyle(

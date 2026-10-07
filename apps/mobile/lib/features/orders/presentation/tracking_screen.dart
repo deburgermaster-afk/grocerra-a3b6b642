@@ -167,26 +167,35 @@ class TrackingScreen extends StatelessWidget {
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: <Widget>[
-                        Row(
-                          children: <Widget>[
-                            const Icon(
-                              Icons.directions_car_filled_rounded,
-                              color: Color(0xFF34D399),
-                              size: 20,
-                            ),
-                            const SizedBox(width: 8),
-                            Text(
-                              'Arriving in ${order.deliveryEtaMinutes} mins',
-                              style: const TextStyle(
-                                fontWeight: FontWeight.w800,
-                                fontSize: 14,
-                                color: Colors.white,
+                        Expanded(
+                          child: Row(
+                            children: <Widget>[
+                              const Icon(
+                                Icons.directions_car_filled_rounded,
+                                color: Color(0xFF34D399),
+                                size: 20,
                               ),
-                            ),
-                          ],
+                              const SizedBox(width: 8),
+                              Expanded(
+                                child: Text(
+                                  'Arriving in ${order.deliveryEtaMinutes} mins',
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                  style: const TextStyle(
+                                    fontWeight: FontWeight.w800,
+                                    fontSize: 14,
+                                    color: Colors.white,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
                         ),
+                        const SizedBox(width: 8),
                         Text(
                           order.courierPartner,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
                           style: TextStyle(
                             fontSize: 12,
                             fontWeight: FontWeight.w600,
@@ -401,6 +410,8 @@ class TrackingScreen extends StatelessWidget {
                             children: <Widget>[
                               Text(
                                 '${item.quantity}x ${item.name}',
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
                                 style: const TextStyle(
                                   fontWeight: FontWeight.w700,
                                   fontSize: 14,
@@ -409,6 +420,8 @@ class TrackingScreen extends StatelessWidget {
                               ),
                               Text(
                                 item.variantLabel,
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
                                 style: TextStyle(
                                   fontSize: 12,
                                   color: Colors.grey.shade600,

@@ -201,14 +201,19 @@ class CartSheet extends StatelessWidget {
                         Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: <Widget>[
-                            const Text(
-                              'Subtotal (incl. GST)',
-                              style: TextStyle(
-                                fontSize: 16,
-                                fontWeight: FontWeight.w600,
-                                color: AppColors.ink,
+                            const Expanded(
+                              child: Text(
+                                'Subtotal (incl. GST)',
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                                style: TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.w600,
+                                  color: AppColors.ink,
+                                ),
                               ),
                             ),
+                            const SizedBox(width: 8),
                             Text(
                               CartService.instance.formattedSubtotal,
                               style: const TextStyle(
@@ -313,9 +318,13 @@ class _CartItemRow extends StatelessWidget {
               const SizedBox(height: 2),
               Row(
                 children: <Widget>[
-                  Text(
-                    item.variant.label,
-                    style: TextStyle(fontSize: 12, color: Colors.grey.shade600),
+                  Flexible(
+                    child: Text(
+                      item.variant.label,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: TextStyle(fontSize: 12, color: Colors.grey.shade600),
+                    ),
                   ),
                   if (item.variant.isPricedByWeight) ...<Widget>[
                     const SizedBox(width: 6),

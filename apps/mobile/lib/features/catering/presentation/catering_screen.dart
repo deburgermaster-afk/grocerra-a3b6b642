@@ -268,6 +268,8 @@ class _CateringScreenState extends State<CateringScreen> {
                               Expanded(
                                 child: Text(
                                   pkg.title,
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
                                   style: const TextStyle(
                                     fontSize: 17,
                                     fontWeight: FontWeight.w800,
@@ -276,6 +278,7 @@ class _CateringScreenState extends State<CateringScreen> {
                                   ),
                                 ),
                               ),
+                              const SizedBox(width: 8),
                               Text(
                                 '\$${(pkg.pricePerHeadCents / 100).toStringAsFixed(0)} / head',
                                 style: const TextStyle(
@@ -289,6 +292,8 @@ class _CateringScreenState extends State<CateringScreen> {
                           const SizedBox(height: 4),
                           Text(
                             'by ${pkg.caterer} • Min ${pkg.minGuests} guests',
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
                             style: TextStyle(
                               fontSize: 12,
                               color: Colors.grey.shade600,

@@ -210,27 +210,32 @@ class _StoreDetailScreenState extends State<StoreDetailScreen> {
                       vertical: 12,
                     ),
                     child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceAround,
                       children: <Widget>[
-                        _InfoItem(
-                          icon: Icons.star_rounded,
-                          iconColor: const Color(0xFFF59E0B),
-                          title: '${widget.store.rating}',
-                          subtitle: '(${widget.store.reviewCount}+ reviews)',
+                        Expanded(
+                          child: _InfoItem(
+                            icon: Icons.star_rounded,
+                            iconColor: const Color(0xFFF59E0B),
+                            title: '${widget.store.rating}',
+                            subtitle: '(${widget.store.reviewCount}+ reviews)',
+                          ),
                         ),
                         _VerticalDivider(),
-                        _InfoItem(
-                          icon: Icons.access_time_filled_rounded,
-                          iconColor: const Color(0xFF10B981),
-                          title: '${widget.store.deliveryEtaMinutes} mins',
-                          subtitle: 'Uber & DoorDash',
+                        Expanded(
+                          child: _InfoItem(
+                            icon: Icons.access_time_filled_rounded,
+                            iconColor: const Color(0xFF10B981),
+                            title: '${widget.store.deliveryEtaMinutes} mins',
+                            subtitle: 'Uber & DoorDash',
+                          ),
                         ),
                         _VerticalDivider(),
-                        _InfoItem(
-                          icon: Icons.delivery_dining_rounded,
-                          iconColor: AppColors.ink,
-                          title: widget.store.formattedDeliveryFee,
-                          subtitle: widget.store.formattedMinOrder,
+                        Expanded(
+                          child: _InfoItem(
+                            icon: Icons.delivery_dining_rounded,
+                            iconColor: AppColors.ink,
+                            title: widget.store.formattedDeliveryFee,
+                            subtitle: widget.store.formattedMinOrder,
+                          ),
                         ),
                       ],
                     ),
@@ -417,37 +422,44 @@ class _StoreDetailScreenState extends State<StoreDetailScreen> {
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: <Widget>[
-                    Row(
-                      children: <Widget>[
-                        Container(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 8,
-                            vertical: 4,
-                          ),
-                          decoration: BoxDecoration(
-                            color: const Color(0xFF10B981).withValues(alpha: 0.25),
-                            borderRadius: BorderRadius.circular(10),
-                          ),
-                          child: Text(
-                            '$count',
-                            style: const TextStyle(
-                              color: Color(0xFF34D399),
-                              fontWeight: FontWeight.w800,
-                              fontSize: 13,
+                    Expanded(
+                      child: Row(
+                        children: <Widget>[
+                          Container(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 8,
+                              vertical: 4,
+                            ),
+                            decoration: BoxDecoration(
+                              color: const Color(0xFF10B981).withValues(alpha: 0.25),
+                              borderRadius: BorderRadius.circular(10),
+                            ),
+                            child: Text(
+                              '$count',
+                              style: const TextStyle(
+                                color: Color(0xFF34D399),
+                                fontWeight: FontWeight.w800,
+                                fontSize: 13,
+                              ),
                             ),
                           ),
-                        ),
-                        const SizedBox(width: 12),
-                        const Text(
-                          'View Basket',
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 15,
-                            fontWeight: FontWeight.w700,
+                          const SizedBox(width: 12),
+                          const Expanded(
+                            child: Text(
+                              'View Basket',
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontSize: 15,
+                                fontWeight: FontWeight.w700,
+                              ),
+                            ),
                           ),
-                        ),
-                      ],
+                        ],
+                      ),
                     ),
+                    const SizedBox(width: 8),
                     Row(
                       children: <Widget>[
                         Text(
@@ -558,28 +570,35 @@ class _ProductCard extends StatelessWidget {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: <Widget>[
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: <Widget>[
-                          Text(
-                            product.formattedPrice,
-                            style: const TextStyle(
-                              fontSize: 15,
-                              fontWeight: FontWeight.w800,
-                              color: AppColors.accentDark,
-                            ),
-                          ),
-                          if (product.isCatchWeight)
-                            const Text(
-                              'Scale weight hold (+10%)',
-                              style: TextStyle(
-                                fontSize: 10,
-                                fontWeight: FontWeight.w600,
-                                color: Color(0xFF059669),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: <Widget>[
+                            Text(
+                              product.formattedPrice,
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                              style: const TextStyle(
+                                fontSize: 15,
+                                fontWeight: FontWeight.w800,
+                                color: AppColors.accentDark,
                               ),
                             ),
-                        ],
+                            if (product.isCatchWeight)
+                              const Text(
+                                'Scale weight hold (+10%)',
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                                style: TextStyle(
+                                  fontSize: 10,
+                                  fontWeight: FontWeight.w600,
+                                  color: Color(0xFF059669),
+                                ),
+                              ),
+                          ],
+                        ),
                       ),
+                      const SizedBox(width: 8),
                       if (variant != null)
                         GestureDetector(
                           onTap: () => onAdd(variant),
@@ -641,18 +660,24 @@ class _InfoItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Column(
+      mainAxisSize: MainAxisSize.min,
       children: <Widget>[
         Row(
           mainAxisSize: MainAxisSize.min,
+          mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
             Icon(icon, size: 16, color: iconColor),
             const SizedBox(width: 4),
-            Text(
-              title,
-              style: const TextStyle(
-                fontWeight: FontWeight.w800,
-                fontSize: 13,
-                letterSpacing: -0.2,
+            Flexible(
+              child: Text(
+                title,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: const TextStyle(
+                  fontWeight: FontWeight.w800,
+                  fontSize: 13,
+                  letterSpacing: -0.2,
+                ),
               ),
             ),
           ],
@@ -660,6 +685,9 @@ class _InfoItem extends StatelessWidget {
         const SizedBox(height: 2),
         Text(
           subtitle,
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
+          textAlign: TextAlign.center,
           style: TextStyle(fontSize: 11, color: Colors.grey.shade600),
         ),
       ],

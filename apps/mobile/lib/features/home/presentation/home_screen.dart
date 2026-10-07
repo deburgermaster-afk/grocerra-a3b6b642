@@ -301,11 +301,15 @@ class _HomeScreenState extends State<HomeScreen> {
                         children: <Widget>[
                           const Icon(Icons.search, color: Color(0xFF94A3B8)),
                           const SizedBox(width: 10),
-                          Text(
-                            'Search halal goat, paratha, shan biryani...',
-                            style: TextStyle(
-                              color: Colors.grey.shade500,
-                              fontSize: 14,
+                          Expanded(
+                            child: Text(
+                              'Search halal goat, paratha, shan biryani...',
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                              style: TextStyle(
+                                color: Colors.grey.shade500,
+                                fontSize: 14,
+                              ),
                             ),
                           ),
                         ],
@@ -550,46 +554,55 @@ class _HomeScreenState extends State<HomeScreen> {
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: <Widget>[
-                          Row(
-                            children: <Widget>[
-                              Container(
-                                padding: const EdgeInsets.all(8),
-                                decoration: BoxDecoration(
-                                  color: const Color(0xFF10B981)
-                                      .withValues(alpha: 0.2),
-                                  shape: BoxShape.circle,
-                                ),
-                                child: const Icon(
-                                  Icons.shopping_bag_rounded,
-                                  color: Color(0xFF34D399),
-                                  size: 20,
-                                ),
-                              ),
-                              const SizedBox(width: 12),
-                              Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                mainAxisSize: MainAxisSize.min,
-                                children: <Widget>[
-                                  Text(
-                                    '$count ${count == 1 ? "item" : "items"} in basket',
-                                    style: const TextStyle(
-                                      color: Colors.white,
-                                      fontSize: 14,
-                                      fontWeight: FontWeight.w700,
-                                    ),
+                          Expanded(
+                            child: Row(
+                              children: <Widget>[
+                                Container(
+                                  padding: const EdgeInsets.all(8),
+                                  decoration: BoxDecoration(
+                                    color: const Color(0xFF10B981)
+                                        .withValues(alpha: 0.2),
+                                    shape: BoxShape.circle,
                                   ),
-                                  Text(
-                                    CartService.instance.formattedSubtotal,
-                                    style: const TextStyle(
-                                      color: Color(0xFF34D399),
-                                      fontSize: 12,
-                                      fontWeight: FontWeight.w700,
-                                    ),
+                                  child: const Icon(
+                                    Icons.shopping_bag_rounded,
+                                    color: Color(0xFF34D399),
+                                    size: 20,
                                   ),
-                                ],
-                              ),
-                            ],
+                                ),
+                                const SizedBox(width: 12),
+                                Expanded(
+                                  child: Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: <Widget>[
+                                      Text(
+                                        '$count ${count == 1 ? "item" : "items"} in basket',
+                                        maxLines: 1,
+                                        overflow: TextOverflow.ellipsis,
+                                        style: const TextStyle(
+                                          color: Colors.white,
+                                          fontSize: 14,
+                                          fontWeight: FontWeight.w700,
+                                        ),
+                                      ),
+                                      Text(
+                                        CartService.instance.formattedSubtotal,
+                                        maxLines: 1,
+                                        overflow: TextOverflow.ellipsis,
+                                        style: const TextStyle(
+                                          color: Color(0xFF34D399),
+                                          fontSize: 12,
+                                          fontWeight: FontWeight.w700,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ],
+                            ),
                           ),
+                          const SizedBox(width: 8),
                           Row(
                             children: const <Widget>[
                               Text(
@@ -920,6 +933,8 @@ class _StoreCard extends StatelessWidget {
                         Expanded(
                           child: Text(
                             store.name,
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
                             style: const TextStyle(
                               fontSize: 17,
                               fontWeight: FontWeight.w800,
@@ -928,6 +943,7 @@ class _StoreCard extends StatelessWidget {
                             ),
                           ),
                         ),
+                        const SizedBox(width: 8),
                         Container(
                           padding: const EdgeInsets.symmetric(
                             horizontal: 8,
@@ -962,30 +978,23 @@ class _StoreCard extends StatelessWidget {
                     const SizedBox(height: 4),
                     Text(
                       '${store.cuisines.join(' · ')} • ${store.suburb}',
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
                       style: TextStyle(
                         fontSize: 13,
                         color: Colors.grey.shade600,
                       ),
                     ),
                     const SizedBox(height: 10),
-                    Row(
-                      children: <Widget>[
-                        Text(
-                          store.formattedDeliveryFee,
-                          style: const TextStyle(
-                            fontSize: 12,
-                            fontWeight: FontWeight.w700,
-                            color: AppColors.accentDark,
-                          ),
-                        ),
-                        Text(
-                          ' • ${store.formattedMinOrder}',
-                          style: TextStyle(
-                            fontSize: 12,
-                            color: Colors.grey.shade600,
-                          ),
-                        ),
-                      ],
+                    Text(
+                      '${store.formattedDeliveryFee} • ${store.formattedMinOrder}',
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: const TextStyle(
+                        fontSize: 12,
+                        fontWeight: FontWeight.w700,
+                        color: AppColors.accentDark,
+                      ),
                     ),
                   ],
                 ),

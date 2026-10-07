@@ -212,47 +212,56 @@ class _ActiveOrderCard extends StatelessWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: <Widget>[
-              Row(
-                children: <Widget>[
-                  Container(
-                    width: 42,
-                    height: 42,
-                    decoration: BoxDecoration(
-                      color: const Color(0xFF1E293B),
-                      shape: BoxShape.circle,
-                      border: Border.all(color: const Color(0xFF334155)),
-                    ),
-                    child: const Icon(
-                      Icons.electric_bolt_rounded,
-                      color: Color(0xFF34D399),
-                      size: 20,
-                    ),
-                  ),
-                  const SizedBox(width: 12),
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: <Widget>[
-                      Text(
-                        order.storeName,
-                        style: const TextStyle(
-                          fontWeight: FontWeight.w800,
-                          fontSize: 16,
-                          color: Colors.white,
-                          letterSpacing: -0.3,
-                        ),
+              Expanded(
+                child: Row(
+                  children: <Widget>[
+                    Container(
+                      width: 42,
+                      height: 42,
+                      decoration: BoxDecoration(
+                        color: const Color(0xFF1E293B),
+                        shape: BoxShape.circle,
+                        border: Border.all(color: const Color(0xFF334155)),
                       ),
-                      const SizedBox(height: 2),
-                      Text(
-                        'Order #${order.orderNumber} • ${order.courierPartner}',
-                        style: TextStyle(
-                          fontSize: 12,
-                          color: Colors.grey.shade400,
-                        ),
+                      child: const Icon(
+                        Icons.electric_bolt_rounded,
+                        color: Color(0xFF34D399),
+                        size: 20,
                       ),
-                    ],
-                  ),
-                ],
+                    ),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: <Widget>[
+                          Text(
+                            order.storeName,
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: const TextStyle(
+                              fontWeight: FontWeight.w800,
+                              fontSize: 16,
+                              color: Colors.white,
+                              letterSpacing: -0.3,
+                            ),
+                          ),
+                          const SizedBox(height: 2),
+                          Text(
+                            'Order #${order.orderNumber} • ${order.courierPartner}',
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: TextStyle(
+                              fontSize: 12,
+                              color: Colors.grey.shade400,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
               ),
+              const SizedBox(width: 8),
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                 decoration: BoxDecoration(
@@ -278,14 +287,19 @@ class _ActiveOrderCard extends StatelessWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: <Widget>[
-              Text(
-                '${order.items.length} items • ${order.formattedTotal}',
-                style: const TextStyle(
-                  fontSize: 13,
-                  fontWeight: FontWeight.w600,
-                  color: Colors.white,
+              Expanded(
+                child: Text(
+                  '${order.items.length} items • ${order.formattedTotal}',
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: const TextStyle(
+                    fontSize: 13,
+                    fontWeight: FontWeight.w600,
+                    color: Colors.white,
+                  ),
                 ),
               ),
+              const SizedBox(width: 8),
               Row(
                 children: <Widget>[
                   const Icon(
@@ -361,25 +375,32 @@ class _CateringRequestCard extends StatelessWidget {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: <Widget>[
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: const <Widget>[
-              Text(
-                'Eid Ul-Fitr Family Feast (40 Guests)',
-                style: TextStyle(
-                  fontWeight: FontWeight.w800,
-                  fontSize: 14,
-                  color: AppColors.ink,
-                  letterSpacing: -0.2,
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: const <Widget>[
+                Text(
+                  'Eid Ul-Fitr Family Feast (40 Guests)',
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: TextStyle(
+                    fontWeight: FontWeight.w800,
+                    fontSize: 14,
+                    color: AppColors.ink,
+                    letterSpacing: -0.2,
+                  ),
                 ),
-              ),
-              SizedBox(height: 4),
-              Text(
-                'Date: Nov 15, 2026 • Coburg Town Hall',
-                style: TextStyle(fontSize: 12, color: Color(0xFF64748B)),
-              ),
-            ],
+                SizedBox(height: 4),
+                Text(
+                  'Date: Nov 15, 2026 • Coburg Town Hall',
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: TextStyle(fontSize: 12, color: Color(0xFF64748B)),
+                ),
+              ],
+            ),
           ),
+          const SizedBox(width: 8),
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
             decoration: BoxDecoration(
