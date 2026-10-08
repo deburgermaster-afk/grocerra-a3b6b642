@@ -1,0 +1,31 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 280 210" fill="none" stroke="{{S}}" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round">
+  <ellipse cx="140" cy="196" rx="112" ry="7" fill="{{T}}" stroke="none"/>
+  <!-- speed lines -->
+  <path d="M8 100 L34 100 M2 118 L26 118 M14 136 L36 136" stroke-width="2.6"/>
+  <!-- delivery box -->
+  <rect x="44" y="70" width="70" height="60" rx="8" fill="{{G}}"/>
+  <path d="M44 88 L114 88" stroke-width="2.4"/>
+  <path d="M70 112 Q70 96 86 94 Q86 112 70 112 Z M70 112 L80 102" stroke="{{F}}" stroke-width="2.4"/>
+  <!-- scooter -->
+  <path d="M74 130 L176 130 Q192 130 198 146 L206 172" fill="none"/>
+  <path d="M66 172 Q66 146 92 146 L150 146 Q160 146 164 156 L170 172 Z" fill="{{F}}"/>
+  <path d="M206 172 L184 82" stroke-width="3.6"/>
+  <path d="M172 80 L196 76" stroke-width="5"/>
+  <path d="M190 104 L204 100 L206 112 Z" fill="{{G}}"/>
+  <circle cx="82" cy="176" r="20" fill="{{F}}"/>
+  <circle cx="82" cy="176" r="6" fill="{{S}}"/>
+  <circle cx="210" cy="176" r="20" fill="{{F}}"/>
+  <circle cx="210" cy="176" r="6" fill="{{S}}"/>
+  <!-- rider legs -->
+  <path d="M120 120 L150 124 L152 146" stroke-width="11"/>
+  <path d="M148 146 L164 146" stroke-width="6"/>
+  <!-- torso -->
+  <path d="M112 126 Q108 92 128 72 Q142 64 150 74 L156 100 Q150 118 128 124 Z" fill="{{F}}"/>
+  <path d="M138 82 L176 82" stroke-width="7"/>
+  <path d="M138 82 L176 82" stroke="{{F}}" stroke-width="2"/>
+  <!-- head + helmet -->
+  <circle cx="146" cy="52" r="15" fill="{{F}}"/>
+  <path d="M130 50 Q130 32 148 32 Q164 34 162 50 Z" fill="{{S}}"/>
+  <path d="M158 48 L166 48" stroke-width="3"/>
+  <circle cx="153" cy="56" r="1.6" fill="{{S}}" stroke="none"/>
+</svg>

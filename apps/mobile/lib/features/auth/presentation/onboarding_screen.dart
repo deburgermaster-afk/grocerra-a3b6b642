@@ -1,15 +1,17 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
-import '../../../core/config/app_config.dart';
 import '../../../core/services/session_store.dart';
-import '../../shell/presentation/home_shell.dart';
-import 'sign_in_screen.dart';
+import 'kit/auth_theme.dart';
+import 'kit/auth_widgets.dart';
+import 'kit/motion.dart';
+import 'kit/scenes.dart';
+import 'welcome_screen.dart';
 
-/// Blueprint `Onboarding - Fresh Halal Groceries`.
-///
-/// Controls, exactly as wired:
-///   * `Skip`    -> opens `Groceries & Catering Home`
-///   * `Continue` -> opens `Sign In / Welcome Screen`
+/// Three-slide introduction (reference: "Build apps without writing any
+/// code" onboarding). Illustrated scene, headline, page dots, Continue, and
+/// Skip in the corner. The scene's pieces sit at different depths, so a
+/// swipe slides them past each other.
 class OnboardingScreen extends StatefulWidget {
   const OnboardingScreen({super.key});
 
@@ -19,53 +21,44 @@ class OnboardingScreen extends StatefulWidget {
   State<OnboardingScreen> createState() => _OnboardingScreenState();
 }
 
+class _Slide {
+  const _Slide(this.title, this.scene);
+
+  final String title;
+  final List<ScenePiece> Function() scene;
+}
+
 class _OnboardingScreenState extends State<OnboardingScreen> {
   final PageController _controller = PageController();
   int _page = 0;
 
-  static const List<_Slide> _slides = <_Slide>[
-    _Slide(
-      icon: Icons.shopping_bag_outlined,
-      title: 'Fresh halal groceries',
-      body: 'Meat, rice, spices and more from stores near you.',
+  static final List<_Slide> _slides = <_Slide>[
+    const _Slide(
+      'Fresh halal groceries from stores you trust',
+      Scenes.groceries,
     ),
-    _Slide(
-      icon: Icons.storefront_outlined,
-      title: 'Catering on demand',
-      body: 'Request quotes from local caterers and track every order.',
-    ),
-    _Slide(
-      icon: Icons.local_shipping_outlined,
-      title: 'Delivered in real time',
-      body: 'Follow your driver from store to doorstep.',
-    ),
+    const _Slide('Catering for every gathering, big or small', Scenes.catering),
+    const _Slide('Track every order live, from store to door', Scenes.tracking),
   ];
+
+  bool get _last => _page == _slides.length - 1;
 
   Future<void> _finish() async {
     await SessionStore.setOnboardingSeen();
     if (!mounted) return;
-    Navigator.of(context).pushReplacement(
-      MaterialPageRoute<void>(builder: (_) => const HomeShell()),
-    );
+    Navigator.of(context)
+        .pushReplacement(FadeThroughRoute<void>(page: const WelcomeScreen()));
   }
 
-  Future<void> _goToSignIn() async {
-    await SessionStore.setOnboardingSeen();
-    if (!mounted) return;
-    Navigator.of(context).pushReplacement(
-      MaterialPageRoute<void>(builder: (_) => const SignInScreen()),
-    );
-  }
-
-  void _onContinue() {
-    if (_page < _slides.length - 1) {
-      _controller.nextPage(
-        duration: const Duration(milliseconds: 320),
-        curve: Curves.easeOutCubic,
-      );
-    } else {
-      _goToSignIn();
+  void _continue() {
+    if (_last) {
+      _finish();
+      return;
     }
+    _controller.nextPage(
+      duration: const Duration(milliseconds: 620),
+      curve: Curves.easeInOutCubic,
+    );
   }
 
   @override
@@ -76,122 +69,160 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final AuthPalette p = AuthPalette.of(context);
+
     return Scaffold(
-      backgroundColor: const Color(0xFFFFFFFF),
-      body: SafeArea(
-        child: Column(
-          children: <Widget>[
-            Padding(
-              padding: const EdgeInsets.fromLTRB(20, 12, 20, 0),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: <Widget>[
-                  const Text(
-                    AppConfig.appName,
-                    style: TextStyle(
-                      color: Color(0xFF111114),
-                      fontSize: 22,
-                      fontWeight: FontWeight.w700,
-                      letterSpacing: 4,
-                    ),
-                  ),
-                  TextButton(
-                    onPressed: _finish,
-                    child: const Text(
-                      'Skip',
-                      style: TextStyle(
-                        color: Color(0xFF7A7A85),
-                        fontSize: 15,
-                        fontWeight: FontWeight.w500,
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            Expanded(
-              child: PageView.builder(
-                controller: _controller,
-                itemCount: _slides.length,
-                onPageChanged: (int index) => setState(() => _page = index),
-                itemBuilder: (BuildContext context, int index) {
-                  final _Slide slide = _slides[index];
-                  return Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 32),
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
+      backgroundColor: p.background,
+      body: Stack(
+        children: <Widget>[
+          const Positioned.fill(child: AuthBackdrop()),
+          SafeArea(
+            child: Column(
+              children: <Widget>[
+                SizedBox(
+                  height: 52,
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 16),
+                    child: Row(
                       children: <Widget>[
-                        Container(
-                          width: 104,
-                          height: 104,
-                          decoration: const BoxDecoration(
-                            color: Color(0xFFF1F1F3),
-                            shape: BoxShape.circle,
-                          ),
-                          child: Icon(slide.icon, size: 44, color: Color(0xFF111114)),
-                        ),
-                        const SizedBox(height: 40),
-                        Text(
-                          slide.title,
-                          textAlign: TextAlign.center,
-                          style: const TextStyle(
-                            color: Color(0xFF111114),
-                            fontSize: 28,
-                            fontWeight: FontWeight.w800,
-                            letterSpacing: -0.6,
-                          ),
-                        ),
-                        const SizedBox(height: 14),
-                        Text(
-                          slide.body,
-                          textAlign: TextAlign.center,
-                          style: const TextStyle(
-                            color: Color(0xFF8A8A93),
-                            fontSize: 15,
-                            height: 1.45,
+                        const ThemeToggle(),
+                        const Spacer(),
+                        Pressable(
+                          semanticLabel: 'Skip',
+                          pressedScale: 0.92,
+                          onTap: _finish,
+                          child: Padding(
+                            padding: const EdgeInsets.all(8),
+                            child: Row(
+                              children: <Widget>[
+                                Text('Skip', style: AuthType.small(p.ink)),
+                                const SizedBox(width: 2),
+                                Icon(
+                                  Icons.chevron_right_rounded,
+                                  size: 20,
+                                  color: p.ink,
+                                ),
+                              ],
+                            ),
                           ),
                         ),
                       ],
                     ),
-                  );
-                },
-              ),
-            ),
-            // Page dots.
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: List<Widget>.generate(_slides.length, (int index) {
-                final bool active = index == _page;
-                return AnimatedContainer(
-                  duration: const Duration(milliseconds: 240),
-                  margin: const EdgeInsets.symmetric(horizontal: 5),
-                  width: active ? 9 : 7,
-                  height: active ? 9 : 7,
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    color: active ? const Color(0xFF111114) : const Color(0xFFD6D6DB),
                   ),
-                );
-              }),
+                ),
+                Expanded(
+                  child: PageView.builder(
+                    controller: _controller,
+                    itemCount: _slides.length,
+                    onPageChanged: (int i) {
+                      HapticFeedback.selectionClick();
+                      setState(() => _page = i);
+                    },
+                    itemBuilder: (BuildContext context, int i) =>
+                        AnimatedBuilder(
+                          animation: _controller,
+                          builder: (BuildContext context, Widget? _) {
+                            final double page =
+                                _controller.hasClients &&
+                                    _controller.position.haveDimensions
+                                ? _controller.page!
+                                : _page.toDouble();
+                            return _SlideView(
+                              slide: _slides[i],
+                              offset: i - page,
+                            );
+                          },
+                        ),
+                  ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(24, 0, 24, 20),
+                  child: Column(
+                    children: <Widget>[
+                      Align(
+                        alignment: Alignment.centerLeft,
+                        child: _Dots(count: _slides.length, index: _page),
+                      ),
+                      const SizedBox(height: 28),
+                      AuthButton(
+                        label: _last ? 'Get started' : 'Continue',
+                        onPressed: _continue,
+                      ),
+                    ],
+                  ),
+                ),
+              ],
             ),
-            Padding(
-              padding: const EdgeInsets.fromLTRB(16, 32, 16, 24),
-              child: FilledButton(
-                onPressed: _onContinue,
-                child: Text(_page == _slides.length - 1 ? 'Get started' : 'Continue'),
-              ),
-            ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
 }
 
-class _Slide {
-  const _Slide({required this.icon, required this.title, required this.body});
+class _SlideView extends StatelessWidget {
+  const _SlideView({required this.slide, required this.offset});
 
-  final IconData icon;
-  final String title;
-  final String body;
+  final _Slide slide;
+
+  /// Distance from the settled position in pages (-1..1 while visible).
+  final double offset;
+
+  @override
+  Widget build(BuildContext context) {
+    final AuthPalette p = AuthPalette.of(context);
+    final double away = offset.abs().clamp(0.0, 1.0);
+
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 24),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: <Widget>[
+          Expanded(
+            child: Padding(
+              padding: const EdgeInsets.symmetric(vertical: 12),
+              child: Scene(pieces: slide.scene(), parallax: offset),
+            ),
+          ),
+          Opacity(
+            opacity: 1 - away * 0.8,
+            child: Transform.translate(
+              offset: Offset(offset * 60, 0),
+              child: Text(slide.title, style: AuthType.hero(p.ink)),
+            ),
+          ),
+          const SizedBox(height: 24),
+        ],
+      ),
+    );
+  }
+}
+
+class _Dots extends StatelessWidget {
+  const _Dots({required this.count, required this.index});
+
+  final int count;
+  final int index;
+
+  @override
+  Widget build(BuildContext context) {
+    final AuthPalette p = AuthPalette.of(context);
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: <Widget>[
+        for (int i = 0; i < count; i++)
+          AnimatedContainer(
+            duration: const Duration(milliseconds: 420),
+            curve: Curves.easeOutBack,
+            margin: const EdgeInsets.only(right: 6),
+            width: i == index ? 22 : 6,
+            height: 6,
+            decoration: BoxDecoration(
+              color: i == index ? p.ink : p.faint,
+              borderRadius: BorderRadius.circular(3),
+            ),
+          ),
+      ],
+    );
+  }
 }

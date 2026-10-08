@@ -2,16 +2,13 @@ import 'dart:math' as math;
 
 import 'package:flutter/widgets.dart';
 
-/// Vertical insets the approved Figma frames assume.
-///
-/// Every Figma frame starts with a 47px status bar. On Chrome the browser
-/// supplies no safe-area inset, so screens must reserve that height
-/// explicitly or their content lands 47px too high.
+/// Vertical insets shared by the shell screens.
 abstract final class AppInsets {
-  /// Height of the Figma status bar. Never smaller than the platform inset so
-  /// a notch on a real device still clears.
+  /// Top inset. Kept compact: on a phone this is the real notch / status-bar inset;
+  /// in a browser, where there is none, just a 12px breathing gap instead of
+  /// the Figma frame's mock 47px status bar.
   static double statusBar(BuildContext context) =>
-      math.max(MediaQuery.of(context).padding.top, 47);
+      math.max(MediaQuery.of(context).padding.top, 12);
 
   /// Clearance for the floating 64px tab bar (Figma: y769, 11px from the
   /// bottom), so scrolling content ends underneath it instead of behind it.

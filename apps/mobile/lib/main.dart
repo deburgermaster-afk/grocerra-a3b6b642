@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 
 import 'app.dart';
 import 'core/services/supabase_service.dart';
+import 'features/auth/presentation/kit/auth_theme.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -13,5 +14,8 @@ Future<void> main() async {
   // No-ops (and records the reason) when it does not, so the UI can say so
   // instead of failing silently.
   await SupabaseService.init();
+  // Restore the light / dark choice before the first frame, so the splash
+  // never flashes the wrong theme.
+  await AuthThemeMode.load();
   runApp(const GrocerraApp());
 }
