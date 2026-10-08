@@ -22,7 +22,11 @@ class VerifyCodeScreen extends StatefulWidget {
   });
 
   static const String routeName = '/auth/verify';
+
+  /// Supabase email codes are 6 digits by default; projects can set up to
+  /// 10, so accept up to 8 rather than assume.
   static const int codeLength = 6;
+  static const int maxCodeLength = 8;
 
   final String email;
 
@@ -69,7 +73,7 @@ class _VerifyCodeScreenState extends State<VerifyCodeScreen> {
   }
 
   Future<void> _verify() async {
-    if (_busy || _code.text.length != VerifyCodeScreen.codeLength) return;
+    if (_busy || _code.text.length < VerifyCodeScreen.codeLength) return;
     FocusScope.of(context).unfocus();
     setState(() => _busy = true);
 
@@ -131,14 +135,13 @@ class _VerifyCodeScreenState extends State<VerifyCodeScreen> {
   @override
   Widget build(BuildContext context) {
     final AuthPalette p = AuthPalette.of(context);
-    final bool ready = _code.text.length == VerifyCodeScreen.codeLength;
+    final bool ready = _code.text.length >= VerifyCodeScreen.codeLength;
 
     return AuthPage(
       title: widget.recovery ? 'Check your\nemail' : 'Verify your\nemail',
       subtitle: Text.rich(
         TextSpan(
-          text:
-              'Enter the ${VerifyCodeScreen.codeLength}-digit code we sent to ',
+          text: 'Enter the code we sent to ',
           children: <InlineSpan>[
             TextSpan(
               text: widget.email,
@@ -154,6 +157,7 @@ class _VerifyCodeScreenState extends State<VerifyCodeScreen> {
           child: OtpInput(
             controller: _code,
             length: VerifyCodeScreen.codeLength,
+            maxLength: VerifyCodeScreen.maxCodeLength,
             hasError: _error,
             onCompleted: (_) => _verify(),
           ),

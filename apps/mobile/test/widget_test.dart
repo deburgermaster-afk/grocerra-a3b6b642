@@ -181,7 +181,7 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.byType(VerifyCodeScreen), findsOneWidget);
-    expect(find.textContaining('6-digit code'), findsOneWidget);
+    expect(find.textContaining('Enter the code we sent'), findsOneWidget);
 
     await tester.enterText(find.byType(TextField).last, '123456');
     await tester.pump(const Duration(seconds: 1));
@@ -317,5 +317,24 @@ void main() {
     await tester.tap(find.widgetWithText(FilledButton, 'Sign in'));
     await tester.pumpAndSettle();
     expect(find.byType(WelcomeScreen), findsOneWidget);
+  });
+
+  testWidgets('verify accepts a longer Supabase code, growing the boxes', (
+    WidgetTester tester,
+  ) async {
+    await pumpToSignIn(tester);
+    await tapText(tester, 'Forgot password?');
+    await tester.enterText(find.byType(TextField).first, 'ayesha@example.com');
+    await tapText(tester, 'Send code');
+    await tester.pump(const Duration(seconds: 1));
+    await tester.pumpAndSettle();
+
+    await tester.enterText(find.byType(TextField).last, '1234567');
+    await tester.pump();
+    expect(find.text('7'), findsOneWidget); // a 7th box appeared
+    await tester.enterText(find.byType(TextField).last, '12345678');
+    await tester.pump(const Duration(seconds: 1));
+    await tester.pumpAndSettle();
+    expect(find.byType(NewPasswordScreen), findsOneWidget);
   });
 }
