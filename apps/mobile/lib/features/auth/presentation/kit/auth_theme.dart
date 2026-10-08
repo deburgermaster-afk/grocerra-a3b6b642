@@ -26,7 +26,6 @@ class AuthPalette extends ThemeExtension<AuthPalette> {
     required this.danger,
     required this.lineArt,
     required this.lineFill,
-    required this.grid,
   });
 
   static const AuthPalette dark = AuthPalette(
@@ -46,7 +45,6 @@ class AuthPalette extends ThemeExtension<AuthPalette> {
     danger: Color(0xFFF87171),
     lineArt: Color(0xFFE6EAE6),
     lineFill: Color(0xFF1A1E1B),
-    grid: Color(0x0FFFFFFF),
   );
 
   static const AuthPalette light = AuthPalette(
@@ -66,7 +64,6 @@ class AuthPalette extends ThemeExtension<AuthPalette> {
     danger: Color(0xFFDC2626),
     lineArt: Color(0xFF121412),
     lineFill: Color(0xFFFFFFFF),
-    grid: Color(0x0D000000),
   );
 
   final Color background;
@@ -91,9 +88,6 @@ class AuthPalette extends ThemeExtension<AuthPalette> {
   /// Stroke and paper colours for the line illustrations.
   final Color lineArt;
   final Color lineFill;
-
-  /// The faint backdrop grid from the reference frames.
-  final Color grid;
 
   static AuthPalette of(BuildContext context) =>
       Theme.of(context).extension<AuthPalette>() ?? dark;
@@ -122,7 +116,6 @@ class AuthPalette extends ThemeExtension<AuthPalette> {
       danger: l(danger, other.danger),
       lineArt: l(lineArt, other.lineArt),
       lineFill: l(lineFill, other.lineFill),
-      grid: l(grid, other.grid),
     );
   }
 }

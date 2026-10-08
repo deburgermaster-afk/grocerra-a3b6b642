@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../../core/services/session_store.dart';
-import '../../../core/services/supabase_service.dart';
+import '../../../core/services/session_manager.dart';
 import 'auth_flow.dart';
 import 'kit/auth_theme.dart';
 import 'kit/auth_widgets.dart';
@@ -38,11 +38,16 @@ class _SplashScreenState extends State<SplashScreen>
   }
 
   Future<void> _advance() async {
-    await AuthThemeMode.load();
-    await Future<void>.delayed(const Duration(milliseconds: 1500));
+    // Hold the brand beat while the cached session is checked (and
+    // refreshed if it expired), so the decision costs no extra wait.
+    final List<Object?> ready = await Future.wait<Object?>(<Future<Object?>>[
+      SessionManager.restore(),
+      Future<void>.delayed(const Duration(milliseconds: 1500)),
+      AuthThemeMode.load(),
+    ]);
     if (!mounted) return;
 
-    if (SupabaseService.session != null) {
+    if (ready.first == true) {
       AuthFlow.goHome(context);
       return;
     }

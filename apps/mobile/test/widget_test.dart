@@ -4,6 +4,8 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'package:grocerra_customer/app.dart';
+import 'package:grocerra_customer/core/services/session_manager.dart';
+import 'package:grocerra_customer/core/widgets/glass_tab_bar.dart';
 import 'package:grocerra_customer/features/auth/presentation/auth_success_screen.dart';
 import 'package:grocerra_customer/features/auth/presentation/kit/auth_theme.dart';
 import 'package:grocerra_customer/features/auth/presentation/kit/motion.dart';
@@ -14,6 +16,7 @@ import 'package:grocerra_customer/features/auth/presentation/sign_up_screen.dart
 import 'package:grocerra_customer/features/auth/presentation/splash_screen.dart';
 import 'package:grocerra_customer/features/auth/presentation/verify_code_screen.dart';
 import 'package:grocerra_customer/features/auth/presentation/welcome_screen.dart';
+import 'package:grocerra_customer/features/search/presentation/search_overlay.dart';
 
 /// These tests run without Supabase configuration, i.e. the demo build:
 /// every auth call short-circuits to success, so the whole flow is walkable.
@@ -54,6 +57,12 @@ void main() {
       ..addFont(rootBundle.load('assets/fonts/Geist-SemiBold.ttf'))
       ..addFont(rootBundle.load('assets/fonts/Geist-Bold.ttf'));
     await geist.load();
+    final FontLoader inter = FontLoader('Inter')
+      ..addFont(rootBundle.load('assets/fonts/Inter-Regular.ttf'))
+      ..addFont(rootBundle.load('assets/fonts/Inter-Medium.ttf'))
+      ..addFont(rootBundle.load('assets/fonts/Inter-SemiBold.ttf'))
+      ..addFont(rootBundle.load('assets/fonts/Inter-Bold.ttf'));
+    await inter.load();
   });
 
   setUp(() {
@@ -219,5 +228,92 @@ void main() {
     await tester.pumpAndSettle();
     expect(brightness(), Brightness.light);
     expect(AuthThemeMode.notifier.value, ThemeMode.light);
+  });
+
+  testWidgets('home filters narrow the store list', (
+    WidgetTester tester,
+  ) async {
+    await pumpToWelcome(tester);
+    await tapText(tester, 'Explore as guest');
+    expect(find.text('Featured on Grocerra'), findsOneWidget);
+    final Finder feed = find
+        .byWidgetPredicate(
+          (Widget w) =>
+              w is Scrollable && w.axisDirection == AxisDirection.down,
+        )
+        .first;
+    await tester.scrollUntilVisible(
+      find.text('All stores (7)'),
+      300,
+      scrollable: feed,
+    );
+    expect(find.text('All stores (7)'), findsOneWidget);
+
+    // Back to the top, then keep only stores with an offer running.
+    await tester.drag(feed, const Offset(0, 3000));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Offers'));
+    await tester.pumpAndSettle();
+    await tester.scrollUntilVisible(
+      find.text('All stores (4)'),
+      300,
+      scrollable: feed,
+    );
+    expect(find.text('All stores (4)'), findsOneWidget);
+  });
+
+  testWidgets('bar has three tabs; search stretches then rises full page', (
+    WidgetTester tester,
+  ) async {
+    await pumpToWelcome(tester);
+    await tapText(tester, 'Explore as guest');
+    expect(find.byType(GlassTabBar), findsOneWidget);
+    expect(find.bySemanticsLabel('Browse'), findsNothing);
+    expect(find.bySemanticsLabel('Orders'), findsNothing);
+
+    await tester.tap(find.bySemanticsLabel('Catering'));
+    await tester.pumpAndSettle();
+
+    await tester.tap(find.byType(SearchPill));
+    await tester.pump(GlassTabBar.expand);
+    await tester.pumpAndSettle();
+    expect(find.byType(SearchOverlay), findsOneWidget);
+    expect(find.text('Recent searches'), findsOneWidget);
+    expect(find.text('Top categories'), findsOneWidget);
+
+    await tester.enterText(
+      find.descendant(
+        of: find.byType(SearchOverlay),
+        matching: find.byType(TextField),
+      ),
+      'basmati',
+    );
+    await tester.pumpAndSettle();
+    expect(find.text('Items (1)'), findsOneWidget);
+
+    await tester.tap(find.byTooltip('Close search'));
+    await tester.pumpAndSettle();
+    expect(find.byType(SearchOverlay), findsNothing);
+    expect(find.bySemanticsLabel('Home'), findsOneWidget);
+  });
+
+  test('no cached session means signed out at launch', () async {
+    expect(await SessionManager.restore(), isFalse);
+    expect(SessionManager.account, isNull);
+  });
+
+  testWidgets('profile shows a guest with a way to sign in', (
+    WidgetTester tester,
+  ) async {
+    await pumpToWelcome(tester);
+    await tapText(tester, 'Explore as guest');
+    await tester.tap(find.bySemanticsLabel('Profile'));
+    await tester.pumpAndSettle();
+
+    expect(find.text('Browsing as guest'), findsOneWidget);
+    expect(find.text('Sign out'), findsNothing);
+    await tester.tap(find.widgetWithText(FilledButton, 'Sign in'));
+    await tester.pumpAndSettle();
+    expect(find.byType(WelcomeScreen), findsOneWidget);
   });
 }

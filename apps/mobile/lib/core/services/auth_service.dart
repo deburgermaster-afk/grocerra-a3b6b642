@@ -2,6 +2,7 @@ import 'package:flutter/foundation.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../config/app_config.dart';
+import 'session_manager.dart';
 import 'supabase_service.dart';
 
 /// Result of an auth attempt, always safe to show in the UI.
@@ -88,6 +89,7 @@ abstract final class AuthService {
         email: email,
         password: password,
       );
+      await SessionManager.rememberEmail(email);
       return const AuthResult.success();
     } catch (error) {
       return AuthResult.failure(_friendly(error));

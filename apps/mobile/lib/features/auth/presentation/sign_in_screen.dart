@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../../../core/config/app_config.dart';
 import '../../../core/services/auth_service.dart';
+import '../../../core/services/session_manager.dart';
 import 'auth_flow.dart';
 import 'forgot_password_screen.dart';
 import 'kit/auth_page.dart';
@@ -32,6 +33,19 @@ class _SignInScreenState extends State<SignInScreen> {
   String? _emailError;
   String? _passwordError;
   bool _busy = false;
+
+  @override
+  void initState() {
+    super.initState();
+    // Pre-fill whoever signed in last on this device.
+    if (_email.text.isEmpty) {
+      SessionManager.lastEmail().then((String? email) {
+        if (mounted && email != null && _email.text.isEmpty) {
+          _email.text = email;
+        }
+      });
+    }
+  }
 
   @override
   void dispose() {

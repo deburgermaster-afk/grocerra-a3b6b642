@@ -500,7 +500,8 @@ class ThemeToggle extends StatelessWidget {
   }
 }
 
-/// The faint blueprint grid with a slow green glow, behind every screen.
+/// Soft, blurred colour behind every screen: a few large green and grey
+/// glows that drift slowly, like light through frosted glass. No lines.
 class AuthBackdrop extends StatelessWidget {
   const AuthBackdrop({super.key, this.glow = true});
 
@@ -509,89 +510,132 @@ class AuthBackdrop extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final AuthPalette p = AuthPalette.of(context);
+    final bool dark = Theme.of(context).brightness == Brightness.dark;
+    final Color green = p.accent.withValues(alpha: dark ? 0.26 : 0.20);
+    final Color grey = dark
+        ? const Color(0xFF8A958D).withValues(alpha: 0.14)
+        : const Color(0xFF9AA59D).withValues(alpha: 0.18);
+    final Color deep = dark
+        ? const Color(0xFF0F5132).withValues(alpha: 0.32)
+        : p.accent.withValues(alpha: 0.10);
+
     return Stack(
       fit: StackFit.expand,
       children: <Widget>[
         ColoredBox(color: p.background),
-        CustomPaint(painter: _GridPainter(p.grid)),
-        if (glow)
-          Float(
-            amplitude: 18,
-            period: const Duration(seconds: 9),
-            rotate: 0,
-            child: DecoratedBox(
-              decoration: BoxDecoration(
-                gradient: RadialGradient(
-                  center: const Alignment(0.7, -0.9),
-                  radius: 1.0,
-                  colors: <Color>[
-                    p.accentSoft,
-                    p.accentSoft.withValues(alpha: 0),
-                  ],
-                ),
-              ),
-            ),
+        if (glow) ...<Widget>[
+          _Glow(
+            color: green,
+            at: const Offset(1.0, -0.02),
+            size: 0.95,
+            phase: 0,
           ),
+          _Glow(
+            color: grey,
+            at: const Offset(-0.05, 0.5),
+            size: 0.8,
+            phase: 0.35,
+          ),
+          _Glow(
+            color: deep,
+            at: const Offset(0.75, 1.05),
+            size: 0.95,
+            phase: 0.7,
+          ),
+        ],
       ],
     );
   }
 }
 
-class _GridPainter extends CustomPainter {
-  const _GridPainter(this.color);
+/// One large radial glow, fading to nothing at its edge, drifting on a
+/// long loop. Radial gradients are already soft, so no blur pass is needed.
+class _Glow extends StatelessWidget {
+  const _Glow({
+    required this.color,
+    required this.at,
+    required this.size,
+    required this.phase,
+  });
 
   final Color color;
 
-  @override
-  void paint(Canvas canvas, Size size) {
-    final Paint line = Paint()
-      ..color = color
-      ..strokeWidth = 1;
-    const double step = 44;
-    for (double x = step / 2; x < size.width; x += step) {
-      canvas.drawLine(Offset(x, 0), Offset(x, size.height), line);
-    }
-    for (double y = step / 2; y < size.height; y += step) {
-      canvas.drawLine(Offset(0, y), Offset(size.width, y), line);
-    }
-  }
+  /// Centre as a fraction of the screen (0,0 top-left .. 1,1 bottom-right).
+  /// Centres sit on or past the edges so the glow washes in from them.
+  final Offset at;
 
-  @override
-  bool shouldRepaint(_GridPainter old) => old.color != color;
-}
-
-/// The GROCERRA wordmark (brand `4.svg`, light weight), recoloured per theme.
-class Wordmark extends StatelessWidget {
-  const Wordmark({super.key, this.width = 200});
-
-  final double width;
-
-  static Future<String>? _source;
+  /// Diameter as a fraction of the screen's longer side.
+  final double size;
+  final double phase;
 
   @override
   Widget build(BuildContext context) {
-    final AuthPalette p = Theme.of(context).brightness == Brightness.dark
-        ? AuthPalette.dark
-        : AuthPalette.light;
-    _source ??= DefaultAssetBundle.of(context)
-        .loadString('assets/brand/wordmark_light.svg');
-    String hex(Color c) =>
-        '#${(c.toARGB32() & 0xFFFFFF).toRadixString(16).padLeft(6, '0')}';
+    final Size screen = MediaQuery.sizeOf(context);
+    final double d = math.max(screen.width, screen.height) * size;
+    return Positioned(
+      left: at.dx * screen.width - d / 2,
+      top: at.dy * screen.height - d / 2,
+      width: d,
+      height: d,
+      child: Float(
+        amplitude: 28,
+        period: const Duration(seconds: 14),
+        phase: phase,
+        rotate: 0,
+        child: SizedBox(
+          width: d,
+          height: d,
+          child: DecoratedBox(
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              gradient: RadialGradient(
+                colors: <Color>[
+                  color,
+                  color.withValues(alpha: color.a * 0.45),
+                  color.withValues(alpha: 0),
+                ],
+                stops: const <double>[0, 0.4, 1],
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
 
+/// The GROCERRA wordmark, text only, straight from the brand files:
+/// `4.svg` on dark, `5.svg` on light, `6.svg` on brand green.
+class Wordmark extends StatelessWidget {
+  const Wordmark({super.key, this.width = 200, this.onGreen = false});
+
+  final double width;
+
+  /// Use the white-and-black version made for green surfaces.
+  final bool onGreen;
+
+  /// Width / height of the cropped artwork.
+  static const double aspect = 6.77;
+
+  @override
+  Widget build(BuildContext context) {
+    final bool dark = Theme.of(context).brightness == Brightness.dark;
+    final String file = onGreen
+        ? 'wordmark_on_green'
+        : dark
+        ? 'wordmark_dark'
+        : 'wordmark_light';
     return SizedBox(
       width: width,
-      height: width * 44 / 340,
-      child: FutureBuilder<String>(
-        future: _source,
-        builder: (BuildContext context, AsyncSnapshot<String> snap) {
-          if (!snap.hasData) return const SizedBox.shrink();
-          return SvgPicture.string(
-            snap.data!
-                .replaceAll('{{INK}}', hex(p.ink))
-                .replaceAll('{{GREEN}}', hex(p.accent)),
-            width: width,
-          );
-        },
+      height: width / aspect,
+      child: AnimatedSwitcher(
+        duration: const Duration(milliseconds: 450),
+        child: SvgPicture.asset(
+          'assets/brand/$file.svg',
+          key: ValueKey<String>(file),
+          width: width,
+          height: width / aspect,
+        ),
       ),
     );
   }

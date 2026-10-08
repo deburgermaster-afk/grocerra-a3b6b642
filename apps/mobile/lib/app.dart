@@ -53,11 +53,23 @@ class _GrocerraAppState extends State<GrocerraApp> {
     // Opening the link in a password-reset email (instead of typing the
     // code) signs the user in for recovery: take them straight to
     // "Create new password".
+    //
+    // When a session ends (signed out here or on another device, refresh
+    // token revoked, account removed), leave the signed-in app and return
+    // to Welcome so nothing keeps showing data that is no longer theirs.
     _auth = SupabaseService.authStateChanges.listen((AuthState state) {
-      if (state.event == AuthChangeEvent.passwordRecovery) {
-        _navigator.currentState?.push(
-          AuthRoute<void>(page: const NewPasswordScreen()),
-        );
+      switch (state.event) {
+        case AuthChangeEvent.passwordRecovery:
+          _navigator.currentState?.push(
+            AuthRoute<void>(page: const NewPasswordScreen()),
+          );
+        case AuthChangeEvent.signedOut:
+          _navigator.currentState?.pushAndRemoveUntil(
+            FadeThroughRoute<void>(page: const WelcomeScreen()),
+            (Route<dynamic> _) => false,
+          );
+        default:
+          break;
       }
     });
   }

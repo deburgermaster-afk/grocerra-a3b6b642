@@ -35,8 +35,13 @@ abstract final class SupabaseService {
       await Supabase.initialize(
         url: AppConfig.apiBaseUrl,
         publishableKey: AppConfig.supabaseAnonKey,
+        // Sessions persist on the device and the access token refreshes
+        // itself in the background; see SessionManager for launch handling.
         authOptions: const FlutterAuthClientOptions(
           authFlowType: AuthFlowType.pkce,
+          persistSession: true,
+          autoRefreshToken: true,
+          detectSessionInUri: true,
         ),
       );
       _initialised = true;

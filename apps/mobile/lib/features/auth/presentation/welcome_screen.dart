@@ -44,36 +44,9 @@ class WelcomeScreen extends StatelessWidget {
                   ),
                 ),
                 Expanded(
-                  child: Stack(
-                    children: <Widget>[
-                      Positioned.fill(
-                        child: Padding(
-                          padding: const EdgeInsets.fromLTRB(16, 8, 16, 0),
-                          child: Scene(pieces: Scenes.welcome()),
-                        ),
-                      ),
-                      // Let the collage dissolve into the page.
-                      Positioned(
-                        left: 0,
-                        right: 0,
-                        bottom: 0,
-                        height: 90,
-                        child: IgnorePointer(
-                          child: DecoratedBox(
-                            decoration: BoxDecoration(
-                              gradient: LinearGradient(
-                                begin: Alignment.topCenter,
-                                end: Alignment.bottomCenter,
-                                colors: <Color>[
-                                  p.background.withValues(alpha: 0),
-                                  p.background,
-                                ],
-                              ),
-                            ),
-                          ),
-                        ),
-                      ),
-                    ],
+                  child: Padding(
+                    padding: const EdgeInsets.fromLTRB(16, 8, 16, 0),
+                    child: Scene(pieces: Scenes.welcome()),
                   ),
                 ),
                 Padding(
