@@ -1,49 +1,79 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'package:grocerra_customer/app.dart';
+import 'package:grocerra_customer/features/auth/presentation/auth_success_screen.dart';
+import 'package:grocerra_customer/features/auth/presentation/kit/auth_theme.dart';
+import 'package:grocerra_customer/features/auth/presentation/kit/motion.dart';
+import 'package:grocerra_customer/features/auth/presentation/new_password_screen.dart';
 import 'package:grocerra_customer/features/auth/presentation/onboarding_screen.dart';
 import 'package:grocerra_customer/features/auth/presentation/sign_in_screen.dart';
+import 'package:grocerra_customer/features/auth/presentation/sign_up_screen.dart';
 import 'package:grocerra_customer/features/auth/presentation/splash_screen.dart';
+import 'package:grocerra_customer/features/auth/presentation/verify_code_screen.dart';
+import 'package:grocerra_customer/features/auth/presentation/welcome_screen.dart';
 
-/// Pumps the app, lets the splash brand beat elapse and settles the
-/// transition into whatever follows it.
+/// These tests run without Supabase configuration, i.e. the demo build:
+/// every auth call short-circuits to success, so the whole flow is walkable.
 Future<void> pumpPastSplash(WidgetTester tester) async {
+  tester.view.physicalSize = const Size(390, 844);
+  tester.view.devicePixelRatio = 1;
+  addTearDown(tester.view.reset);
+
   await tester.pumpWidget(const GrocerraApp());
-  // Splash holds ~1.2s before navigating.
-  await tester.pump(const Duration(milliseconds: 1300));
+  await tester.pump(const Duration(milliseconds: 1700));
   await tester.pumpAndSettle();
 }
 
-/// Walks the approved blueprint path A1 -> A2/A3/A4 -> A5 so the tests
-/// exercise the Sign in screen exactly the way a first-run user reaches it.
-Future<void> pumpToSignIn(WidgetTester tester) async {
+Future<void> tapText(WidgetTester tester, String text) async {
+  final Finder f = find.text(text).last;
+  await tester.ensureVisible(f);
+  await tester.pumpAndSettle();
+  await tester.tap(f);
+  await tester.pumpAndSettle();
+}
+
+Future<void> pumpToWelcome(WidgetTester tester) async {
   await pumpPastSplash(tester);
-  await tester.tap(find.text('Continue'));
-  await tester.pumpAndSettle();
-  await tester.tap(find.text('Continue'));
-  await tester.pumpAndSettle();
-  await tester.tap(find.text('Get started'));
-  await tester.pumpAndSettle();
+  await tapText(tester, 'Skip');
+}
+
+Future<void> pumpToSignIn(WidgetTester tester) async {
+  await pumpToWelcome(tester);
+  await tapText(tester, 'Sign in');
 }
 
 void main() {
-  // The persistence layer is device-local; back it with an in-memory store
-  // for every test so the splash -> onboarding decision can run.
-  setUp(() {
-    SharedPreferences.setMockInitialValues(<String, Object>{});
+  setUpAll(() async {
+    // Measure with the real Geist so layout overflows are real ones.
+    final FontLoader geist = FontLoader('Geist')
+      ..addFont(rootBundle.load('assets/fonts/Geist-Regular.ttf'))
+      ..addFont(rootBundle.load('assets/fonts/Geist-Medium.ttf'))
+      ..addFont(rootBundle.load('assets/fonts/Geist-SemiBold.ttf'))
+      ..addFont(rootBundle.load('assets/fonts/Geist-Bold.ttf'));
+    await geist.load();
   });
 
-  testWidgets('app boots into the splash screen', (WidgetTester tester) async {
+  setUp(() {
+    SharedPreferences.setMockInitialValues(<String, Object>{});
+    AuthThemeMode.notifier.value = ThemeMode.dark;
+    // Floating art and the blinking caret loop forever; switch them off so
+    // pumpAndSettle can settle.
+    Motion.ambient = false;
+  });
+
+  testWidgets('app boots into the splash wordmark', (
+    WidgetTester tester,
+  ) async {
     await tester.pumpWidget(const GrocerraApp());
     await tester.pump();
 
     expect(find.byType(SplashScreen), findsOneWidget);
-    expect(find.text('GROCERRA'), findsOneWidget);
+    expect(find.bySemanticsLabel('GROCERRA'), findsOneWidget);
 
-    // Drain the 1.2s brand timer so it does not outlive the test.
-    await tester.pump(const Duration(milliseconds: 1300));
+    await tester.pump(const Duration(milliseconds: 1700));
     await tester.pumpAndSettle();
   });
 
@@ -53,110 +83,141 @@ void main() {
     await pumpPastSplash(tester);
 
     expect(find.byType(OnboardingScreen), findsOneWidget);
-    expect(find.text('Fresh halal groceries'), findsOneWidget);
+    expect(
+      find.text('Fresh halal groceries from stores you trust'),
+      findsOneWidget,
+    );
     expect(find.text('Continue'), findsOneWidget);
     expect(find.text('Skip'), findsOneWidget);
   });
 
-  testWidgets('Continue advances onboarding, last slide opens Sign In', (
+  testWidgets('Continue walks the slides, Get started opens Welcome', (
     WidgetTester tester,
   ) async {
     await pumpPastSplash(tester);
 
-    // Slide 1 -> 2.
-    await tester.tap(find.text('Continue'));
-    await tester.pumpAndSettle();
-    expect(find.text('Catering on demand'), findsOneWidget);
+    await tapText(tester, 'Continue');
+    expect(
+      find.text('Catering for every gathering, big or small'),
+      findsOneWidget,
+    );
+    await tapText(tester, 'Continue');
+    expect(
+      find.text('Track every order live, from store to door'),
+      findsOneWidget,
+    );
 
-    // Slide 2 -> 3.
-    await tester.tap(find.text('Continue'));
-    await tester.pumpAndSettle();
-    expect(find.text('Delivered in real time'), findsOneWidget);
-
-    // Last slide -> Sign In / Welcome Screen.
-    await tester.tap(find.text('Get started'));
-    await tester.pumpAndSettle();
-
-    expect(find.byType(SignInScreen), findsOneWidget);
-    expect(find.text('Welcome back'), findsOneWidget);
+    await tapText(tester, 'Get started');
+    expect(find.byType(WelcomeScreen), findsOneWidget);
+    expect(find.text('Create account'), findsOneWidget);
+    expect(find.text('Sign in'), findsOneWidget);
   });
 
-  testWidgets('Skip jumps straight to the home shell', (WidgetTester tester) async {
+  testWidgets('onboarding is skipped once seen', (WidgetTester tester) async {
+    SharedPreferences.setMockInitialValues(<String, Object>{
+      'grocerra.onboarding_seen': true,
+    });
     await pumpPastSplash(tester);
 
-    await tester.tap(find.text('Skip'));
-    await tester.pumpAndSettle();
-
-    expect(find.text('Groceries & Catering'), findsOneWidget);
-    expect(find.byType(NavigationBar), findsOneWidget);
-    for (final String tab in <String>[
-      'Home',
-      'Browse',
-      'Catering',
-      'Orders',
-      'Profile',
-    ]) {
-      expect(
-        find.descendant(
-          of: find.byType(NavigationBar),
-          matching: find.text(tab),
-        ),
-        findsOneWidget,
-      );
-    }
+    expect(find.byType(WelcomeScreen), findsOneWidget);
   });
 
-  testWidgets('bottom tabs switch to their blueprint screen', (
-    WidgetTester tester,
-  ) async {
-    await pumpPastSplash(tester);
-    await tester.tap(find.text('Skip'));
-    await tester.pumpAndSettle();
-
-    await tester.tap(
-      find.descendant(
-        of: find.byType(NavigationBar),
-        matching: find.text('Browse'),
-      ),
-    );
-    await tester.pump();
-
-    expect(find.textContaining('category grid'), findsOneWidget);
-    final NavigationBar bar = tester.widget<NavigationBar>(
-      find.byType(NavigationBar),
-    );
-    expect(bar.selectedIndex, 1);
-  });
-
-  testWidgets('Sign In screen validates empty credentials', (
+  testWidgets('Sign in validates empty credentials', (
     WidgetTester tester,
   ) async {
     await pumpToSignIn(tester);
+    expect(find.byType(SignInScreen), findsOneWidget);
+    expect(find.text('Hey,\nWelcome\nBack'), findsOneWidget);
 
-    // Submit with an empty form (the button sits below the fold).
-    final Finder submit = find.widgetWithText(FilledButton, 'Sign in');
-    await tester.ensureVisible(submit);
-    await tester.pumpAndSettle();
-    await tester.tap(submit);
-    await tester.pumpAndSettle();
+    await tapText(tester, 'Sign in');
 
     expect(find.text('Enter a valid email address'), findsOneWidget);
-    // The hint and the validation message use the same approved copy,
-    // so this asserts both are on screen after a failed submit.
-    expect(find.text('Enter your password'), findsWidgets);
+    expect(find.text('Enter your password'), findsOneWidget);
   });
 
-  testWidgets('Create account tab shows the registration fields', (
+  testWidgets('Sign up flags mismatched passwords and rates strength', (
+    WidgetTester tester,
+  ) async {
+    await pumpToWelcome(tester);
+    await tapText(tester, 'Create account');
+    expect(find.byType(SignUpScreen), findsOneWidget);
+
+    final Finder fields = find.byType(TextField);
+    await tester.enterText(fields.at(0), 'Ayesha Khan');
+    await tester.enterText(fields.at(1), 'ayesha@example.com');
+    await tester.enterText(fields.at(2), 'Correct-Horse-9');
+    await tester.enterText(fields.at(3), 'something-else');
+    await tester.pumpAndSettle();
+    expect(find.text('Strong'), findsOneWidget);
+
+    await tapText(tester, 'Sign up');
+    expect(find.text("Passwords don't match"), findsOneWidget);
+  });
+
+  testWidgets('new account: sign up, verify code, success', (
+    WidgetTester tester,
+  ) async {
+    await pumpToWelcome(tester);
+    await tapText(tester, 'Create account');
+
+    final Finder fields = find.byType(TextField);
+    await tester.enterText(fields.at(0), 'Ayesha Khan');
+    await tester.enterText(fields.at(1), 'ayesha@example.com');
+    await tester.enterText(fields.at(2), 'Correct-Horse-9');
+    await tester.enterText(fields.at(3), 'Correct-Horse-9');
+    await tapText(tester, 'Sign up');
+    await tester.pump(const Duration(seconds: 1));
+    await tester.pumpAndSettle();
+
+    expect(find.byType(VerifyCodeScreen), findsOneWidget);
+    expect(find.textContaining('6-digit code'), findsOneWidget);
+
+    await tester.enterText(find.byType(TextField).last, '123456');
+    await tester.pump(const Duration(seconds: 1));
+    await tester.pumpAndSettle();
+
+    expect(find.byType(AuthSuccessScreen), findsOneWidget);
+    expect(find.text('Email verified'), findsOneWidget);
+  });
+
+  testWidgets('reset: forgot password, code, new password', (
     WidgetTester tester,
   ) async {
     await pumpToSignIn(tester);
+    await tapText(tester, 'Forgot password?');
+    expect(find.text('Forgot\nPassword?'), findsOneWidget);
 
-    await tester.tap(find.text('Create account'));
+    await tester.enterText(find.byType(TextField).first, 'ayesha@example.com');
+    await tapText(tester, 'Send code');
+    await tester.pump(const Duration(seconds: 1));
     await tester.pumpAndSettle();
+    expect(find.text('Check\nYour Email'), findsOneWidget);
 
-    expect(find.text('Create account'), findsWidgets);
-    expect(find.text('Full name'), findsOneWidget);
-    expect(find.text('At least 8 characters'), findsOneWidget);
-    expect(find.text('Show'), findsOneWidget);
+    await tester.enterText(find.byType(TextField).last, '654321');
+    await tester.pump(const Duration(seconds: 1));
+    await tester.pumpAndSettle();
+    expect(find.byType(NewPasswordScreen), findsOneWidget);
+
+    final Finder fields = find.byType(TextField);
+    await tester.enterText(fields.at(0), 'Brand-New-Pass-1');
+    await tester.enterText(fields.at(1), 'Brand-New-Pass-1');
+    await tapText(tester, 'Save');
+    await tester.pump(const Duration(seconds: 1));
+    await tester.pumpAndSettle();
+    expect(find.text('Password updated'), findsOneWidget);
+  });
+
+  testWidgets('theme toggle flips the flow between dark and light', (
+    WidgetTester tester,
+  ) async {
+    await pumpToWelcome(tester);
+    Brightness brightness() =>
+        Theme.of(tester.element(find.text('Create account'))).brightness;
+    expect(brightness(), Brightness.dark);
+
+    await tester.tap(find.bySemanticsLabel('Switch to light mode'));
+    await tester.pumpAndSettle();
+    expect(brightness(), Brightness.light);
+    expect(AuthThemeMode.notifier.value, ThemeMode.light);
   });
 }

@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 260 220" fill="none" stroke="{{S}}" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round">
+  <ellipse cx="130" cy="206" rx="104" ry="7" fill="{{T}}" stroke="none"/>
+  <!-- steam -->
+  <path d="M96 52 Q86 40 96 28 Q106 16 96 4" stroke-width="2.6"/>
+  <path d="M130 44 Q120 32 130 20 Q140 8 130 -4" stroke-width="2.6"/>
+  <path d="M164 52 Q154 40 164 28 Q174 16 164 4" stroke-width="2.6"/>
+  <!-- rice mound -->
+  <path d="M62 96 Q70 58 130 56 Q190 58 198 96 Z" fill="{{F}}"/>
+  <g fill="{{S}}" stroke="none">
+    <circle cx="96" cy="84" r="2"/><circle cx="112" cy="74" r="2"/><circle cx="130" cy="82" r="2"/>
+    <circle cx="150" cy="72" r="2"/><circle cx="166" cy="86" r="2"/><circle cx="120" cy="92" r="2"/>
+    <circle cx="144" cy="90" r="2"/><circle cx="84" cy="92" r="2"/><circle cx="178" cy="94" r="2"/>
+  </g>
+  <path d="M118 66 Q124 60 132 64 Q126 72 118 66 Z" fill="{{G}}"/>
+  <path d="M150 80 Q158 76 164 80 Q156 86 150 80 Z" fill="{{G}}"/>
+  <!-- pot -->
+  <path d="M52 96 L208 96 Q212 96 210 104 L196 176 Q192 192 176 192 L84 192 Q68 192 64 176 L50 104 Q48 96 52 96 Z" fill="{{F}}"/>
+  <path d="M56 116 L204 116" stroke-width="2.4"/>
+  <path d="M60 130 L200 130 L196 150 L64 150 Z" fill="{{G}}"/>
+  <path d="M50 104 Q30 104 32 118 Q34 126 54 122" fill="{{F}}"/>
+  <path d="M210 104 Q230 104 228 118 Q226 126 206 122" fill="{{F}}"/>
+  <!-- chili + onion -->
+  <path d="M206 196 Q232 200 246 182 Q236 186 222 186 Q210 186 206 196 Z" fill="{{F}}"/>
+  <path d="M246 182 Q250 176 248 170" stroke-width="2.6"/>
+  <path d="M10 196 Q10 178 26 176 Q42 178 42 196 Q40 206 26 207 Q12 206 10 196 Z" fill="{{F}}"/>
+  <path d="M26 176 L26 166 M20 184 Q22 196 26 204 M32 184 Q30 196 26 204" stroke-width="2"/>
+</svg>

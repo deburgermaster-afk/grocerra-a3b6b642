@@ -1,14 +1,21 @@
+import 'package:flutter/foundation.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
+import '../config/app_config.dart';
 import 'supabase_service.dart';
 
 /// Result of an auth attempt, always safe to show in the UI.
 class AuthResult {
-  const AuthResult._({required this.ok, required this.message, this.needsEmailConfirmation = false});
+  const AuthResult._({
+    required this.ok,
+    required this.message,
+    this.needsEmailConfirmation = false,
+  });
 
   const AuthResult.success() : this._(ok: true, message: '');
 
-  const AuthResult.failure(String message) : this._(ok: false, message: message);
+  const AuthResult.failure(String message)
+    : this._(ok: false, message: message);
 
   final bool ok;
   final String message;
@@ -26,6 +33,11 @@ class AuthResult {
 ///   * email confirmation is ON (`mailer_autoconfirm = false`)
 ///   * Google/Apple providers are not enabled (see [AppConfig.oauthEnabled])
 abstract final class AuthService {
+  /// Where links in auth emails return to. On the web this is the page's own
+  /// origin, so preview deployments work too; Supabase only honours it when
+  /// it is on the project's redirect allow-list, else it uses the Site URL.
+  static String? get _redirect => kIsWeb ? Uri.base.origin : null;
+
   static String _friendly(Object error) {
     if (error is AuthException) {
       final String message = error.message.toLowerCase();
@@ -47,6 +59,20 @@ abstract final class AuthService {
       if (message.contains('user not found')) {
         return 'No account found for that email.';
       }
+      if (message.contains('expired') ||
+          (message.contains('invalid') && message.contains('token'))) {
+        return 'That code is wrong or has expired. Check it, or send a new one.';
+      }
+      if (message.contains('different from the old')) {
+        return 'Choose a password you have not used before.';
+      }
+      if (message.contains('not authorized')) {
+        return 'Email sending is limited on this test project. '
+            'Use an address on the project team, or set up SMTP in Supabase.';
+      }
+      if (message.contains('email') && message.contains('invalid')) {
+        return 'Enter a valid email address.';
+      }
       return error.message;
     }
     if (error is StateError) return error.message;
@@ -58,7 +84,10 @@ abstract final class AuthService {
     required String password,
   }) async {
     try {
-      await SupabaseService.auth.signInWithPassword(email: email, password: password);
+      await SupabaseService.auth.signInWithPassword(
+        email: email,
+        password: password,
+      );
       return const AuthResult.success();
     } catch (error) {
       return AuthResult.failure(_friendly(error));
@@ -75,10 +104,12 @@ abstract final class AuthService {
         email: email,
         password: password,
         data: <String, String>{'full_name': name},
+        emailRedirectTo: _redirect,
       );
       // With confirmation ON the gateway returns no session; the account
       // exists but is unusable until the email link is clicked.
-      final bool unconfirmed = response.session == null && response.user != null;
+      final bool unconfirmed =
+          response.session == null && response.user != null;
       if (unconfirmed) {
         return const AuthResult._(
           ok: true,
@@ -94,11 +125,61 @@ abstract final class AuthService {
 
   static Future<AuthResult> sendPasswordReset({required String email}) async {
     try {
-      await SupabaseService.auth.resetPasswordForEmail(email);
+      await SupabaseService.auth.resetPasswordForEmail(
+        email,
+        redirectTo: _redirect,
+      );
       return const AuthResult._(
         ok: true,
-        message: 'Password reset link sent to that address.',
+        message: 'We sent a code to that address.',
       );
+    } catch (error) {
+      return AuthResult.failure(_friendly(error));
+    }
+  }
+
+  /// Confirms the one-time code from a sign-up or password-reset email.
+  /// Success leaves the user signed in.
+  static Future<AuthResult> verifyCode({
+    required String email,
+    required String code,
+    required bool recovery,
+  }) async {
+    try {
+      await SupabaseService.auth.verifyOTP(
+        email: email,
+        token: code,
+        type: recovery ? OtpType.recovery : OtpType.signup,
+      );
+      return const AuthResult.success();
+    } catch (error) {
+      return AuthResult.failure(_friendly(error));
+    }
+  }
+
+  /// Sends the sign-up or password-reset email again.
+  static Future<AuthResult> resendCode({
+    required String email,
+    required bool recovery,
+  }) async {
+    if (recovery) return sendPasswordReset(email: email);
+    try {
+      await SupabaseService.auth.resend(
+        type: OtpType.signup,
+        email: email,
+        emailRedirectTo: _redirect,
+      );
+      return const AuthResult._(ok: true, message: 'A new code is on its way.');
+    } catch (error) {
+      return AuthResult.failure(_friendly(error));
+    }
+  }
+
+  /// Sets a new password for the signed-in (or just-recovered) user.
+  static Future<AuthResult> updatePassword(String password) async {
+    try {
+      await SupabaseService.auth.updateUser(UserAttributes(password: password));
+      return const AuthResult.success();
     } catch (error) {
       return AuthResult.failure(_friendly(error));
     }
@@ -114,7 +195,9 @@ abstract final class AuthService {
     try {
       await SupabaseService.auth.signInWithOAuth(
         OAuthProvider.google,
-        redirectTo: null,
+        redirectTo: AppConfig.oauthRedirectUrl.isNotEmpty
+            ? AppConfig.oauthRedirectUrl
+            : _redirect,
       );
       return const AuthResult.success();
     } catch (error) {
@@ -132,7 +215,9 @@ abstract final class AuthService {
     try {
       await SupabaseService.auth.signInWithOAuth(
         OAuthProvider.apple,
-        redirectTo: null,
+        redirectTo: AppConfig.oauthRedirectUrl.isNotEmpty
+            ? AppConfig.oauthRedirectUrl
+            : _redirect,
       );
       return const AuthResult.success();
     } catch (error) {

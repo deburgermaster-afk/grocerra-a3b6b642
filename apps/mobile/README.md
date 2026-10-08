@@ -75,3 +75,25 @@ Money is stored in AUD cents, prices GST-inclusive.
   secrets are loaded from Reevake straight into a single command's environment.
 - `AGENTS.md` → `.reevake/agent.md` holds the Reevake workflow; both are
   excluded in `.git/info/exclude`.
+
+## Sign-in flow and Supabase Auth
+
+Welcome → Sign in / Sign up → Verify code → Location, plus Forgot password →
+Verify code → Create new password. All of it runs on Supabase Auth (project
+`grocera`, email provider), configured for web builds by
+`config/vercel.defines.json` (project URL + publishable key; public values).
+
+Two dashboard settings the flow relies on (Supabase › Authentication):
+
+- **Email templates.** The app asks for the 6-digit code. Add `{{ .Token }}`
+  to the *Confirm signup* and *Reset password* templates, or users only get
+  a link (the link also works: it signs them in and the app opens
+  *Create new password* for resets).
+- **URL configuration.** Add the app's Vercel domains (and
+  `http://localhost:*`) to the redirect allow-list so email links return
+  to the app.
+
+Apple and Google buttons show "coming soon" until those providers are
+enabled and the build sets `GROCERRA_OAUTH_ENABLED=true`. The built-in
+Supabase mailer only delivers to project team addresses and a few emails an
+hour; connect SMTP (Resend) before real users sign up.
