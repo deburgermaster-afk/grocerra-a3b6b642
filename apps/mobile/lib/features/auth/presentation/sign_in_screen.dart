@@ -119,7 +119,10 @@ class _SignInScreenState extends State<SignInScreen> {
   @override
   Widget build(BuildContext context) {
     return AuthPage(
-      title: 'Hey,\nWelcome\nBack',
+      title: 'Hey,\nwelcome back',
+      subtitle: const Text(
+        'Sign in to order groceries, track deliveries and book catering.',
+      ),
       footer: AuthSwitchLine(
         prompt: "Don't have an account?",
         action: 'Sign up',
@@ -144,7 +147,7 @@ class _SignInScreenState extends State<SignInScreen> {
                     if (_emailError != null) setState(() => _emailError = null);
                   },
                 ),
-                const SizedBox(height: 14),
+                const SizedBox(height: 10),
                 AuthField(
                   controller: _password,
                   hint: 'Password',
@@ -164,8 +167,8 @@ class _SignInScreenState extends State<SignInScreen> {
             ),
           ),
         ),
-        const SizedBox(height: 6),
         AuthLink(
+          alignment: Alignment.centerRight,
           label: 'Forgot password?',
           onTap: () => Navigator.of(context).push(
             AuthRoute<void>(
@@ -173,18 +176,18 @@ class _SignInScreenState extends State<SignInScreen> {
             ),
           ),
         ),
-        const SizedBox(height: 18),
+        const SizedBox(height: 8),
         AuthButton(label: 'Sign in', loading: _busy, onPressed: _submit),
-        const SizedBox(height: 26),
+        const SizedBox(height: 14),
         const OrDivider(),
-        const SizedBox(height: 26),
+        const SizedBox(height: 14),
         AuthButton(
           label: 'Continue with Apple',
           variant: AuthButtonVariant.secondary,
           leading: const BrandMark.apple(),
           onPressed: () => _social(AuthService.signInWithApple),
         ),
-        const SizedBox(height: 12),
+        const SizedBox(height: 10),
         AuthButton(
           label: 'Continue with Google',
           variant: AuthButtonVariant.secondary,

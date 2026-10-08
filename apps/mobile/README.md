@@ -1,7 +1,7 @@
 # Grocerra — user app (Flutter)
 
-Customer app for **Grocerra**: South Asian groceries, certified halal meat and
-catering delivered on demand (Melbourne pilot, 1 December 2026).
+Customer app for **Grocerra**: fresh groceries and catering, delivered to you
+(Melbourne pilot, 1 December 2026).
 
 - **Blueprint:** Reevake `User App - Frontend` (app: User app), backend
   `User App - Backend`. Never build a screen against another app's backend.

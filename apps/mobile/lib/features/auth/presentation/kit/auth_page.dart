@@ -4,11 +4,13 @@ import 'auth_theme.dart';
 import 'auth_widgets.dart';
 import 'motion.dart';
 
-/// Layout shared by the form screens (reference: "Login Experience").
+/// Layout shared by the form screens.
 ///
-/// `‹ Back` and the theme toggle on top, a large title, then the content,
-/// each piece rising into place one after another. Content scrolls under the
-/// keyboard; [footer] stays pinned to the bottom when there is room.
+/// Compact and thumb-first: a slim top bar (back, centred wordmark, theme
+/// toggle), then everything else anchored to the bottom of the screen - the
+/// title, a one-line subtitle, the form and the footer - with tight, even
+/// spacing. Each piece rises into place in turn. When the keyboard opens the
+/// content scrolls instead of squashing.
 class AuthPage extends StatelessWidget {
   const AuthPage({
     super.key,
@@ -44,24 +46,32 @@ class AuthPage extends StatelessWidget {
               child: LayoutBuilder(
                 builder: (BuildContext context, BoxConstraints c) {
                   return SingleChildScrollView(
-                    padding: const EdgeInsets.fromLTRB(24, 4, 24, 24),
+                    reverse: true,
+                    padding: const EdgeInsets.fromLTRB(20, 4, 20, 16),
                     child: ConstrainedBox(
-                      constraints: BoxConstraints(minHeight: c.maxHeight - 28),
+                      constraints: BoxConstraints(minHeight: c.maxHeight - 20),
                       child: IntrinsicHeight(
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.stretch,
                           children: <Widget>[
                             SizedBox(
-                              height: 48,
-                              child: Row(
+                              height: 44,
+                              child: Stack(
+                                alignment: Alignment.center,
                                 children: <Widget>[
-                                  if (showBack) const BackPill(),
-                                  const Spacer(),
-                                  const ThemeToggle(),
+                                  const Reveal(child: Wordmark(width: 120)),
+                                  Row(
+                                    children: <Widget>[
+                                      if (showBack) const BackPill(),
+                                      const Spacer(),
+                                      const ThemeToggle(),
+                                    ],
+                                  ),
                                 ],
                               ),
                             ),
-                            const SizedBox(height: 28),
+                            const Spacer(),
+                            const SizedBox(height: 24),
                             step(
                               Semantics(
                                 header: true,
@@ -72,7 +82,7 @@ class AuthPage extends StatelessWidget {
                               ),
                             ),
                             if (subtitle != null) ...<Widget>[
-                              const SizedBox(height: 14),
+                              const SizedBox(height: 8),
                               step(
                                 DefaultTextStyle(
                                   style: AuthType.body(p.muted),
@@ -80,11 +90,10 @@ class AuthPage extends StatelessWidget {
                                 ),
                               ),
                             ],
-                            const SizedBox(height: 32),
+                            const SizedBox(height: 20),
                             for (final Widget child in children) step(child),
                             if (footer != null) ...<Widget>[
-                              const Spacer(),
-                              const SizedBox(height: 24),
+                              const SizedBox(height: 14),
                               step(footer!),
                             ],
                           ],
@@ -151,22 +160,25 @@ class AuthLink extends StatelessWidget {
     required this.label,
     required this.onTap,
     this.underline = false,
+    this.alignment = Alignment.center,
   });
 
   final String label;
   final VoidCallback? onTap;
   final bool underline;
+  final AlignmentGeometry alignment;
 
   @override
   Widget build(BuildContext context) {
     final AuthPalette p = AuthPalette.of(context);
-    return Center(
+    return Align(
+      alignment: alignment,
       child: Pressable(
         semanticLabel: label,
         pressedScale: 0.94,
         onTap: onTap,
         child: Padding(
-          padding: const EdgeInsets.all(8),
+          padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 8),
           child: AnimatedDefaultTextStyle(
             duration: Motion.quick,
             style: AuthType.small(onTap == null ? p.faint : p.muted).copyWith(

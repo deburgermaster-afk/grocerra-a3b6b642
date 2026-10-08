@@ -44,11 +44,11 @@ class AuthButton extends StatelessWidget {
         opacity: onPressed == null ? 0.45 : 1,
         child: AnimatedContainer(
           duration: Motion.quick,
-          height: 56,
+          height: 52,
           width: double.infinity,
           decoration: BoxDecoration(
             color: bg,
-            borderRadius: BorderRadius.circular(28),
+            borderRadius: BorderRadius.circular(26),
             border: primary ? null : Border.all(color: p.fieldBorder),
           ),
           alignment: Alignment.center,
@@ -227,7 +227,7 @@ class _AuthFieldState extends State<AuthField> {
         ? p.danger
         : focused
         ? p.accent
-        : p.fieldBorder.withValues(alpha: 0);
+        : p.fieldBorder;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -235,7 +235,7 @@ class _AuthFieldState extends State<AuthField> {
         AnimatedContainer(
           duration: const Duration(milliseconds: 240),
           curve: Motion.enter,
-          height: 56,
+          height: 52,
           decoration: BoxDecoration(
             color: p.field,
             borderRadius: BorderRadius.circular(16),

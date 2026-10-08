@@ -168,10 +168,10 @@ abstract final class AuthType {
   /// Screen titles: "Hey, Welcome Back".
   static TextStyle title(Color color) => TextStyle(
     fontFamily: family,
-    fontSize: 36,
-    height: 1.08,
-    fontWeight: FontWeight.w600,
-    letterSpacing: -1.4,
+    fontSize: 40,
+    height: 1.02,
+    fontWeight: FontWeight.w700,
+    letterSpacing: -1.8,
     color: color,
   );
 

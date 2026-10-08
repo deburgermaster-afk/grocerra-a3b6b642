@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en-AU">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<title>Order confirmed</title>
+</head>
+<body style="margin:0;padding:0;background-color:#f6f7f5">
+<div style="display:none;max-height:0;overflow:hidden;font-size:1px;line-height:1px;color:#f6f7f5">We've got your order {{{ORDER_ID}}}.</div>
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" bgcolor="#f6f7f5" style="background-color:#f6f7f5">
+  <tr><td align="center" style="padding-top:32px;padding-bottom:32px;padding-left:16px;padding-right:16px">
+    <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="max-width:560px">
+      <tr><td style="padding-bottom:20px;padding-left:4px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;font-size:22px;line-height:28px;font-weight:600;letter-spacing:2px;color:#0b0d0b">GRO<span style="color:#5ac426">CERRA</span></td></tr>
+      <tr><td bgcolor="#ffffff" style="background-color:#ffffff;border:1px solid #e3e6e2;border-radius:20px;padding-top:32px;padding-bottom:28px;padding-left:28px;padding-right:28px">
+        <h1 style="margin-top:0;margin-bottom:12px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;font-size:24px;line-height:30px;font-weight:700;color:#0b0d0b">Order confirmed</h1>
+        <table role="presentation" cellpadding="0" cellspacing="0" border="0" style="margin-bottom:14px"><tr><td bgcolor="#e8f6e1" style="background-color:#e8f6e1;border-radius:12px;padding-top:4px;padding-bottom:4px;padding-left:10px;padding-right:10px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;font-size:12px;line-height:16px;font-weight:600;color:#16a34a">Order {{{ORDER_ID}}}</td></tr></table><p style="margin-top:0;margin-bottom:16px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;font-size:15px;line-height:1.55;color:#5b625c;font-weight:400">Thanks {{{CUSTOMER_NAME}}}! <strong style="color:#0b0d0b">{{{STORE_NAME}}}</strong> is preparing your order. Estimated arrival: <strong style="color:#0b0d0b">{{{ETA}}}</strong>.</p><p style="margin-top:0;margin-bottom:16px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;font-size:14px;line-height:1.55;color:#0b0d0b;font-weight:400">{{{ITEM_SUMMARY}}}</p><table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="margin-top:4px;margin-bottom:20px"><tr>
+  <td style="padding-top:8px;padding-bottom:8px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;font-size:14px;line-height:20px;color:#5b625c">Subtotal</td>
+  <td align="right" style="padding-top:8px;padding-bottom:8px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;font-size:14px;line-height:20px;color:#0b0d0b">{{{SUBTOTAL}}}</td>
+</tr><tr>
+  <td style="padding-top:8px;padding-bottom:8px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;font-size:14px;line-height:20px;color:#5b625c">Delivery</td>
+  <td align="right" style="padding-top:8px;padding-bottom:8px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;font-size:14px;line-height:20px;color:#0b0d0b">{{{DELIVERY_FEE}}}</td>
+</tr><tr>
+  <td style="padding-top:12px;border-top:1px solid #e3e6e2;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;font-size:16px;line-height:22px;font-weight:700;color:#0b0d0b">Total</td>
+  <td align="right" style="padding-top:12px;border-top:1px solid #e3e6e2;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;font-size:16px;line-height:22px;font-weight:700;color:#0b0d0b">{{{TOTAL}}}</td>
+</tr></table><p style="margin-top:0;margin-bottom:16px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;font-size:13px;line-height:1.55;color:#5b625c;font-weight:400">Delivering to {{{DELIVERY_ADDRESS}}}. Meat is charged at its estimated weight; anything packed under the estimate is refunded automatically.</p><table role="presentation" cellpadding="0" cellspacing="0" border="0" style="margin-top:8px;margin-bottom:8px">
+  <tr><td bgcolor="#0b0d0b" style="background-color:#0b0d0b;border-radius:26px">
+    <a href="{{{TRACK_URL}}}" style="display:inline-block;padding-top:14px;padding-bottom:14px;padding-left:28px;padding-right:28px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;font-size:15px;line-height:20px;font-weight:600;color:#ffffff;text-decoration:none">Track your order</a>
+  </td></tr>
+</table>
+      </td></tr>
+      <tr><td style="padding-top:20px;padding-left:4px;padding-right:4px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;font-size:12px;line-height:18px;color:#8b938d">
+        This is the receipt for your Grocerra order.<br>Grocerra · Fresh groceries and catering, delivered to you.
+      </td></tr>
+    </table>
+  </td></tr>
+</table>
+</body>
+</html>

@@ -125,7 +125,8 @@ class _SignUpScreenState extends State<SignUpScreen> {
   @override
   Widget build(BuildContext context) {
     return AuthPage(
-      title: "Let's get\nStarted",
+      title: "Let's get\nstarted",
+      subtitle: const Text('Create your account with your email.'),
       footer: AuthSwitchLine(
         prompt: 'Already have an account?',
         action: 'Sign in',
@@ -148,7 +149,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                   error: _errors['name'],
                   onChanged: (_) => _clear('name'),
                 ),
-                const SizedBox(height: 14),
+                const SizedBox(height: 10),
                 AuthField(
                   controller: _email,
                   hint: 'Email address',
@@ -158,7 +159,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                   error: _errors['email'],
                   onChanged: (_) => _clear('email'),
                 ),
-                const SizedBox(height: 14),
+                const SizedBox(height: 10),
                 AuthField(
                   controller: _password,
                   hint: 'Password',
@@ -172,7 +173,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                   },
                 ),
                 PasswordStrength(password: _password.text),
-                const SizedBox(height: 14),
+                const SizedBox(height: 10),
                 AuthField(
                   controller: _confirm,
                   hint: 'Confirm password',
@@ -188,18 +189,18 @@ class _SignUpScreenState extends State<SignUpScreen> {
             ),
           ),
         ),
-        const SizedBox(height: 24),
+        const SizedBox(height: 16),
         AuthButton(label: 'Sign up', loading: _busy, onPressed: _submit),
-        const SizedBox(height: 26),
+        const SizedBox(height: 14),
         const OrDivider(),
-        const SizedBox(height: 26),
+        const SizedBox(height: 14),
         AuthButton(
           label: 'Continue with Apple',
           variant: AuthButtonVariant.secondary,
           leading: const BrandMark.apple(),
           onPressed: () => _social(AuthService.signInWithApple),
         ),
-        const SizedBox(height: 12),
+        const SizedBox(height: 10),
         AuthButton(
           label: 'Continue with Google',
           variant: AuthButtonVariant.secondary,

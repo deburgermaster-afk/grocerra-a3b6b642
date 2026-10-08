@@ -80,7 +80,7 @@ class _NewPasswordScreenState extends State<NewPasswordScreen> {
   @override
   Widget build(BuildContext context) {
     return AuthPage(
-      title: 'Create\nNew Password',
+      title: 'Create a new\npassword',
       subtitle: const Text(
         'Your new password must be different from ones you have used before.',
       ),
@@ -99,7 +99,7 @@ class _NewPasswordScreenState extends State<NewPasswordScreen> {
                 onChanged: (_) => setState(() => _passwordError = null),
               ),
               PasswordStrength(password: _password.text),
-              const SizedBox(height: 14),
+              const SizedBox(height: 10),
               AuthField(
                 controller: _confirm,
                 hint: 'Confirm password',
@@ -118,7 +118,7 @@ class _NewPasswordScreenState extends State<NewPasswordScreen> {
             ],
           ),
         ),
-        const SizedBox(height: 28),
+        const SizedBox(height: 16),
         AuthButton(label: 'Save', loading: _busy, onPressed: _save),
       ],
     );

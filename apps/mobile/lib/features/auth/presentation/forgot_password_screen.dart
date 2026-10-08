@@ -66,7 +66,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
   @override
   Widget build(BuildContext context) {
     return AuthPage(
-      title: 'Forgot\nPassword?',
+      title: 'Forgot\npassword?',
       subtitle: const Text(
         "Enter the email you signed up with and we'll send you a code to "
         'reset your password.',
@@ -88,7 +88,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
             },
           ),
         ),
-        const SizedBox(height: 24),
+        const SizedBox(height: 16),
         AuthButton(label: 'Send code', loading: _busy, onPressed: _send),
       ],
     );
