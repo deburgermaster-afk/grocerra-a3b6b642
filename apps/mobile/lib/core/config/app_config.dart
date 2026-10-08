@@ -27,6 +27,20 @@ abstract final class AppConfig {
     defaultValue: false,
   );
 
+  /// Canonical home of the customer app (Flutter web, Vercel project
+  /// `grocerra-app`). Links in auth emails and OAuth callbacks land here,
+  /// whichever build sent them.
+  static const String appUrl = String.fromEnvironment(
+    'GROCERRA_APP_URL',
+    defaultValue: 'https://grocerra-app.vercel.app',
+  );
+
+  /// The public marketing site (Vercel project `grocerra-website`).
+  static const String siteUrl = String.fromEnvironment(
+    'GROCERRA_SITE_URL',
+    defaultValue: 'https://grocerra.com.au',
+  );
+
   /// Absolute redirect target for OAuth deep links, when enabled.
   static const String oauthRedirectUrl = String.fromEnvironment(
     'GROCERRA_OAUTH_REDIRECT',

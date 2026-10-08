@@ -7,6 +7,17 @@ South Asian groceries, halal meat and catering delivered on demand in Melbourne.
 - Setup, services and secrets: [SETUP.md](SETUP.md)
 - Architecture: [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) (live version: Reevake › Blueprints)
 
+## Where things live
+
+| What | URL | Vercel project | Deploys from |
+|---|---|---|---|
+| Customer app (Flutter web) | https://grocerra-app.vercel.app | `grocerra-app` (root `apps/mobile`) | `main` → production; every branch/PR → preview |
+| Landing page | https://grocerra.com.au (`www.` redirects) | `grocerra-website` (root `apps/website`) | `main` → production |
+| Backend | https://dfktgmjkgspljdpsvbcl.supabase.co | Supabase `grocera` (Sydney) | migrations / dashboard |
+
+All app development, testing and auth email links point at
+`grocerra-app.vercel.app`; only public marketing lives on the domain.
+
 ## Layout
 
 | Folder | What lives here |

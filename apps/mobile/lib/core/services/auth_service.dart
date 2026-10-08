@@ -34,10 +34,13 @@ class AuthResult {
 ///   * email confirmation is ON (`mailer_autoconfirm = false`)
 ///   * Google/Apple providers are not enabled (see [AppConfig.oauthEnabled])
 abstract final class AuthService {
-  /// Where links in auth emails return to. On the web this is the page's own
-  /// origin, so preview deployments work too; Supabase only honours it when
-  /// it is on the project's redirect allow-list, else it uses the Site URL.
-  static String? get _redirect => kIsWeb ? Uri.base.origin : null;
+  /// Where links in auth emails return to: the production app
+  /// ([AppConfig.appUrl]) from every build, or the local dev server when
+  /// running on localhost. Supabase must list both in its redirect
+  /// allow-list, otherwise it falls back to the project's Site URL.
+  static String get _redirect => kIsWeb && Uri.base.host == 'localhost'
+      ? Uri.base.origin
+      : AppConfig.appUrl;
 
   static String _friendly(Object error) {
     if (error is AuthException) {
