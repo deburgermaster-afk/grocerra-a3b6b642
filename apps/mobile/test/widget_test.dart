@@ -136,7 +136,7 @@ void main() {
   ) async {
     await pumpToSignIn(tester);
     expect(find.byType(SignInScreen), findsOneWidget);
-    expect(find.text('Hey,\nWelcome\nBack'), findsOneWidget);
+    expect(find.text('Hey,\nwelcome back'), findsOneWidget);
 
     await tapText(tester, 'Sign in');
 
@@ -194,13 +194,13 @@ void main() {
   ) async {
     await pumpToSignIn(tester);
     await tapText(tester, 'Forgot password?');
-    expect(find.text('Forgot\nPassword?'), findsOneWidget);
+    expect(find.text('Forgot\npassword?'), findsOneWidget);
 
     await tester.enterText(find.byType(TextField).first, 'ayesha@example.com');
     await tapText(tester, 'Send code');
     await tester.pump(const Duration(seconds: 1));
     await tester.pumpAndSettle();
-    expect(find.text('Check\nYour Email'), findsOneWidget);
+    expect(find.text('Check your\nemail'), findsOneWidget);
 
     await tester.enterText(find.byType(TextField).last, '654321');
     await tester.pump(const Duration(seconds: 1));

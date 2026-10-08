@@ -134,7 +134,7 @@ class _VerifyCodeScreenState extends State<VerifyCodeScreen> {
     final bool ready = _code.text.length == VerifyCodeScreen.codeLength;
 
     return AuthPage(
-      title: widget.recovery ? 'Check\nYour Email' : 'Verify\nYour Email',
+      title: widget.recovery ? 'Check your\nemail' : 'Verify your\nemail',
       subtitle: Text.rich(
         TextSpan(
           text:
@@ -158,7 +158,7 @@ class _VerifyCodeScreenState extends State<VerifyCodeScreen> {
             onCompleted: (_) => _verify(),
           ),
         ),
-        const SizedBox(height: 20),
+        const SizedBox(height: 12),
         AnimatedSwitcher(
           duration: Motion.quick,
           child: _cooldown > 0
@@ -179,13 +179,13 @@ class _VerifyCodeScreenState extends State<VerifyCodeScreen> {
                   onTap: _resend,
                 ),
         ),
-        const SizedBox(height: 24),
+        const SizedBox(height: 12),
         AuthButton(
           label: 'Verify',
           loading: _busy,
           onPressed: ready ? _verify : null,
         ),
-        const SizedBox(height: 16),
+        const SizedBox(height: 12),
         Text(
           'No code? Check spam, or tap the link in the email instead.',
           textAlign: TextAlign.center,
