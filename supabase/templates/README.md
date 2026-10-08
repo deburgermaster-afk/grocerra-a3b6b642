@@ -13,5 +13,5 @@ The app expects 6 digits (`VerifyCodeScreen.codeLength`). If Supabase ›
 Authentication › Providers › Email shows a different *Email OTP Length*,
 set it to 6.
 
-Emails are sent through Resend (SMTP) from `noreply@grocerra.com.au`; see the
+Emails are sent through Resend (SMTP) from `accounts@grocerra.com.au`; see the
 root SETUP.md.

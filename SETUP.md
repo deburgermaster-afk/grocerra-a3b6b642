@@ -167,6 +167,6 @@ Records the domain needs:
 **Auth emails go through Resend.** Supabase › Authentication › Emails ›
 SMTP settings: host `smtp.resend.com`, port `465`, username `resend`,
 password = a Resend API key with *sending access* to `grocerra.com.au`,
-sender `noreply@grocerra.com.au`, name `Grocerra`. (Resend › Integrations ›
+sender `accounts@grocerra.com.au`, name `Grocerra`. (Resend › Integrations ›
 Supabase can fill this in for you.) Templates with the 6-digit code are in
 `supabase/templates/`.
