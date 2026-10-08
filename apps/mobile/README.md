@@ -20,6 +20,20 @@ flutter test
 flutter run            # Chrome or a connected Android/iOS device
 ```
 
+## Live app
+
+Production: **https://grocerra-app.vercel.app** (Vercel project
+`grocerra-app`, built from `main`). This is the app's canonical address
+(`AppConfig.appUrl`): sign-up and password-reset email links send people
+here from every build, except a local dev server on `localhost`. The
+marketing site is separate, at https://grocerra.com.au (`AppConfig.siteUrl`).
+
+Supabase › Authentication › URL configuration should match:
+
+- **Site URL:** `https://grocerra-app.vercel.app`
+- **Redirect URLs:** `https://grocerra-app.vercel.app/**` and
+  `http://localhost:*/**`
+
 ## Web preview on Vercel
 
 Every push builds this app for the web (`flutter build web`) on Vercel, so you get a live link to try it in a browser: a preview link for branches and PRs, and the production link for `main`. The build runs `vercel-build.sh` and starts as soon as `pubspec.yaml` exists. To use the same build locally: `flutter build web --release`.
