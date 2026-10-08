@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
@@ -641,21 +642,31 @@ class Wordmark extends StatelessWidget {
   }
 }
 
-/// Code entry: [length] boxes over one hidden field, so paste and SMS / email
+/// Code entry: boxes over one hidden field, so paste and SMS / email
 /// autofill work. The active box glows, digits pop in as they land.
+///
+/// Shows [length] boxes and accepts up to [maxLength] digits (Supabase email
+/// codes are 6 by default but can be configured longer); extra boxes appear
+/// as extra digits arrive. A full-length code completes at once; a
+/// [length]-digit one completes after a short pause, so a longer code typed
+/// digit by digit is not cut off.
 class OtpInput extends StatefulWidget {
   const OtpInput({
     super.key,
     required this.controller,
     this.length = 6,
+    this.maxLength,
     this.onCompleted,
     this.hasError = false,
   });
 
   final TextEditingController controller;
   final int length;
+  final int? maxLength;
   final ValueChanged<String>? onCompleted;
   final bool hasError;
+
+  int get maxDigits => maxLength ?? length;
 
   @override
   State<OtpInput> createState() => _OtpInputState();
@@ -686,14 +697,30 @@ class _OtpInputState extends State<OtpInput>
     _focus.addListener(_changed);
   }
 
+  Timer? _settle;
+  String _lastSubmitted = '';
+
   void _changed() {
     setState(() {});
     final String v = widget.controller.text;
-    if (v.length == widget.length) widget.onCompleted?.call(v);
+    _settle?.cancel();
+    if (v.length == widget.maxDigits) {
+      _submit(v);
+    } else if (v.length >= widget.length) {
+      // Might be a shorter code, might be a longer one still being typed.
+      _settle = Timer(const Duration(milliseconds: 900), () => _submit(v));
+    }
+  }
+
+  void _submit(String v) {
+    if (!mounted || v != widget.controller.text || v == _lastSubmitted) return;
+    _lastSubmitted = v;
+    widget.onCompleted?.call(v);
   }
 
   @override
   void dispose() {
+    _settle?.cancel();
     widget.controller.removeListener(_changed);
     _focus.dispose();
     _caret.dispose();
@@ -704,6 +731,8 @@ class _OtpInputState extends State<OtpInput>
   Widget build(BuildContext context) {
     final AuthPalette p = AuthPalette.of(context);
     final String value = widget.controller.text;
+    // [length] boxes, plus one more for each extra digit of a longer code.
+    final int boxes = value.length.clamp(widget.length, widget.maxDigits);
 
     return GestureDetector(
       onTap: () => _focus.requestFocus(),
@@ -720,7 +749,7 @@ class _OtpInputState extends State<OtpInput>
                 autofocus: true,
                 keyboardType: TextInputType.number,
                 autofillHints: const <String>[AutofillHints.oneTimeCode],
-                maxLength: widget.length,
+                maxLength: widget.maxDigits,
                 inputFormatters: <TextInputFormatter>[
                   FilteringTextInputFormatter.digitsOnly,
                 ],
@@ -732,8 +761,8 @@ class _OtpInputState extends State<OtpInput>
           IgnorePointer(
             child: Row(
               children: <Widget>[
-                for (int i = 0; i < widget.length; i++) ...<Widget>[
-                  if (i > 0) const SizedBox(width: 10),
+                for (int i = 0; i < boxes; i++) ...<Widget>[
+                  if (i > 0) SizedBox(width: boxes > 6 ? 6 : 10),
                   Expanded(child: _box(p, value, i)),
                 ],
               ],

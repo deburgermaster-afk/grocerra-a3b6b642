@@ -44,6 +44,31 @@
     For more details:
     * https://docs.flutter.dev/platform-integration/web/initialization
   -->
+  <script>
+    // iOS Safari scrolls the page to reveal a focused text field, but the
+    // app already lifts its layout above the keyboard. The two together push
+    // the screen off the top (e.g. the code boxes vanish on Verify). Undo the
+    // browser's scroll so only the app's adjustment applies.
+    (function () {
+      var reset = function () {
+        if (window.scrollX !== 0 || window.scrollY !== 0) window.scrollTo(0, 0);
+        if (document.documentElement.scrollTop) document.documentElement.scrollTop = 0;
+        if (document.body.scrollTop) document.body.scrollTop = 0;
+      };
+      var settle = function () {
+        reset();
+        requestAnimationFrame(reset);
+        setTimeout(reset, 120);
+        setTimeout(reset, 350);
+      };
+      window.addEventListener('scroll', reset, { passive: true });
+      window.addEventListener('focusin', settle);
+      if (window.visualViewport) {
+        window.visualViewport.addEventListener('resize', settle);
+        window.visualViewport.addEventListener('scroll', settle);
+      }
+    })();
+  </script>
   <script src="flutter_bootstrap.js" async></script>
 </body>
 </html>
