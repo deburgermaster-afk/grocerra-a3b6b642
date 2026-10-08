@@ -1,6 +1,6 @@
 /// Prototype catalogue behind Home and search.
 ///
-/// Melbourne halal grocers, butchers, sweet shops and caterers with a few
+/// Melbourne grocers, butchers, sweet shops and caterers with a few
 /// of their items. Swap for Supabase queries (stores, products) when the
 /// catalogue tables land; widgets only read these classes.
 library;
@@ -78,7 +78,7 @@ String money(int cents) =>
 const List<String> modes = <String>[
   'All',
   'Grocery',
-  'Halal meat',
+  'Meat',
   'Catering',
   'Sweets',
   'Convenience',
@@ -101,7 +101,7 @@ const List<Store> stores = <Store>[
   Store(
     name: 'Madina Halal Meats',
     kind: StoreKind.meat,
-    tagline: 'Butcher · Halal certified',
+    tagline: 'Butcher · Fresh cuts daily',
     deliveryFee: 599,
     rating: 4.8,
     ratings: '320+',

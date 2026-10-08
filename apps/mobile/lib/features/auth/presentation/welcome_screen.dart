@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 
 import '../../../core/config/app_config.dart';
+import '../../../core/services/auth_service.dart';
 import 'auth_flow.dart';
+import 'kit/auth_page.dart';
 import 'kit/auth_theme.dart';
 import 'kit/auth_widgets.dart';
 import 'kit/motion.dart';
@@ -9,18 +11,34 @@ import 'kit/scenes.dart';
 import 'sign_in_screen.dart';
 import 'sign_up_screen.dart';
 
-/// Get started (reference: "Manage Tasks, Master Time."). An illustrated
-/// collage of the whole service floats above the headline, then Create
-/// account and Sign in.
+/// Get started: an illustrated collage of the service, the motto, and three
+/// ways in - Apple, Google or email - all anchored to the bottom. The email
+/// form lives on its own screen so this one stays clean.
 class WelcomeScreen extends StatelessWidget {
   const WelcomeScreen({super.key});
 
   static const String routeName = '/welcome';
 
+  Future<void> _social(
+    BuildContext context,
+    Future<AuthResult> Function() run,
+  ) async {
+    if (!AppConfig.oauthEnabled) {
+      showAuthMessage(
+        context,
+        'Apple and Google sign-in are coming soon. Continue with email for now.',
+      );
+      return;
+    }
+    final AuthResult result = await run();
+    if (!context.mounted) return;
+    if (!result.ok) showAuthMessage(context, result.message, error: true);
+  }
+
   @override
   Widget build(BuildContext context) {
     final AuthPalette p = AuthPalette.of(context);
-    final TextStyle hero = AuthType.hero(p.ink).copyWith(fontSize: 38);
+    final TextStyle hero = AuthType.hero(p.ink).copyWith(fontSize: 34);
 
     return Scaffold(
       backgroundColor: p.background,
@@ -30,85 +48,101 @@ class WelcomeScreen extends StatelessWidget {
           SafeArea(
             child: Column(
               children: <Widget>[
-                SizedBox(
-                  height: 52,
+                const SizedBox(
+                  height: 48,
                   child: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 20),
+                    padding: EdgeInsets.symmetric(horizontal: 20),
                     child: Row(
                       children: <Widget>[
-                        const Reveal(child: Wordmark(width: 118)),
-                        const Spacer(),
-                        const ThemeToggle(),
+                        Reveal(child: Wordmark(width: 118)),
+                        Spacer(),
+                        ThemeToggle(),
                       ],
                     ),
                   ),
                 ),
                 Expanded(
                   child: Padding(
-                    padding: const EdgeInsets.fromLTRB(16, 8, 16, 0),
+                    padding: const EdgeInsets.fromLTRB(16, 4, 16, 0),
                     child: Scene(pieces: Scenes.welcome()),
                   ),
                 ),
                 Padding(
-                  padding: const EdgeInsets.fromLTRB(24, 8, 24, 20),
+                  padding: const EdgeInsets.fromLTRB(20, 4, 20, 16),
                   child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: <Widget>[
                       Reveal(
                         order: 4,
                         child: Text.rich(
                           TextSpan(
-                            text: 'Halal groceries,\ndelivered ',
+                            text: 'Fresh groceries and\ncatering, delivered\n',
                             children: <InlineSpan>[
                               TextSpan(
-                                text: 'fresh.',
-                                style: AuthType.accent(p.accent, 38),
+                                text: 'to you.',
+                                style: AuthType.accent(p.accent, 34),
                               ),
                             ],
                           ),
-                          textAlign: TextAlign.center,
                           style: hero,
                         ),
                       ),
-                      const SizedBox(height: 12),
+                      const SizedBox(height: 18),
                       Reveal(
                         order: 5,
-                        child: Text(
-                          'Meat, spices, rice and catering from Melbourne '
-                          'stores you trust, at your door in minutes.',
-                          textAlign: TextAlign.center,
-                          style: AuthType.body(p.muted),
+                        child: AuthButton(
+                          label: 'Continue with Apple',
+                          variant: AuthButtonVariant.secondary,
+                          leading: const BrandMark.apple(),
+                          onPressed: () =>
+                              _social(context, AuthService.signInWithApple),
                         ),
                       ),
-                      const SizedBox(height: 28),
+                      const SizedBox(height: 10),
                       Reveal(
                         order: 6,
                         child: AuthButton(
-                          label: 'Create account',
-                          onPressed: () => Navigator.of(
-                            context,
-                          ).push(AuthRoute<void>(page: const SignUpScreen())),
+                          label: 'Continue with Google',
+                          variant: AuthButtonVariant.secondary,
+                          leading: const BrandMark.google(),
+                          onPressed: () =>
+                              _social(context, AuthService.signInWithGoogle),
                         ),
                       ),
-                      const SizedBox(height: 12),
+                      const SizedBox(height: 10),
                       Reveal(
                         order: 7,
                         child: AuthButton(
-                          label: 'Sign in',
-                          variant: AuthButtonVariant.secondary,
+                          label: 'Continue with email',
+                          leading: Icon(
+                            Icons.mail_outline_rounded,
+                            size: 20,
+                            color: p.onPrimary,
+                          ),
                           onPressed: () => Navigator.of(
                             context,
                           ).push(AuthRoute<void>(page: const SignInScreen())),
                         ),
                       ),
+                      const SizedBox(height: 6),
+                      Reveal(
+                        order: 8,
+                        child: AuthSwitchLine(
+                          prompt: 'New to Grocerra?',
+                          action: 'Create account',
+                          onTap: () => Navigator.of(
+                            context,
+                          ).push(AuthRoute<void>(page: const SignUpScreen())),
+                        ),
+                      ),
                       // Demo builds only (no Supabase config): walk the app
                       // without an account. Never shown once auth is wired.
                       if (AppConfig.bypassAuthentication)
-                        Padding(
-                          padding: const EdgeInsets.only(top: 8),
+                        Center(
                           child: Pressable(
                             onTap: () => AuthFlow.goHome(context),
                             child: Padding(
-                              padding: const EdgeInsets.all(8),
+                              padding: const EdgeInsets.all(6),
                               child: Text(
                                 'Explore as guest',
                                 style: AuthType.small(p.muted),

@@ -65,7 +65,7 @@ def page(preheader, title, body, footer_note):
         {body}
       </td></tr>
       <tr><td style="padding-top:20px;padding-left:4px;padding-right:4px;font-family:{FONT};font-size:12px;line-height:18px;color:#8b938d">
-        {footer_note}<br>Grocerra · South Asian groceries, halal meat and catering, delivered in Melbourne.
+        {footer_note}<br>Grocerra · Fresh groceries and catering, delivered to you.
       </td></tr>
     </table>
   </td></tr>
@@ -79,8 +79,8 @@ TEMPLATES = {
     "account-welcome": page(
         "Your Grocerra account is ready.",
         "Welcome to Grocerra, {{{CUSTOMER_NAME}}}",
-        p("Your account is ready. Fresh halal meat, rice, spices and sweets from Melbourne stores you trust, at your door in about an hour.")
-        + p("Planning a wedding, Eid or a family gathering? Request catering quotes in the app too.")
+        p("Your account is ready. Fresh groceries from local stores you trust, at your door in about an hour.")
+        + p("Planning a party, a celebration or a family gathering? Request catering quotes in the app too.")
         + button("Start shopping", "{{{APP_URL}}}"),
         "You're receiving this because you created a Grocerra account."),
     "order-confirmation": page(

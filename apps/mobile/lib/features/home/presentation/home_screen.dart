@@ -29,7 +29,7 @@ class _HomeScreenState extends State<HomeScreen> {
   static const Map<String, StoreKind?> _modeKinds = <String, StoreKind?>{
     'All': null,
     'Grocery': StoreKind.grocery,
-    'Halal meat': StoreKind.meat,
+    'Meat': StoreKind.meat,
     'Catering': StoreKind.catering,
     'Sweets': StoreKind.sweets,
     'Convenience': StoreKind.grocery,
@@ -192,7 +192,7 @@ class _HomeScreenState extends State<HomeScreen> {
     const Map<String, String> icons = <String, String>{
       'All': '🛍️',
       'Grocery': '🍌',
-      'Halal meat': '🥩',
+      'Meat': '🥩',
       'Catering': '🍛',
       'Sweets': '🍮',
       'Convenience': '🧃',

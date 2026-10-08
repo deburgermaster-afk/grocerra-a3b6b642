@@ -253,7 +253,7 @@ abstract final class Scenes {
       depth: 1.8,
     ),
     ScenePiece(
-      child: SceneChip(label: 'Halal certified', leading: TickBadge()),
+      child: SceneChip(label: 'Picked fresh today', leading: TickBadge()),
       x: 0.24,
       y: 0.86,
       phase: 0.2,

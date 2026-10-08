@@ -33,10 +33,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
   int _page = 0;
 
   static final List<_Slide> _slides = <_Slide>[
-    const _Slide(
-      'Fresh halal groceries from stores you trust',
-      Scenes.groceries,
-    ),
+    const _Slide('Fresh groceries from stores you trust', Scenes.groceries),
     const _Slide('Catering for every gathering, big or small', Scenes.catering),
     const _Slide('Track every order live, from store to door', Scenes.tracking),
   ];

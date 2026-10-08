@@ -31,7 +31,7 @@ Future<void> pumpPastSplash(WidgetTester tester) async {
 }
 
 Future<void> tapText(WidgetTester tester, String text) async {
-  final Finder f = find.text(text).last;
+  final Finder f = find.text(text, findRichText: true).last;
   await tester.ensureVisible(f);
   await tester.pumpAndSettle();
   await tester.tap(f);
@@ -45,7 +45,7 @@ Future<void> pumpToWelcome(WidgetTester tester) async {
 
 Future<void> pumpToSignIn(WidgetTester tester) async {
   await pumpToWelcome(tester);
-  await tapText(tester, 'Sign in');
+  await tapText(tester, 'Continue with email');
 }
 
 void main() {
@@ -92,10 +92,7 @@ void main() {
     await pumpPastSplash(tester);
 
     expect(find.byType(OnboardingScreen), findsOneWidget);
-    expect(
-      find.text('Fresh halal groceries from stores you trust'),
-      findsOneWidget,
-    );
+    expect(find.text('Fresh groceries from stores you trust'), findsOneWidget);
     expect(find.text('Continue'), findsOneWidget);
     expect(find.text('Skip'), findsOneWidget);
   });
@@ -118,8 +115,11 @@ void main() {
 
     await tapText(tester, 'Get started');
     expect(find.byType(WelcomeScreen), findsOneWidget);
-    expect(find.text('Create account'), findsOneWidget);
-    expect(find.text('Sign in'), findsOneWidget);
+    expect(find.text('Continue with Apple'), findsOneWidget);
+    expect(find.text('Continue with Google'), findsOneWidget);
+    expect(find.text('Continue with email'), findsOneWidget);
+    // Email and password live on the next screen, not here.
+    expect(find.byType(TextField), findsNothing);
   });
 
   testWidgets('onboarding is skipped once seen', (WidgetTester tester) async {
@@ -148,7 +148,8 @@ void main() {
     WidgetTester tester,
   ) async {
     await pumpToWelcome(tester);
-    await tapText(tester, 'Create account');
+    await tester.tap(find.textContaining('Create account', findRichText: true));
+    await tester.pumpAndSettle();
     expect(find.byType(SignUpScreen), findsOneWidget);
 
     final Finder fields = find.byType(TextField);
@@ -167,7 +168,8 @@ void main() {
     WidgetTester tester,
   ) async {
     await pumpToWelcome(tester);
-    await tapText(tester, 'Create account');
+    await tester.tap(find.textContaining('Create account', findRichText: true));
+    await tester.pumpAndSettle();
 
     final Finder fields = find.byType(TextField);
     await tester.enterText(fields.at(0), 'Ayesha Khan');
@@ -221,7 +223,7 @@ void main() {
   ) async {
     await pumpToWelcome(tester);
     Brightness brightness() =>
-        Theme.of(tester.element(find.text('Create account'))).brightness;
+        Theme.of(tester.element(find.text('Continue with email'))).brightness;
     expect(brightness(), Brightness.dark);
 
     await tester.tap(find.bySemanticsLabel('Switch to light mode'));

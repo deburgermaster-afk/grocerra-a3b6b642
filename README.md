@@ -1,6 +1,6 @@
 # Grocerra
 
-South Asian groceries, halal meat and catering delivered on demand in Melbourne. Internal Reevake product; pilot launch target **1 December 2026**.
+Fresh groceries and catering, delivered to you. Launching in Melbourne. Internal Reevake product; pilot launch target **1 December 2026**.
 
 - Project, tasks and milestones: https://reevake.com/dashboard?project=a3b6b642-dcf7-4fee-a932-99340afdb790
 - Brief: [docs/PROJECT_BRIEF.md](docs/PROJECT_BRIEF.md)
