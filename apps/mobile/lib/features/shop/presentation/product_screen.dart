@@ -178,7 +178,7 @@ class _ProductScreenState extends State<ProductScreen> {
           SafeArea(
             bottom: false,
             child: Padding(
-              padding: EdgeInsets.only(top: topInset - 47),
+              padding: const EdgeInsets.only(top: 8),
               child: Row(
                 children: <Widget>[
                   const SizedBox(width: 16),
@@ -206,11 +206,11 @@ class _ProductScreenState extends State<ProductScreen> {
                       borderRadius: BorderRadius.circular(20),
                     ),
                     alignment: Alignment.center,
-                    child: Text(
+                    child: const Text(
                       'Madina Halal Meats',
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontSize: 13,
                         height: 16 / 13,
                         fontWeight: FontWeight.w600,
@@ -259,16 +259,22 @@ class _ProductScreenState extends State<ProductScreen> {
                       borderRadius: BorderRadius.circular(AppRadius.lg),
                     ),
                     child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                       children: <Widget>[
-                        const SizedBox(width: 14),
-                        IconButton(
-                          padding: EdgeInsets.zero,
-                          icon: const Icon(Icons.remove, size: 24, color: AppColors.ink),
-                          onPressed: _quantity > 1
+                        InkWell(
+                          borderRadius: BorderRadius.circular(16),
+                          onTap: _quantity > 1
                               ? () => setState(() => _quantity--)
                               : null,
+                          child: Padding(
+                            padding: const EdgeInsets.all(8),
+                            child: Icon(
+                              Icons.remove,
+                              size: 20,
+                              color: _quantity > 1 ? AppColors.ink : AppColors.inkMuted,
+                            ),
+                          ),
                         ),
-                        const SizedBox(width: 14),
                         Text(
                           '$_quantity',
                           style: const TextStyle(
@@ -278,11 +284,13 @@ class _ProductScreenState extends State<ProductScreen> {
                             color: AppColors.ink,
                           ),
                         ),
-                        const SizedBox(width: 14),
-                        IconButton(
-                          padding: EdgeInsets.zero,
-                          icon: const Icon(Icons.add, size: 24, color: AppColors.ink),
-                          onPressed: () => setState(() => _quantity++),
+                        InkWell(
+                          borderRadius: BorderRadius.circular(16),
+                          onTap: () => setState(() => _quantity++),
+                          child: const Padding(
+                            padding: EdgeInsets.all(8),
+                            child: Icon(Icons.add, size: 20, color: AppColors.ink),
+                          ),
                         ),
                       ],
                     ),

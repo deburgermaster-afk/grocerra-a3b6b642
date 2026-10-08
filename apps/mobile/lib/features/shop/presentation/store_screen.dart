@@ -117,10 +117,11 @@ class _StoreScreenState extends State<StoreScreen> {
   }
 
   Widget _buildGlassHeader(double topInset) {
+    final double safeTop = topInset > 47 ? topInset - 47 : 0;
     return Container(
-      height: 172,
+      height: 125 + safeTop,
       color: AppColors.surfaceAlt.withValues(alpha: 0.5),
-      padding: EdgeInsets.only(top: topInset - 47),
+      padding: EdgeInsets.only(top: safeTop),
       child: Column(
         children: <Widget>[
           Padding(
