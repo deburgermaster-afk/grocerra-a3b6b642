@@ -143,3 +143,30 @@ Rules for agents:
 2. Push values to their runtime homes from the vault. Edge Function secrets go through `supabase secrets set --project-ref <prod ref>`; Vercel production variables go through `vercel env add`. Auth SMS settings go in the Supabase dashboard.
 3. Deploy prod by running migrations and Edge Function deploys with `PROD_` keys. Merging to `main` deploys the portals through Vercel's Git integration.
 4. Every reveal, save, delete and agent use appears in Reevake › Grocerra › Secrets › Log.
+
+## Email (Resend) and DNS for grocerra.com.au
+
+**DNS lives on Vercel.** Set the domain's nameservers once at the registrar
+(Squarespace › Domains › grocerra.com.au › DNS › Nameservers › custom):
+`ns1.vercel-dns.com` and `ns2.vercel-dns.com`. From then on every record
+(website, Resend, verification TXT records) is managed in Vercel › Domains,
+by hand or through the Vercel API, with no further registrar edits.
+
+Records the domain needs:
+
+| Name | Type | Value | For |
+|---|---|---|---|
+| `@` | A | `76.76.21.21` | Website (Vercel adds this itself for project domains) |
+| `www` | CNAME | `cname.vercel-dns.com` | Website |
+| `@` | TXT | `v=spf1 -all` | Root domain sends no mail itself |
+| `_dmarc` | TXT | `v=DMARC1; p=reject; sp=reject; adkim=s; aspf=s` | Anti-spoofing |
+| `resend._domainkey` | TXT | DKIM key from Resend › Domains › grocerra.com.au | Resend signing |
+| `send` | CNAME | `send.forge.rmta.net` | Resend return path / SPF |
+| `rsend` | CNAME | `rsend-apne1.forge.rmta.net` | Resend return path / SPF |
+
+**Auth emails go through Resend.** Supabase › Authentication › Emails ›
+SMTP settings: host `smtp.resend.com`, port `465`, username `resend`,
+password = a Resend API key with *sending access* to `grocerra.com.au`,
+sender `noreply@grocerra.com.au`, name `Grocerra`. (Resend › Integrations ›
+Supabase can fill this in for you.) Templates with the 6-digit code are in
+`supabase/templates/`.
