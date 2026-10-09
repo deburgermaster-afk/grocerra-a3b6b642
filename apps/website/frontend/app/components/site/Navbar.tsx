@@ -5,7 +5,8 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 import { ACCOUNT_LINKS, MAIN_NAV } from "@/app/content/site";
-import { cx, EASE } from "./motion";
+import { cx } from "./cx";
+import { EASE } from "./motion";
 import s from "./site.module.css";
 
 export function Logo({ inverse = false }: { inverse?: boolean }) {

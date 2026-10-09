@@ -5,8 +5,6 @@ import type { ReactNode } from "react";
 
 export const EASE = [0.2, 0.7, 0.2, 1] as const;
 
-export const cx = (...names: (string | false | null | undefined)[]) => names.filter(Boolean).join(" ");
-
 /** Respects the visitor's reduced-motion setting for every Framer Motion animation on the site. */
 export function MotionProvider({ children }: { children: ReactNode }) {
 	return <MotionConfig reducedMotion="user">{children}</MotionConfig>;
