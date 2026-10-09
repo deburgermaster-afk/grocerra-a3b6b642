@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:shadcn_ui/shadcn_ui.dart';
 import '../../../../core/theme/app_theme.dart';
 import '../data/repositories/store_orders_repository.dart';
 import 'widgets/store_header.dart';
@@ -47,43 +48,49 @@ class _StoreShellState extends State<StoreShell> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: AppColors.canvas,
-      body: SafeArea(
-        child: Column(
-          children: [
-            // Top Persistent Store Header
-            StoreHeader(
-              isOpen: _isOpen,
-              onToggleOpen: (val) => setState(() => _isOpen = val),
-              isRushMode: _isRushMode,
-              onToggleRush: (val) => setState(() => _isRushMode = val),
-              soundEnabled: _soundEnabled,
-              onToggleSound: () => setState(() => _soundEnabled = !_soundEnabled),
-            ),
-
-            // Main Body: Left Sidebar Rail + Active Page Viewport
-            Expanded(
-              child: Row(
-                children: [
-                  // Persistent Left Sidebar Rail
-                  StoreSidebarRail(
-                    currentRoute: _activeRoute,
-                    onNavigate: _handleNavigate,
-                    incomingCount: 1,
-                  ),
-
-                  // Main Viewport
-                  Expanded(
-                    child: Padding(
-                      padding: const EdgeInsets.all(20),
-                      child: _buildActiveScreen(),
-                    ),
-                  ),
-                ],
+    return ShadTheme(
+      data: ShadThemeData(
+        colorScheme: const ShadGreenColorScheme.light(),
+        radius: const BorderRadius.all(Radius.circular(8)),
+      ),
+      child: Scaffold(
+        backgroundColor: AppColors.canvas,
+        body: SafeArea(
+          child: Column(
+            children: [
+              // Top Persistent Store Header
+              StoreHeader(
+                isOpen: _isOpen,
+                onToggleOpen: (val) => setState(() => _isOpen = val),
+                isRushMode: _isRushMode,
+                onToggleRush: (val) => setState(() => _isRushMode = val),
+                soundEnabled: _soundEnabled,
+                onToggleSound: () => setState(() => _soundEnabled = !_soundEnabled),
               ),
-            ),
-          ],
+
+              // Main Body: Left Sidebar Rail + Active Page Viewport
+              Expanded(
+                child: Row(
+                  children: [
+                    // Persistent Left Sidebar Rail
+                    StoreSidebarRail(
+                      currentRoute: _activeRoute,
+                      onNavigate: _handleNavigate,
+                      incomingCount: 1,
+                    ),
+
+                    // Main Viewport
+                    Expanded(
+                      child: Padding(
+                        padding: const EdgeInsets.all(20),
+                        child: _buildActiveScreen(),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );
