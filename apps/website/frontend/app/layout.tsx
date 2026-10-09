@@ -1,10 +1,16 @@
 import type { Metadata, Viewport } from "next";
 import { ThemeProvider } from "./components/ThemeProvider";
+import { landingFonts } from "./components/landing/fonts";
+import { MotionProvider } from "./components/site/motion";
+import Navbar from "./components/site/Navbar";
 import "./globals.css";
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://grocerra.com"),
-  title: "Grocerra | Groceries and Fresh Meat Delivered in Australia",
+  title: {
+    default: "Grocerra | Groceries and Fresh Meat Delivered in Australia",
+    template: "%s — Grocerra"
+  },
   description: "Order groceries, fresh halal meat and catering from trusted local stores. Get live delivery quotes and track your order.",
   keywords: [
     "grocery delivery Australia",
@@ -45,10 +51,13 @@ export const viewport: Viewport = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en-AU">
+    <html lang="en-AU" className={landingFonts}>
       <body>
         <ThemeProvider>
-          {children}
+          <MotionProvider>
+            <Navbar />
+            {children}
+          </MotionProvider>
         </ThemeProvider>
       </body>
     </html>

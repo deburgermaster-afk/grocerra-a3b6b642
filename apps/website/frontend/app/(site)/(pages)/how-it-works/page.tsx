@@ -1,8 +1,8 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import Header from "../components/Header";
-import HowItWorks from "../components/HowItWorks";
-import Footer from "../components/Footer";
+import Header from "@/app/components/Header";
+import HowItWorks from "@/app/components/HowItWorks";
+import Footer from "@/app/components/Footer";
 
 export const metadata: Metadata = {
   title: "How It Works | Grocerra",

@@ -465,3 +465,16 @@
   .steps, .wipe { height: auto !important }
   .stepsPin, .wipePin { position: relative !important }
 }
+
+/* cookie banner */
+.cookie { position: fixed; z-index: 70; left: 20px; bottom: 20px; width: min(420px, calc(100% - 40px)); padding: 22px; border-radius: 24px; background: var(--ink); color: #fff; box-shadow: 0 30px 60px -30px rgba(0, 0, 0, .6) }
+.cookieTitle { margin: 0 0 6px; font-weight: 800; font-size: 17px }
+.cookieText { margin: 0 0 18px; color: rgba(255, 255, 255, .75); font-size: 14.5px; line-height: 1.5 }
+.cookieText a { color: var(--lime) }
+.cookieBtns { display: flex; gap: 8px; flex-wrap: wrap }
+.cookieAccept, .cookieLine { display: inline-flex; align-items: center; justify-content: center; min-height: 44px; padding: 0 20px; border-radius: 999px; font: inherit; font-weight: 700; font-size: 15px; cursor: pointer; text-decoration: none; transition: transform .3s, background .25s }
+.cookieAccept { background: var(--green); color: #fff; border: 0 }
+.cookieLine { background: transparent; color: #fff; border: 1.5px solid rgba(255, 255, 255, .5) }
+.cookieAccept:hover, .cookieLine:hover { transform: translateY(-3px) }
+.cookieLine:hover { background: rgba(255, 255, 255, .1) }
+.cookieAccept:focus-visible, .cookieLine:focus-visible { outline: 3px solid var(--lime); outline-offset: 3px }
