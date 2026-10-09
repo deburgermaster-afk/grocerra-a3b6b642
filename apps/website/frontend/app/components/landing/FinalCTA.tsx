@@ -35,7 +35,7 @@ export default function FinalCTA() {
 						Fresh food, <span className={s.serif}>without the trip.</span>
 					</h2>
 					<p>Your favourite local stores, a few taps away — tonight and every night.</p>
-					<Link className={cx(s.pBtn, s.pBtnDark)} href="/download">
+					<Link className={cx(s.pBtn, s.pBtnDark)} href="/#app">
 						Start shopping
 						<ArrowIcon size={16} />
 					</Link>

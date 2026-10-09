@@ -1,6 +1,6 @@
-import Link from "next/link";
 import type { CSSProperties } from "react";
 import { siApple, siGoogleplay } from "simple-icons";
+import { ACCOUNT_LINKS } from "@/app/content/site";
 import s from "./landing.module.css";
 
 /** Inline styles that include CSS custom properties (--py, --fx, …). */
@@ -44,25 +44,25 @@ function BrandIcon({ path, size = 24 }: { path: string; size?: number }) {
 	);
 }
 
-// Both badges point at the Download page until the store listings are live
+// Store listings are not live yet; links come from ACCOUNT_LINKS in app/content/site.ts
 export function StoreBadges({ tone = "light" }: { tone?: "light" | "dark" }) {
 	const badge = cx(s.storeBadge, tone === "dark" && s.storeBadgeDark);
 	return (
 		<div className={s.storeBadges}>
-			<Link className={badge} href="/download" aria-label="Download on the App Store">
+			<a className={badge} href={ACCOUNT_LINKS.appStore} aria-label="Download on the App Store">
 				<BrandIcon path={siApple.path} size={26} />
 				<span>
 					<small>Download on the</small>
 					App Store
 				</span>
-			</Link>
-			<Link className={badge} href="/download" aria-label="Get it on Google Play">
+			</a>
+			<a className={badge} href={ACCOUNT_LINKS.googlePlay} aria-label="Get it on Google Play">
 				<BrandIcon path={siGoogleplay.path} size={22} />
 				<span>
 					<small>Get it on</small>
 					Google Play
 				</span>
-			</Link>
+			</a>
 		</div>
 	);
 }

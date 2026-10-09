@@ -93,7 +93,7 @@ export default function Categories() {
 					{CATEGORIES.map((c) => (
 						<Link
 							key={c.title}
-							href="/download"
+							href="/#app"
 							aria-label={`Shop ${c.title.toLowerCase()} in the Grocerra app`}
 							className={cx(s.cat, c.tone, c.layout === "wide" && s.wide, c.layout === "tall" && s.tall)}
 							data-reveal="up"

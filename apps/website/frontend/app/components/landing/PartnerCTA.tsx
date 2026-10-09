@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { ACCOUNT_LINKS } from "@/app/content/site";
 import s from "./landing.module.css";
 import { CategoryIcon, type CategoryIconName } from "./CategoryIcons";
 import { ArrowIcon, cx, Eyebrow, vars } from "./shared";
@@ -88,13 +89,13 @@ export default function PartnerCTA() {
 						</h2>
 						<p className={s.lede}>List your store, reach new customers nearby and manage every order from one simple dashboard.</p>
 						<div className={s.partnerBtns}>
-							<Link className={cx(s.pBtn, s.pBtnDark)} href="/partner-with-us">
+							<Link className={cx(s.pBtn, s.pBtnDark)} href="/partners">
 								Become a partner
 								<ArrowIcon size={16} />
 							</Link>
-							<Link className={cx(s.pBtn, s.pBtnGhost)} href="/partner-login">
+							<a className={cx(s.pBtn, s.pBtnGhost)} href={ACCOUNT_LINKS.merchantLogin}>
 								Partner login
-							</Link>
+							</a>
 						</div>
 					</div>
 					<Storefront />
