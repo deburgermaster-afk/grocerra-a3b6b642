@@ -163,7 +163,7 @@
 .dark .pill { background: rgba(255, 255, 255, .14) }
 .tint .pill { background: #fff }
 .statBig { margin-top: 18px; font-size: 36px }
-.feeBig { font-size: clamp(48px, 6vw, 80px); font-weight: 900; letter-spacing: -0.05em; line-height: 1; margin: 14px 0 4px }
+.feeBig { font-size: clamp(40px, 4.2vw, 64px); overflow-wrap: anywhere; font-weight: 900; letter-spacing: -0.05em; line-height: 1; margin: 14px 0 4px }
 
 /* big numbered steps */
 .steps { display: grid; gap: 18px }
