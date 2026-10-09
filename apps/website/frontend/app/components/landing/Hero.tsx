@@ -1,6 +1,7 @@
+import Image from "next/image";
 import { Fragment } from "react";
 import s from "./landing.module.css";
-import { Grocery, GrocerraBag, type GroceryName } from "./GroceryArt";
+import { GrocerraBag } from "./GroceryArt";
 import PhoneMockup from "./PhoneMockup";
 import { cx, vars } from "./shared";
 
@@ -19,16 +20,18 @@ const WORDS = [
 // each item slides out from the bag mouth (MOUTH, also in %) to its resting spot.
 const MOUTH = { x: 62, y: 20 };
 const PILE_BOX = { w: 480, h: 330 };
-const SPILL: { name: GroceryName; left: number; top: number; width: number; rotate: number }[] = [
-	{ name: "spices", left: 48, top: 4, width: 8, rotate: -34 },
-	{ name: "tin", left: 54, top: 22, width: 11, rotate: 72 },
-	{ name: "eggs", left: 26, top: 30, width: 22, rotate: -10 },
-	{ name: "oil", left: 46, top: 40, width: 7, rotate: 14 },
-	{ name: "tin", left: 4, top: 56, width: 11, rotate: -78 },
-	{ name: "tin", left: 16, top: 60, width: 11, rotate: 12 },
-	{ name: "milk", left: 30, top: 54, width: 8.5, rotate: -4 },
-	{ name: "bread", left: 38, top: 62, width: 20, rotate: 6 },
-	{ name: "rice", left: 56, top: 50, width: 13, rotate: -16 },
+// 3D produce (Fluent Emoji, MIT — see public/images/3d/LICENSE.txt)
+const SPILL: { src: string; left: number; top: number; width: number; rotate: number }[] = [
+	{ src: "leafy-green", left: 44, top: -4, width: 18, rotate: -30 },
+	{ src: "carrot", left: 50, top: 22, width: 16, rotate: 40 },
+	{ src: "bread", left: 22, top: 22, width: 22, rotate: -10 },
+	{ src: "eggplant", left: 4, top: 44, width: 17, rotate: -20 },
+	{ src: "tomato", left: 38, top: 42, width: 14, rotate: 8 },
+	{ src: "egg", left: 17, top: 62, width: 11, rotate: 20 },
+	{ src: "broccoli", left: 25, top: 52, width: 18, rotate: -6 },
+	{ src: "apple", left: 2, top: 66, width: 14, rotate: -8 },
+	{ src: "lemon", left: 44, top: 64, width: 12, rotate: 24 },
+	{ src: "meat", left: 55, top: 52, width: 17, rotate: -14 },
 ];
 const spillFrom = (left: number, top: number) => ({
 	"--sx": `${Math.round(((MOUTH.x - left) / 100) * PILE_BOX.w)}px`,
@@ -80,7 +83,7 @@ export default function Hero() {
 					{SPILL.map((item, i) => (
 						<div key={i} className={s.pileItem} style={vars({ left: `${item.left}%`, top: `${item.top}%`, width: `${item.width}%`, rotate: `${item.rotate}deg` })}>
 							<div className={s.spill} style={vars({ ...spillFrom(item.left, item.top), animationDelay: `${1.5 + i * 0.12}s` })}>
-								<Grocery name={item.name} />
+								<Image src={`/images/3d/${item.src}.png`} alt="" width={256} height={256} sizes="100px" priority className={s.pileImg} />
 							</div>
 						</div>
 					))}

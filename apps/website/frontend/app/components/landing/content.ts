@@ -23,13 +23,14 @@ export type Review = {
 	countryCode: string;
 	quote: string;
 	ordered: string;
-	/** Optional path in /public, e.g. "/images/reviews/ayesha.jpg". Initials are shown until one is added. */
+	/** Path in /public to the avatar (illustrated 3D avatars for now). Initials are shown when missing. */
 	photo?: string;
 };
 
 export const REVIEWS: Review[] = [
 	{
 		name: "Ayesha Rahman",
+		photo: "/images/3d/avatar-ayesha.png",
 		location: "Dandenong, VIC",
 		country: "Bangladesh",
 		countryCode: "BD",
@@ -38,6 +39,7 @@ export const REVIEWS: Review[] = [
 	},
 	{
 		name: "Rohan Mehta",
+		photo: "/images/3d/avatar-rohan.png",
 		location: "Tarneit, VIC",
 		country: "India",
 		countryCode: "IN",
@@ -46,6 +48,7 @@ export const REVIEWS: Review[] = [
 	},
 	{
 		name: "Fatima Siddiqui",
+		photo: "/images/3d/avatar-fatima.png",
 		location: "Craigieburn, VIC",
 		country: "Pakistan",
 		countryCode: "PK",
@@ -54,6 +57,7 @@ export const REVIEWS: Review[] = [
 	},
 	{
 		name: "Nimal Perera",
+		photo: "/images/3d/avatar-nimal.png",
 		location: "Clayton, VIC",
 		country: "Sri Lanka",
 		countryCode: "LK",
@@ -62,6 +66,7 @@ export const REVIEWS: Review[] = [
 	},
 	{
 		name: "Sita Gurung",
+		photo: "/images/3d/avatar-sita.png",
 		location: "Footscray, VIC",
 		country: "Nepal",
 		countryCode: "NP",
@@ -70,6 +75,7 @@ export const REVIEWS: Review[] = [
 	},
 	{
 		name: "Omar Haddad",
+		photo: "/images/3d/avatar-omar.png",
 		location: "Coburg, VIC",
 		country: "Lebanon",
 		countryCode: "LB",
@@ -78,6 +84,7 @@ export const REVIEWS: Review[] = [
 	},
 	{
 		name: "Grace Nguyen",
+		photo: "/images/3d/avatar-grace.png",
 		location: "Springvale, VIC",
 		country: "Vietnam",
 		countryCode: "VN",
@@ -86,6 +93,7 @@ export const REVIEWS: Review[] = [
 	},
 	{
 		name: "Hassan Abdi",
+		photo: "/images/3d/avatar-hassan.png",
 		location: "Flemington, VIC",
 		country: "Somalia",
 		countryCode: "SO",

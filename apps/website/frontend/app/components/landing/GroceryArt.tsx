@@ -133,30 +133,76 @@ function MeatTray() {
 	);
 }
 
-/** Kraft paper carry bag with the Grocerra wordmark, drawn tipped over so groceries spill from its mouth. */
+/** Kraft paper carry bag with the Grocerra wordmark, shaded to look like a real paper bag, drawn tipped over so groceries spill from its mouth. */
 export function GrocerraBag({ className }: { className?: string }) {
 	return (
-		<span className={cx(s.grocery, className)} aria-hidden="true">
+		<span className={cx(s.grocery, s.bagReal, className)} aria-hidden="true">
 			<svg viewBox="0 0 300 320">
-				<ellipse cx="150" cy="306" rx="140" ry="12" fill="#0B0B0B" opacity=".12" />
+				<defs>
+					<linearGradient id="gbFront" x1="0" y1="0" x2="1" y2="0">
+						<stop offset="0" stopColor="#B98552" />
+						<stop offset=".35" stopColor="#DDB07A" />
+						<stop offset=".7" stopColor="#D4A26C" />
+						<stop offset="1" stopColor="#A9743F" />
+					</linearGradient>
+					<linearGradient id="gbSide" x1="0" y1="0" x2="1" y2="0">
+						<stop offset="0" stopColor="#8E5F31" />
+						<stop offset="1" stopColor="#B07D4C" />
+					</linearGradient>
+					<linearGradient id="gbInside" x1="0" y1="0" x2="0" y2="1">
+						<stop offset="0" stopColor="#4A2E14" />
+						<stop offset="1" stopColor="#7A4E26" />
+					</linearGradient>
+					<linearGradient id="gbShade" x1="0" y1="0" x2="0" y2="1">
+						<stop offset="0" stopColor="#000" stopOpacity=".18" />
+						<stop offset=".25" stopColor="#000" stopOpacity="0" />
+						<stop offset=".85" stopColor="#000" stopOpacity="0" />
+						<stop offset="1" stopColor="#000" stopOpacity=".2" />
+					</linearGradient>
+					<filter id="gbPaper" x="0" y="0" width="100%" height="100%">
+						<feTurbulence type="fractalNoise" baseFrequency=".9" numOctaves="3" seed="4" result="n" />
+						<feColorMatrix in="n" type="matrix" values="0 0 0 0 .35  0 0 0 0 .22  0 0 0 0 .1  0 0 0 .55 0" />
+						<feComposite in2="SourceGraphic" operator="in" />
+					</filter>
+					<filter id="gbBlur" x="-20%" y="-50%" width="140%" height="200%">
+						<feGaussianBlur stdDeviation="8" />
+					</filter>
+				</defs>
+				<ellipse cx="150" cy="304" rx="150" ry="14" fill="#0B0B0B" opacity=".28" filter="url(#gbBlur)" />
 				<g transform="rotate(-24 270 300)">
 					{/* inside of the bag, seen through the mouth */}
-					<path d="M46 70 92 40l184 26-34 22z" fill="#7A4E26" />
-					{/* handles */}
-					<path d="M110 70q8-64 46-60 36 4 30 70" fill="none" stroke="#8B5E34" strokeWidth="6" strokeLinecap="round" />
-					<path d="M126 66q10-48 34-46 24 3 20 52" fill="none" stroke="#6B4423" strokeWidth="5" strokeLinecap="round" opacity=".7" />
-					{/* side gusset */}
-					<path d="M242 88l34-22 10 216-30 18z" fill="#B07D4C" />
-					<path d="M259 77l7 220" stroke="#8B5E34" strokeWidth="2" opacity=".5" />
+					<path d="M46 70 92 40l184 26-34 22z" fill="url(#gbInside)" />
+					{/* back handle */}
+					<path d="M126 66q10-48 34-46 24 3 20 52" fill="none" stroke="#6B4423" strokeWidth="7" strokeLinecap="round" />
+					<path d="M126 66q10-48 34-46 24 3 20 52" fill="none" stroke="#8B5E34" strokeWidth="2.5" strokeLinecap="round" strokeDasharray="5 4" />
+					{/* side gusset with a centre fold */}
+					<path d="M242 88l34-22 10 216-30 18z" fill="url(#gbSide)" />
+					<path d="M259 77l7 220" stroke="#6B4423" strokeWidth="2" opacity=".55" />
+					<path d="M242 88l17-11 7 220-10 21z" fill="#000" opacity=".1" />
 					{/* front panel */}
-					<path d="M46 70h196l14 230H34z" fill="#D2A673" />
-					<path d="M46 70h196l2 22H45z" fill="#C4945F" />
-					<path d="M34 300h222l-1-10H35z" fill="#B88A5A" />
-					<text x="146" y="198" textAnchor="middle" className={s.svgLogo} fontSize="38" fontWeight={800} letterSpacing="-0.5">
-						<tspan className="fill-grocerra-black">GRO</tspan>
-						<tspan className="fill-grocerra-green-700">CERRA</tspan>
-					</text>
-					<path d="M136 226c0-9 6-15 20-15 0 11-7 17-15 17-2 0-4-1-5-2Z" className="fill-grocerra-green-700" />
+					<path d="M46 70h196l14 230H34z" fill="url(#gbFront)" />
+					<path d="M46 70h196l14 230H34z" filter="url(#gbPaper)" opacity=".5" />
+					<path d="M46 70h196l14 230H34z" fill="url(#gbShade)" />
+					{/* folded rim and creases */}
+					<path d="M46 70h196l2 24H45z" fill="#C4945F" />
+					<path d="M45 94h199" stroke="#8B5E34" strokeWidth="1.5" opacity=".6" />
+					<path d="M46 70h196" stroke="#F0CFA0" strokeWidth="2" opacity=".8" />
+					<path d="M40 238l216 4M37 270l218 3" stroke="#8B5E34" strokeWidth="1.2" opacity=".35" />
+					<path d="M78 96l-8 204M212 96l10 204" stroke="#FFF3DD" strokeWidth="3" opacity=".12" />
+					<path d="M34 300h222l-1-12H35z" fill="#9C6B3B" />
+					{/* front handle: twisted paper cord */}
+					<path d="M110 74q8-68 46-62 36 4 30 74" fill="none" stroke="#7A4E26" strokeWidth="8" strokeLinecap="round" />
+					<path d="M110 74q8-68 46-62 36 4 30 74" fill="none" stroke="#B88A5A" strokeWidth="3" strokeLinecap="round" strokeDasharray="6 5" />
+					<rect x="102" y="70" width="16" height="12" rx="3" fill="#8B5E34" />
+					<rect x="178" y="80" width="16" height="12" rx="3" fill="#8B5E34" />
+					{/* printed logo */}
+					<g opacity=".95">
+						<text x="146" y="198" textAnchor="middle" className={s.svgLogo} fontSize="38" fontWeight={800} letterSpacing="-0.5">
+							<tspan className="fill-grocerra-black">GRO</tspan>
+							<tspan className="fill-grocerra-green-700">CERRA</tspan>
+						</text>
+						<path d="M136 226c0-9 6-15 20-15 0 11-7 17-15 17-2 0-4-1-5-2Z" className="fill-grocerra-green-700" />
+					</g>
 				</g>
 			</svg>
 		</span>
