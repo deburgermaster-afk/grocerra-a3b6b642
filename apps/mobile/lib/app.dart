@@ -23,6 +23,7 @@ import 'features/catering/presentation/catering_routes.dart';
 import 'features/search/presentation/search_routes.dart';
 import 'features/shell/presentation/home_shell.dart';
 import 'features/shop/presentation/shop_routes.dart';
+import 'features/store/presentation/store_routes.dart';
 import 'features/support/presentation/support_routes.dart';
 
 /// Root widget of the Grocerra customer app.
@@ -129,6 +130,7 @@ class _GrocerraAppState extends State<GrocerraApp> {
         ...searchRoutes,
         ...supportRoutes,
         ...accountRoutes,
+        ...storeRoutes,
       },
     );
   }
