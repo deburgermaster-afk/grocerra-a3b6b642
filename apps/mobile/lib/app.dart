@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:ui' as ui;
 
 import 'package:flutter/material.dart';
+import 'package:shadcn_ui/shadcn_ui.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 import 'core/config/app_config.dart';
@@ -23,6 +24,7 @@ import 'features/catering/presentation/catering_routes.dart';
 import 'features/search/presentation/search_routes.dart';
 import 'features/shell/presentation/home_shell.dart';
 import 'features/shop/presentation/shop_routes.dart';
+import 'features/store/presentation/store_routes.dart';
 import 'features/support/presentation/support_routes.dart';
 
 /// Root widget of the Grocerra customer app.
@@ -99,6 +101,13 @@ class _GrocerraAppState extends State<GrocerraApp> {
       title: AppConfig.appName,
       debugShowCheckedModeBanner: false,
       theme: AppTheme.light(),
+      builder: (context, child) => ShadTheme(
+        data: ShadThemeData(
+          colorScheme: const ShadGreenColorScheme.light(),
+          radius: const BorderRadius.all(Radius.circular(8)),
+        ),
+        child: child ?? const SizedBox.shrink(),
+      ),
       navigatorKey: _navigator,
       initialRoute: startRoute,
       routes: <String, WidgetBuilder>{
@@ -129,6 +138,7 @@ class _GrocerraAppState extends State<GrocerraApp> {
         ...searchRoutes,
         ...supportRoutes,
         ...accountRoutes,
+        ...storeRoutes,
       },
     );
   }
