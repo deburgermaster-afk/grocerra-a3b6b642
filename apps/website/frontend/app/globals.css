@@ -1,6 +1,32 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Playfair+Display:ital,wght@1,500;1,600;1,700&family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap');
 @import "tailwindcss";
 
+/* Grocerra brand palette — single source of truth for the landing page.
+   Exposed as CSS variables (--color-grocerra-*) and Tailwind utilities (bg-grocerra-green, fill-grocerra-yellow, …). */
+@theme static {
+  --color-grocerra-green: #16A34A;
+  --color-grocerra-green-600: #12913F;
+  --color-grocerra-green-700: #0F7A36;
+  --color-grocerra-green-800: #0C6A2F;
+  --color-grocerra-black: #0B0B0B;
+  --color-grocerra-white: #FFFFFF;
+  --color-grocerra-grey: #F4F5F7;
+  --color-grocerra-mint: #E8F6EC;
+  --color-grocerra-yellow: #FACC15;
+
+  /* Supporting tints used by the landing illustrations */
+  --color-grocerra-green-glow: #2BBF5F;
+  --color-grocerra-green-hill: #13873D;
+  --color-grocerra-green-stripe: #119143;
+  --color-grocerra-green-text: #15803D;
+  --color-grocerra-green-bright: #22C55E;
+  --color-grocerra-green-neon: #4ADE80;
+  --color-grocerra-green-pale: #BBF7D0;
+  --color-grocerra-yellow-light: #FDE047;
+  --color-grocerra-muted: #5B5F5C;
+  --color-grocerra-meat: #D9473F;
+}
+
 @layer base {
 :root, [data-theme="light"] {
   --bg-main: #F4F5F7;
