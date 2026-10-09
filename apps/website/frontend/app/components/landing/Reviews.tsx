@@ -4,6 +4,8 @@ import { REVIEWS, type Review } from "./content";
 import { cx, Eyebrow } from "./shared";
 
 const AVATAR_TONES = [s.avGreen, s.avYellow, s.avBlack, s.avMint];
+// Card colours cycle white → mint → dark by review, so both marquee copies match at the loop seam
+const CARD_TONES = [undefined, s.rvMint, s.rvDark];
 
 const initials = (name: string) =>
 	name
@@ -26,7 +28,7 @@ function Stars() {
 
 function ReviewCard({ review, index, duplicate }: { review: Review; index: number; duplicate?: boolean }) {
 	return (
-		<figure className={s.review} aria-hidden={duplicate || undefined}>
+		<figure className={cx(s.review, CARD_TONES[index % CARD_TONES.length])} aria-hidden={duplicate || undefined}>
 			<div className={s.reviewTop}>
 				<Stars />
 				<svg className={s.quoteMark} width="34" height="34" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
@@ -37,7 +39,9 @@ function ReviewCard({ review, index, duplicate }: { review: Review; index: numbe
 			<span className={s.reviewTag}>Ordered: {review.ordered}</span>
 			<figcaption className={s.who}>
 				{review.photo ? (
-					<Image src={review.photo} alt="" width={48} height={48} className={s.avatar} />
+					<span className={cx(s.avatar, s.avPhoto, AVATAR_TONES[index % AVATAR_TONES.length])} aria-hidden="true">
+						<Image src={review.photo} alt="" width={56} height={56} />
+					</span>
 				) : (
 					<span className={cx(s.avatar, AVATAR_TONES[index % AVATAR_TONES.length])} aria-hidden="true">
 						{initials(review.name)}
@@ -56,16 +60,16 @@ function ReviewCard({ review, index, duplicate }: { review: Review; index: numbe
 	);
 }
 
-function Row({ reviews, offset, reverse }: { reviews: Review[]; offset: number; reverse?: boolean }) {
+function Marquee({ reviews }: { reviews: Review[] }) {
 	return (
 		<div className={s.rvWrap}>
 			{/* Second copy is hidden from screen readers; it only makes the marquee loop */}
-			<div className={cx(s.rvTrack, reverse && s.rev)}>
+			<div className={s.rvTrack}>
 				{reviews.map((r, i) => (
-					<ReviewCard key={r.name} review={r} index={i + offset} />
+					<ReviewCard key={r.name} review={r} index={i} />
 				))}
 				{reviews.map((r, i) => (
-					<ReviewCard key={`dup-${r.name}`} review={r} index={i + offset} duplicate />
+					<ReviewCard key={`dup-${r.name}`} review={r} index={i} duplicate />
 				))}
 			</div>
 		</div>
@@ -73,7 +77,6 @@ function Row({ reviews, offset, reverse }: { reviews: Review[]; offset: number; 
 }
 
 export default function Reviews() {
-	const half = Math.ceil(REVIEWS.length / 2);
 	return (
 		<section className={s.sec} id="reviews">
 			<div className={cx(s.wrap, s.center)}>
@@ -86,8 +89,7 @@ export default function Reviews() {
 				</p>
 			</div>
 			<div className={s.rvRows}>
-				<Row reviews={REVIEWS.slice(0, half)} offset={0} />
-				<Row reviews={REVIEWS.slice(half)} offset={1} reverse />
+				<Marquee reviews={REVIEWS} />
 			</div>
 		</section>
 	);
