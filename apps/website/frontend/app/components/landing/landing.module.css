@@ -1,0 +1,427 @@
+/* Grocerra landing page. Colours come from the Tailwind theme in app/globals.css. */
+
+.page {
+  --green: var(--color-grocerra-green);
+  --forest: var(--color-grocerra-black);
+  --forest2: var(--color-grocerra-green-700);
+  --lime: var(--color-grocerra-yellow);
+  --mint: var(--color-grocerra-mint);
+  --cream: var(--color-grocerra-white);
+  --ink: var(--color-grocerra-black);
+  --muted: var(--color-grocerra-muted);
+  --line: rgba(11, 11, 11, .12);
+  font-family: var(--font-schibsted), system-ui, sans-serif;
+  color: var(--ink);
+  background: var(--cream);
+  line-height: normal;
+  overflow-x: clip;
+  -webkit-font-smoothing: antialiased;
+}
+.page section[id], .page [id="top"] { scroll-margin-top: 90px }
+.wrap { width: min(1200px, calc(100% - 32px)); margin: 0 auto }
+.center { text-align: center }
+.serif { font-family: var(--font-instrument), Georgia, serif; font-style: italic; font-weight: 400; letter-spacing: -0.01em }
+.hl { color: var(--green) }
+.svgText { font-family: var(--font-schibsted), sans-serif }
+.eyebrow { display: inline-flex; align-items: center; gap: 8px; font-size: 13px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--color-grocerra-green-text); padding: 8px 14px; border-radius: 999px; background: var(--mint) }
+.eyebrow::before { content: ""; width: 7px; height: 7px; border-radius: 50%; background: currentColor; animation: pulse 2s ease-in-out infinite }
+@keyframes pulse { 50% { transform: scale(1.8); opacity: .4 } }
+.h2 { font-size: clamp(38px, 5.4vw, 72px); line-height: 1; letter-spacing: -0.04em; font-weight: 800; margin: 18px 0 0 }
+.lede { font-size: clamp(16px, 1.6vw, 19px); line-height: 1.55; color: var(--muted); max-width: 560px; margin: 18px auto 0 }
+.grocery { display: block; width: 100%; filter: drop-shadow(0 22px 24px rgba(0, 0, 0, .3)); user-select: none; pointer-events: none }
+.grocery svg { display: block; width: 100%; height: auto; overflow: visible }
+.srOnly { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0 }
+.coverImg { object-fit: cover }
+.textLink { display: inline-flex; align-items: center; gap: 10px; margin-top: 34px; font-weight: 700; font-size: 16px; color: var(--green); text-decoration: none; border-bottom: 2px solid currentColor; padding-bottom: 4px }
+.textLink svg { transition: transform .3s ease }
+.textLink:hover svg { transform: translateX(4px) }
+.textLinkLight { color: #fff }
+
+/* app store badges */
+.storeBadges { display: flex; gap: 12px; flex-wrap: wrap; margin-top: 32px }
+.storeBadge { display: inline-flex; align-items: center; gap: 12px; min-height: 60px; padding: 0 22px 0 18px; border-radius: 16px; background: var(--cream); color: var(--ink); text-decoration: none; font-weight: 800; font-size: 18px; letter-spacing: -0.01em; line-height: 1.1; transition: transform .3s cubic-bezier(.2, .7, .2, 1), box-shadow .3s }
+.storeBadge small { display: block; font-size: 11px; font-weight: 600; letter-spacing: .02em; opacity: .7 }
+.storeBadge:hover { transform: translateY(-3px); box-shadow: 0 16px 30px -16px rgba(0, 0, 0, .5) }
+.storeBadgeDark { background: var(--ink); color: #fff }
+.glass .storeBadges { justify-content: center; margin-top: 0 }
+
+/* nav — glass bar aligned with the page container */
+.nav { position: fixed; z-index: 60; top: 0; left: 0; right: 0; background: transparent; border-bottom: 1px solid transparent; transition: background .3s, border-color .3s, backdrop-filter .3s; animation: navIn 1s .2s cubic-bezier(.2, .7, .2, 1) both }
+.navScrolled { background: rgba(255, 255, 255, .6); border-bottom-color: rgba(11, 11, 11, .06); backdrop-filter: blur(12px) saturate(1.4); -webkit-backdrop-filter: blur(12px) saturate(1.4) }
+.navOpen { background: rgba(255, 255, 255, .96) }
+@keyframes navIn { from { opacity: 0; transform: translateY(-40px) } to { opacity: 1; transform: none } }
+.logo { display: flex; align-items: center; font-family: var(--font-poppins), sans-serif; font-weight: 800; font-size: 20px; letter-spacing: -0.01em; color: var(--ink); text-decoration: none }
+.logo b { font-weight: 800; color: var(--green) }
+.logo:hover { color: var(--ink) }
+.navBar { display: flex; align-items: center; justify-content: space-between; gap: 16px; width: min(1200px, calc(100% - 32px)); min-height: 76px; margin: 0 auto }
+.navLinks { display: flex; gap: 36px }
+.navLinks a { position: relative; color: rgba(11, 11, 11, .75); text-decoration: none; font-size: 15px; font-weight: 500; padding: 6px 0; transition: color .25s }
+.navLinks a::after { content: ""; position: absolute; left: 0; right: 0; bottom: 0; height: 2px; border-radius: 2px; background: var(--green); transform: scaleX(0); transform-origin: 0 50%; transition: transform .3s cubic-bezier(.2, .7, .2, 1) }
+.navLinks a:hover { color: var(--ink) }
+.navLinks a:hover::after { transform: scaleX(1) }
+.menuBtn { display: none; width: 44px; height: 44px; margin-right: -10px; background: none; flex-direction: column; align-items: center; justify-content: center; gap: 5px; cursor: pointer }
+.menuBtn span { display: block; width: 22px; height: 2px; border-radius: 2px; background: var(--ink); transition: transform .3s, opacity .3s }
+.navOpen .menuBtn span:nth-child(1) { transform: translateY(7px) rotate(45deg) }
+.navOpen .menuBtn span:nth-child(2) { opacity: 0 }
+.navOpen .menuBtn span:nth-child(3) { transform: translateY(-7px) rotate(-45deg) }
+.mobileMenu { overflow: hidden; display: flex; flex-direction: column; width: min(1200px, calc(100% - 32px)); margin: 0 auto }
+.mobileMenu a { color: var(--ink); text-decoration: none; font-weight: 600; font-size: 17px; padding: 14px 0; border-top: 1px solid var(--line) }
+.mobileMenu a:last-child { margin-bottom: 8px }
+
+/* hero — soft mint backdrop, app phone on the left, product pile on the right */
+.heroShell { padding: 0 }
+.hero { position: relative; height: 760px; overflow: hidden; color: var(--ink); background: radial-gradient(60% 55% at 50% 40%, #FFFFFF 0%, transparent 70%), linear-gradient(165deg, var(--mint) 0%, color-mix(in srgb, var(--green) 20%, #FFFFFF) 100%) }
+.heroGlow { position: absolute; left: 50%; top: 180px; width: 820px; height: 560px; margin-left: -410px; border-radius: 50%; background: radial-gradient(closest-side, rgba(255, 255, 255, .8), rgba(255, 255, 255, 0)); animation: breathe 6s ease-in-out infinite }
+.glow { position: absolute; left: 50%; top: 330px; width: 620px; height: 620px; margin-left: -310px; border-radius: 50%; background: radial-gradient(circle, rgba(255, 255, 255, .28), rgba(255, 255, 255, 0) 65%); animation: breathe 6s ease-in-out infinite }
+@keyframes breathe { 50% { transform: scale(1.12); opacity: .75 } }
+.hill { position: absolute; left: 0; width: 100%; display: block }
+.road { position: absolute; left: 0; right: 0; bottom: 46px; height: 18px; background: rgba(255, 255, 255, .55); border-block: 1px solid rgba(22, 163, 74, .12) }
+.road::after { content: ""; position: absolute; left: 0; right: 0; top: 7px; height: 3px; background: repeating-linear-gradient(90deg, rgba(22, 163, 74, .35) 0 26px, transparent 26px 60px); animation: roadmove 1.2s linear infinite }
+@keyframes roadmove { to { background-position: -60px 0 } }
+.van { position: absolute; z-index: 4; bottom: 54px; left: -180px; width: 92px; animation: drive 16s 1.4s linear infinite }
+.van svg { display: block; width: 100%; height: auto; filter: drop-shadow(0 8px 10px rgba(0, 0, 0, .15)) }
+.wheel { transform-box: fill-box; transform-origin: center; animation: spin .6s linear infinite }
+.vanBody { animation: bump .45s ease-in-out infinite alternate }
+@keyframes drive { from { left: -180px } to { left: 100% } }
+@keyframes spin { to { transform: rotate(360deg) } }
+@keyframes bump { to { transform: translateY(-2px) } }
+.heroCopy { position: relative; z-index: 5; padding-top: 150px; text-align: center }
+.tag { display: inline-flex; align-items: center; gap: 10px; padding: 6px 16px 6px 6px; border-radius: 999px; background: rgba(255, 255, 255, .7); border: 1px solid rgba(22, 163, 74, .18); color: var(--ink); font-size: 14px; font-weight: 500; backdrop-filter: blur(8px); animation: rise .9s .1s cubic-bezier(.2, .7, .2, 1) both }
+.tag b { background: var(--lime); color: var(--forest); font-weight: 800; font-size: 12px; padding: 4px 10px; border-radius: 999px }
+.h1 { font-size: clamp(44px, 5.6vw, 92px); line-height: .98; letter-spacing: -0.05em; font-weight: 900; margin: 26px auto 0; max-width: min(780px, 52vw) }
+.h1Accent { color: var(--green) }
+.h1 .serif { color: var(--ink); font-weight: 400; font-size: 1.06em; background: linear-gradient(transparent 84%, var(--lime) 84%, var(--lime) 93%, transparent 93%) }
+.w { display: inline-block; animation: rise 1s cubic-bezier(.2, .7, .2, 1) both }
+@keyframes rise { from { opacity: 0; transform: translateY(50%) rotate(4deg); filter: blur(10px) } to { opacity: 1; transform: none; filter: blur(0) } }
+.heroSub { font-size: clamp(16px, 1.5vw, 19px); line-height: 1.55; color: var(--muted); max-width: 500px; margin: 26px auto 0; animation: rise 1s 1.1s cubic-bezier(.2, .7, .2, 1) both }
+.heroPhone { position: absolute; z-index: 4; left: max(2%, calc(50% - 690px)); top: 190px; width: 280px; transform: scale(.78) rotate(-12deg); transform-origin: 0 0 }
+.heroPhone .phone { animation: bob 7s ease-in-out infinite; box-shadow: 0 50px 70px -30px rgba(11, 60, 30, .45), 0 0 0 1px rgba(0, 0, 0, .08) }
+.heroPile { position: absolute; z-index: 4; right: max(2%, calc(50% - 690px)); top: 300px; width: min(480px, 33vw); aspect-ratio: 480 / 330 }
+.pileBag { position: absolute; right: 0; bottom: 0; width: 46% }
+.spill { animation: spill 1s cubic-bezier(.2, .8, .3, 1) both }
+@keyframes spill { from { opacity: 0; transform: translate(var(--sx), var(--sy)) rotate(-120deg) scale(.3) } 50% { opacity: 1 } to { opacity: 1; transform: none } }
+.svgLogo { font-family: var(--font-poppins), sans-serif }
+.pileItem { position: absolute }
+.fl { position: absolute; z-index: 3 }
+.flIn { animation: popIn 1.1s cubic-bezier(.3, 1.5, .5, 1) both }
+@keyframes popIn { from { opacity: 0; transform: scale(0) rotate(-40deg) } to { opacity: 1; transform: none } }
+.bob { animation: bob 6s ease-in-out infinite }
+.bob2 { animation: bob 7.5s -2s ease-in-out infinite }
+.bob3 { animation: bob 5s -1s ease-in-out infinite }
+@keyframes bob { 0%, 100% { transform: translateY(0) rotate(0) } 50% { transform: translateY(-16px) rotate(6deg) } }
+/* ribbons */
+.ribbons { position: relative; height: 190px; margin-top: -40px; z-index: 2 }
+.ribbon { position: absolute; left: -5%; width: 110%; overflow: hidden; padding: 18px 0 }
+.r1 { top: 40px; background: var(--green); color: #fff; transform: rotate(-2.5deg) }
+.r2 { top: 60px; background: var(--forest); color: var(--cream); transform: rotate(2deg); z-index: -1 }
+.track { display: flex; width: max-content; animation: marq 38s linear infinite }
+.rev { animation-direction: reverse }
+.ribbon span { display: inline-flex; align-items: center; gap: 22px; padding-right: 22px; font-size: 26px; font-weight: 800; letter-spacing: -0.02em; white-space: nowrap }
+.ribbon svg { flex: none }
+@keyframes marq { to { transform: translateX(-50%) } }
+
+/* stores + basket */
+.sec { position: relative; padding: 110px 0 }
+.basketGrid { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.3fr) minmax(0, 1fr); gap: 24px; align-items: center; margin-top: 60px }
+.tcol { display: grid; gap: 18px }
+.ticket { position: relative; padding: 26px 24px 22px; border-radius: 22px; -webkit-mask: radial-gradient(circle 11px at 0 64%, transparent 98%, #000) 0 0/51% 100% no-repeat, radial-gradient(circle 11px at 100% 64%, transparent 98%, #000) 100% 0/51% 100% no-repeat; mask: radial-gradient(circle 11px at 0 64%, transparent 98%, #000) 0 0/51% 100% no-repeat, radial-gradient(circle 11px at 100% 64%, transparent 98%, #000) 100% 0/51% 100% no-repeat; transition: transform .35s cubic-bezier(.2, .7, .2, 1) }
+.ticket:hover { transform: translateY(-6px) rotate(-1.5deg) }
+.tLime { background: var(--lime); color: var(--forest) }
+.tForest { background: var(--forest); color: var(--cream) }
+.tMint { background: var(--mint); color: var(--forest) }
+.tGreen { background: var(--green); color: #fff }
+.big { font-size: clamp(34px, 3.4vw, 46px); font-weight: 900; letter-spacing: -0.05em; line-height: 1 }
+.lbl { margin-top: 26px; padding-top: 14px; border-top: 2px dashed currentColor; border-top-color: color-mix(in srgb, currentColor 30%, transparent); font-size: 14px; font-weight: 600; line-height: 1.35 }
+.basketStage { position: relative; height: 500px }
+.bk { position: absolute; left: 50%; bottom: 0; width: 430px; margin-left: -215px }
+.bk svg { display: block; width: 100%; height: auto }
+.bkBack { z-index: 1 }
+.bkFront { z-index: 3 }
+.drop { position: absolute; z-index: 2 }
+
+/* category bento — photo cards, 4 × 2 grid with no gaps */
+.bento { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); grid-auto-rows: 280px; gap: 18px; margin-top: 56px }
+.cat { position: relative; overflow: hidden; border-radius: 30px; padding: 26px; display: flex; flex-direction: column; justify-content: flex-end; color: #fff; background: var(--forest); isolation: isolate; transition: transform .45s cubic-bezier(.2, .7, .2, 1) }
+.cat:hover { transform: translateY(-8px) }
+.wide { grid-column: span 2 }
+.tall { grid-row: span 2 }
+.catImg { object-fit: cover; z-index: -2; transition: transform .8s cubic-bezier(.2, .7, .2, 1) }
+.cat:hover .catImg { transform: scale(1.07) }
+.catShade { position: absolute; inset: 0; z-index: -1; background: linear-gradient(180deg, rgba(11, 11, 11, 0) 35%, rgba(11, 11, 11, .78) 100%) }
+.catText h3 { margin: 0; font-size: 26px; font-weight: 800; letter-spacing: -0.03em }
+.catText p { margin: 6px 0 0; font-size: 14.5px; opacity: .85 }
+/* steps */
+.steps { position: relative }
+.stepsPin { position: relative; padding: 110px 0 }
+.stepsRow { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 22px; margin-top: 64px }
+.step { position: relative; border-radius: 30px; background: #fff; border: 1px solid var(--line); padding: 30px; min-height: 330px; display: flex; flex-direction: column; justify-content: space-between; overflow: hidden }
+.step:nth-child(2) { background: var(--mint); border-color: transparent }
+.step:nth-child(3) { background: var(--forest); color: var(--cream); border-color: transparent }
+.num { font-size: clamp(130px, 13vw, 200px); line-height: .75; font-weight: 900; letter-spacing: -0.08em; color: var(--green) }
+.step h3 { margin: 0; font-size: 22px; font-weight: 800; letter-spacing: -0.02em }
+.step p { margin: 8px 0 0; font-size: 15px; line-height: 1.5; opacity: .75; max-width: 260px }
+.sico { position: absolute; right: 24px; top: 24px; width: 64px; height: 64px; border-radius: 20px; display: flex; align-items: center; justify-content: center; background: var(--green); color: #fff; animation: wiggle 4s ease-in-out infinite }
+@keyframes wiggle { 0%, 100% { transform: rotate(0) } 10% { transform: rotate(-10deg) } 20% { transform: rotate(8deg) } 30% { transform: rotate(0) } }
+.simg { position: absolute; right: -10px; bottom: -18px; width: 120px; transform: rotate(-12deg) }
+.bar { height: 4px; border-radius: 4px; background: var(--line); margin-top: 40px; overflow: hidden }
+.bar span { display: block; height: 100%; width: 100%; background: var(--green); transform-origin: 0 50% }
+
+/* catering */
+.split { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 20px; align-items: stretch }
+.card { background: #fff; border: 1px solid var(--line); border-radius: 36px; padding: clamp(28px, 4vw, 56px) }
+.card .lede { margin-left: 0 }
+.checks { list-style: none; padding: 0; margin: 28px 0 0; display: grid; gap: 14px }
+.checks li { display: flex; gap: 12px; align-items: center; font-weight: 600 }
+.ck { flex: none; width: 28px; height: 28px; border-radius: 50%; background: var(--green); color: #fff; display: flex; align-items: center; justify-content: center }
+.occasion { position: relative; border-radius: 36px; overflow: hidden; min-height: 560px; background: var(--forest); isolation: isolate }
+.occasionImg { object-fit: cover; z-index: -2 }
+.occasionShade { position: absolute; inset: 0; z-index: -1; background: linear-gradient(180deg, rgba(11, 11, 11, .25) 0%, rgba(11, 11, 11, 0) 30%, rgba(11, 11, 11, .55) 100%) }
+.occasionSlot { left: 22px; top: 22px }
+.occasionGuests { right: 22px; top: 22px }
+.orderCard { position: absolute; left: 22px; right: 22px; bottom: 22px; z-index: 3; padding: 22px 22px 18px; border-radius: 24px; background: rgba(255, 255, 255, .94); color: var(--ink); box-shadow: 0 30px 50px -24px rgba(0, 0, 0, .6); backdrop-filter: blur(10px) }
+.orderKicker { font-size: 12px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--color-grocerra-green-text) }
+.orderTitle { margin: 4px 0 0; font-size: clamp(24px, 2.6vw, 32px); font-weight: 900; letter-spacing: -0.03em }
+.orderItems { list-style: none; margin: 14px 0 0; padding: 0; display: grid; gap: 9px }
+.orderItems li { display: flex; align-items: center; gap: 10px; font-size: 15px; font-weight: 600 }
+.orderTick { flex: none; width: 22px; height: 22px; border-radius: 50%; background: var(--green); color: #fff; display: flex; align-items: center; justify-content: center }
+.orderProgress { height: 4px; border-radius: 4px; background: var(--line); margin-top: 16px; overflow: hidden }
+.orderProgress span { display: block; height: 100%; background: var(--green); transform-origin: 0 50% }
+.occasionDots { display: flex; gap: 6px; margin-top: 12px }
+.occasionDot { width: 8px; height: 8px; padding: 0; border-radius: 999px; background: var(--line); cursor: pointer; transition: width .3s, background .3s }
+.occasionDotOn { width: 24px; background: var(--green) }
+.badge { position: absolute; z-index: 3; padding: 12px 16px; border-radius: 16px; background: var(--forest); color: var(--cream); font-weight: 700; font-size: 14px; box-shadow: 0 18px 30px -18px rgba(0, 0, 0, .5); display: flex; gap: 8px; align-items: center }
+.badgeLime { background: var(--lime); color: var(--forest) }
+
+/* app */
+.app { position: relative; border-radius: 40px; background: var(--forest); color: var(--cream); overflow: hidden; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); align-items: center; gap: 24px; padding: clamp(32px, 5vw, 72px) }
+.app .lede { color: rgba(247, 246, 239, .72); margin-left: 0 }
+.app .eyebrow { background: rgba(22, 163, 74, .18); color: var(--color-grocerra-green-neon) }
+.app .h2 .serif { color: var(--color-grocerra-green-bright) }
+.appCopy { position: relative; z-index: 2 }
+.orb { position: absolute; border-radius: 50%; border: 1.5px dashed rgba(34, 197, 94, .35); animation: spin 40s linear infinite }
+.orbLg { width: 560px; height: 560px; right: -60px; top: 40px }
+.orbSm { width: 380px; height: 380px; right: 30px; top: 130px; animation-direction: reverse }
+.phoneStage { position: relative; height: 600px; display: flex; justify-content: center; align-items: center }
+.phone { position: relative; z-index: 2; width: 280px; height: 570px; border-radius: 46px; background: #000; padding: 10px; box-shadow: 0 50px 80px -30px rgba(0, 0, 0, .6), 0 0 0 1px rgba(255, 255, 255, .08); animation: bob 7s ease-in-out infinite }
+.screen { position: relative; height: 100%; border-radius: 37px; background: var(--cream); color: var(--ink); overflow: hidden; padding: 46px 16px 16px; display: flex; flex-direction: column; gap: 12px }
+.notch { position: absolute; left: 50%; top: 18px; width: 86px; height: 24px; margin-left: -43px; border-radius: 20px; background: #000; z-index: 3 }
+.scHead { display: flex; justify-content: space-between; align-items: center }
+.scGreet { font-size: 11px; color: var(--muted) }
+.scTitle { font-weight: 900; font-size: 18px; letter-spacing: -0.03em }
+.scAvatar { width: 36px; height: 36px; border-radius: 50%; background: var(--lime) }
+.scSearch { height: 42px; border-radius: 14px; background: #fff; border: 1px solid var(--line); display: flex; align-items: center; gap: 8px; padding: 0 12px; font-size: 12px; color: var(--muted) }
+.scChips { display: flex; gap: 6px }
+.scChips span { font-size: 11px; font-weight: 700; padding: 6px 10px; border-radius: 999px; background: #fff; border: 1px solid var(--line) }
+.scChips span:first-child { background: var(--green); color: #fff; border-color: transparent }
+.scOrder { border-radius: 18px; background: var(--green); color: #fff; padding: 14px; position: relative; overflow: hidden }
+.scOrder small { display: block; font-size: 11px; opacity: .85 }
+.scOrder b { display: block; font-size: 15px; margin-top: 2px }
+.prog { height: 6px; border-radius: 6px; background: rgba(255, 255, 255, .3); margin-top: 12px; overflow: hidden }
+.prog span { display: block; height: 100%; border-radius: 6px; background: var(--lime); animation: prog 4s ease-in-out infinite }
+@keyframes prog { 0% { width: 12% } 70%, 100% { width: 88% } }
+.scGrid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px }
+.scTile { position: relative; border-radius: 16px; height: 96px; padding: 8px 10px; display: flex; align-items: flex-end; font-size: 11px; font-weight: 700; color: #fff; overflow: hidden; isolation: isolate; background: var(--forest) }
+.scTile::after { content: ""; position: absolute; inset: 0; z-index: -1; background: linear-gradient(180deg, transparent 40%, rgba(0, 0, 0, .65)) }
+.scTileImg { object-fit: cover; z-index: -2 }
+.notif { position: absolute; z-index: 3; right: 0; top: 70px; width: 240px; padding: 14px; border-radius: 20px; background: var(--cream); color: var(--ink); box-shadow: 0 24px 40px -20px rgba(0, 0, 0, .5); display: flex; gap: 12px; align-items: center; font-size: 13px; animation: notif 6s ease-in-out infinite }
+.notifIc { width: 42px; height: 42px; flex: none; border-radius: 14px; background: var(--green); display: flex; align-items: center; justify-content: center; color: #fff }
+.notifSub { color: var(--muted) }
+@keyframes notif { 0%, 8% { opacity: 0; transform: translateY(-18px) scale(.95) } 18%, 82% { opacity: 1; transform: none } 92%, 100% { opacity: 0; transform: translateY(-18px) scale(.95) } }
+/* colour wipe */
+.wipe { position: relative; height: 640px }
+.wipePin { position: relative; height: 640px; display: flex; align-items: center; justify-content: center }
+.wipePanel { position: absolute; inset: 0; background: var(--green); overflow: hidden; display: flex; align-items: center; justify-content: center }
+.wipeText { position: relative; z-index: 2; text-align: center; color: #fff; font-size: clamp(46px, 8.4vw, 128px); line-height: .92; letter-spacing: -0.05em; font-weight: 900; margin: 0; padding: 0 16px }
+.wipeText .serif { color: var(--ink); font-weight: 400 }
+.wipeSub { display: block; font-size: clamp(15px, 1.4vw, 18px); letter-spacing: 0; font-weight: 600; color: rgba(255, 255, 255, .85); margin-top: 26px; line-height: 1.5 }
+.wfly { position: absolute; z-index: 1; width: clamp(90px, 12vw, 170px) }
+
+/* reviews */
+.rvRows { display: grid; gap: 18px; margin-top: 56px }
+.rvWrap { overflow: hidden; -webkit-mask: linear-gradient(90deg, transparent, #000 8%, #000 92%, transparent); mask: linear-gradient(90deg, transparent, #000 8%, #000 92%, transparent) }
+.rvTrack { display: flex; width: max-content; animation: marq 70s linear infinite; padding: 6px 0 }
+.rvWrap:hover .rvTrack { animation-play-state: paused }
+.review { flex: none; width: min(400px, 84vw); margin: 0 18px 0 0; background: #fff; border: 1px solid var(--line); border-radius: 28px; padding: 26px; display: flex; flex-direction: column; gap: 16px; text-align: left }
+.review:nth-child(3n+2) { background: var(--mint); border-color: transparent }
+.review:nth-child(3n) { background: var(--forest); color: var(--cream); border-color: transparent }
+.reviewTop { display: flex; align-items: center; justify-content: space-between }
+.quoteMark { color: var(--green); opacity: .35 }
+.reviewQuote { margin: 0; font-size: 17px; line-height: 1.55; flex: 1 }
+.reviewTag { align-self: flex-start; font-size: 12px; font-weight: 700; padding: 6px 10px; border-radius: 999px; background: rgba(22, 163, 74, .12); color: var(--color-grocerra-green-text) }
+.review:nth-child(3n) .reviewTag { background: rgba(255, 255, 255, .1); color: var(--color-grocerra-green-neon) }
+.who { display: flex; gap: 12px; align-items: center; font-size: 14px; padding-top: 16px; border-top: 1px solid var(--line) }
+.review:nth-child(3n) .who { border-top-color: rgba(255, 255, 255, .14) }
+.avatar { width: 48px; height: 48px; flex: none; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; font-weight: 800; font-size: 16px; object-fit: cover }
+.avGreen { background: var(--green); color: #fff }
+.avYellow { background: var(--lime); color: var(--ink) }
+.avBlack { background: var(--ink); color: #fff; box-shadow: inset 0 0 0 2px rgba(255, 255, 255, .25) }
+.avMint { background: var(--color-grocerra-green-pale); color: var(--ink) }
+.whoText { display: flex; flex-direction: column; min-width: 0; line-height: 1.35 }
+.whoText > span:not(.country) { opacity: .7 }
+.country { display: inline-flex; align-items: center; gap: 6px; margin-top: 4px; font-size: 12px; font-weight: 700; white-space: nowrap }
+.country i { font-style: normal; font-size: 10px; letter-spacing: .04em; padding: 3px 5px; border-radius: 4px; background: var(--ink); color: #fff }
+.review:nth-child(3n) .country i { background: var(--lime); color: var(--ink) }
+.stars { display: flex; gap: 2px; color: var(--green) }
+.review:nth-child(3n) .stars { color: var(--lime) }
+/* partner */
+.partner { position: relative; border-radius: 40px; background: var(--green); color: #fff; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 24px; align-items: center; overflow: hidden; padding: clamp(32px, 5vw, 72px) }
+.partner .lede { color: rgba(255, 255, 255, .88); margin-left: 0 }
+.partner .eyebrow { background: var(--ink); color: #fff }
+.partner .eyebrow::before { background: var(--lime) }
+.partner .h2 .serif { color: var(--ink) }
+.collage { position: relative; height: 440px }
+.collageMain { position: absolute; left: 0; right: 14%; top: 40px; bottom: 30px; border-radius: 28px; overflow: hidden; box-shadow: 0 40px 60px -30px rgba(0, 0, 0, .55) }
+.collageSide { position: absolute; right: 0; bottom: 0; width: 38%; aspect-ratio: 3 / 4; border-radius: 22px; overflow: hidden; border: 5px solid #fff; box-shadow: 0 30px 50px -24px rgba(0, 0, 0, .6) }
+.ping { position: absolute; left: 6%; top: 10px; z-index: 3; padding: 12px 16px; border-radius: 16px; background: var(--forest); color: var(--cream); font-weight: 700; font-size: 14px; display: flex; gap: 10px; align-items: center; box-shadow: 0 18px 30px -18px rgba(0, 0, 0, .5) }
+.pingDot { width: 10px; height: 10px; border-radius: 50%; background: var(--lime); display: inline-block; animation: pulse 1.4s ease-in-out infinite }
+.orderPing { position: absolute; left: -12px; bottom: 50px; z-index: 3; display: flex; flex-direction: column; gap: 2px; padding: 14px 18px; border-radius: 18px; background: #fff; color: var(--ink); font-size: 13px; box-shadow: 0 24px 40px -20px rgba(0, 0, 0, .5) }
+.orderPing small { font-size: 11px; font-weight: 700; color: var(--muted) }
+.orderPing b { font-size: 15px }
+.orderPing span { color: var(--color-grocerra-green-text); font-weight: 600 }
+/* final cta */
+.finalShell { padding: 0 10px }
+.final { position: relative; height: 740px; border-radius: 40px; overflow: hidden; background: radial-gradient(120% 90% at 50% 100%, var(--color-grocerra-green-glow) 0%, var(--green) 55%, var(--color-grocerra-green-600) 100%); color: #fff }
+.final .glow { top: 120px }
+.finalHill { bottom: 0; height: 300px }
+.glass { position: relative; z-index: 5; margin: 0 auto; top: 160px; width: min(660px, calc(100% - 32px)); text-align: center; padding: 52px clamp(24px, 4vw, 60px); border-radius: 36px; background: rgba(247, 246, 239, .08); border: 1px solid rgba(247, 246, 239, .22); backdrop-filter: blur(18px); -webkit-backdrop-filter: blur(18px); box-shadow: 0 30px 80px -30px rgba(0, 0, 0, .6) }
+.glass .h2 { margin-top: 0 }
+.glass .serif { color: #fff; background: linear-gradient(transparent 80%, var(--lime) 80%, var(--lime) 92%, transparent 92%) }
+.glass p { color: rgba(247, 246, 239, .78); font-size: 17px; line-height: 1.55; margin: 16px auto 30px; max-width: 420px }
+
+/* footer */
+.foot { padding: 90px 0 40px }
+.footGrid { display: grid; grid-template-columns: 1.4fr repeat(4, minmax(0, 1fr)); gap: 32px }
+.footBlurb { color: var(--muted); font-size: 14.5px; line-height: 1.6; max-width: 280px; margin: 16px 0 0 }
+.foot h4 { margin: 0 0 14px; font-size: 14px; font-weight: 800 }
+.foot ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 10px }
+.foot ul a { color: var(--muted); text-decoration: none; font-size: 14.5px; transition: color .2s, padding .2s }
+.foot ul a:hover { color: var(--green); padding-left: 4px }
+.giant { font-family: var(--font-poppins), sans-serif; font-size: clamp(40px, 14vw, 200px); font-weight: 800; letter-spacing: -0.02em; line-height: .9; color: var(--forest); margin: 80px 0 0; white-space: nowrap; text-align: center }
+.giant span { color: var(--green) }
+.footBottom { margin-top: 40px; padding-top: 24px; border-top: 1px solid var(--line); display: flex; justify-content: space-between; align-items: center; gap: 16px; flex-wrap: wrap; font-size: 14px; color: var(--muted) }
+.footBottom a { color: var(--muted); text-decoration: none }
+.footBottom a:hover { color: var(--green) }
+
+/* ---------- scroll-driven motion ---------- */
+@supports (animation-timeline: view()) {
+  .reveal { animation: fadeUp linear both; animation-timeline: view(); animation-range: entry 5% cover 28% }
+  @keyframes fadeUp { from { opacity: 0; transform: translateY(60px) } to { opacity: 1; transform: none } }
+  .zoom { animation: zoomIn linear both; animation-timeline: view(); animation-range: entry 0% cover 35% }
+  @keyframes zoomIn { from { opacity: 0; transform: scale(.88) translateY(60px) } to { opacity: 1; transform: none } }
+
+  .heroCopy { animation: heroOut linear both; animation-timeline: scroll(root); animation-range: 0 700px }
+  @keyframes heroOut { to { transform: translateY(-140px) scale(.94); opacity: 0 } }
+  .fl { animation: flp linear both; animation-timeline: scroll(root); animation-range: 0 900px }
+  @keyframes flp { to { transform: translateY(var(--py)) rotate(var(--pr)) } }
+  .heroPhone { animation: phoneUp linear both; animation-timeline: scroll(root); animation-range: 0 800px }
+  @keyframes phoneUp { from { transform: scale(.78) rotate(-12deg) } to { transform: translateY(-140px) scale(.78) rotate(-18deg) } }
+  .heroPile { animation: pileUp linear both; animation-timeline: scroll(root); animation-range: 0 800px }
+  @keyframes pileUp { to { transform: translateY(-100px) } }
+
+  .r1 { animation: rib1 linear both; animation-timeline: view(); animation-range: cover 0% cover 100% }
+  .r2 { animation: rib2 linear both; animation-timeline: view(); animation-range: cover 0% cover 100% }
+  @keyframes rib1 { from { transform: rotate(-2.5deg) translateX(4%) } to { transform: rotate(-2.5deg) translateX(-4%) } }
+  @keyframes rib2 { from { transform: rotate(2deg) translateX(-4%) } to { transform: rotate(2deg) translateX(4%) } }
+
+  .ticket { animation: tk linear both; animation-timeline: view(); animation-range: entry 5% cover 35% }
+  .tcolLeft .ticket { --tx: -120px }
+  .tcolRight .ticket { --tx: 120px }
+  @keyframes tk { from { opacity: 0; transform: translateX(var(--tx)) rotate(-8deg) scale(.85) } to { opacity: 1; transform: none } }
+  .drop { animation: dropIn linear both; animation-timeline: view(); animation-range: entry 30% cover 55% }
+  @keyframes dropIn { from { opacity: 0; transform: translateY(-460px) rotate(var(--r0)) } 70% { opacity: 1 } to { opacity: 1; transform: none } }
+  .bkFront, .bkBack { animation: bkIn linear both; animation-timeline: view(); animation-range: entry 0% cover 30% }
+  @keyframes bkIn { from { opacity: 0; transform: translateY(80px) scale(.9) } to { opacity: 1; transform: none } }
+
+  .cat { animation: catIn linear both; animation-timeline: view(); animation-range: entry 0% cover 30% }
+  @keyframes catIn { from { opacity: 0; transform: translateY(90px) rotate(2deg) scale(.94) } to { opacity: 1; transform: none } }
+  .cat:hover { animation: none }
+
+  .steps { height: 2600px; view-timeline: --steps block }
+  .stepsPin { position: sticky; top: 0; min-height: 820px; display: flex; flex-direction: column; justify-content: center; padding: 100px 0 60px }
+  .step { animation: stepIn linear both; animation-timeline: --steps }
+  .step:nth-child(1) { animation-range: contain 0% contain 20% }
+  .step:nth-child(2) { animation-range: contain 25% contain 45% }
+  .step:nth-child(3) { animation-range: contain 50% contain 70% }
+  @keyframes stepIn { from { opacity: 0; transform: translateX(300px) rotate(6deg); filter: blur(8px) } to { opacity: 1; transform: none; filter: blur(0) } }
+  .bar span { animation: barGrow linear both; animation-timeline: --steps; animation-range: contain 0% contain 75% }
+  @keyframes barGrow { from { transform: scaleX(0) } to { transform: scaleX(1) } }
+
+
+  .phone { animation: phoneIn linear both; animation-timeline: view(); animation-range: entry 0% cover 40% }
+  @keyframes phoneIn { from { transform: translateY(160px) rotate(-12deg); opacity: 0 } to { transform: none; opacity: 1 } }
+
+  .wipe { height: 1500px; view-timeline: --wipe block }
+  .wipePin { position: sticky; top: 0; height: 820px }
+  .wipePanel { animation: wipeOpen linear both; animation-timeline: --wipe; animation-range: contain 0% contain 45% }
+  @keyframes wipeOpen { from { clip-path: inset(30% 32% round 60px) } to { clip-path: inset(0 0 round 0) } }
+  .wipeText { animation: wipeText linear both; animation-timeline: --wipe; animation-range: contain 10% contain 45% }
+  @keyframes wipeText { from { opacity: 0; transform: scale(.7) } to { opacity: 1; transform: none } }
+  .wfly { animation: fly linear both; animation-timeline: --wipe; animation-range: contain 5% contain 60% }
+  @keyframes fly { from { transform: translate(var(--fx), var(--fy)) scale(.2) rotate(-60deg); opacity: 0 } to { transform: none; opacity: 1 } }
+
+  .giant { animation: giantIn linear both; animation-timeline: view(); animation-range: entry 0% cover 40% }
+  @keyframes giantIn { from { transform: translateY(120px); opacity: 0; letter-spacing: .05em } to { transform: none; opacity: 1 } }
+  .glass { animation: glassIn linear both; animation-timeline: view(); animation-range: entry 10% cover 40% }
+  @keyframes glassIn { from { opacity: 0; transform: translateY(90px) scale(.92) } to { opacity: 1; transform: none } }
+}
+
+/* ---------- fallback for browsers without scroll timelines (Firefox) ----------
+   LandingShell sets data-io on .page and adds .is-visible as elements enter the viewport. */
+@supports not (animation-timeline: view()) {
+  .page[data-io] [data-reveal]:not(:global(.is-visible)) { opacity: 0; transform: translateY(48px) }
+  .page[data-io] [data-reveal="zoom"]:not(:global(.is-visible)) { transform: scale(.92) translateY(48px) }
+  .page[data-io] [data-reveal="left"]:not(:global(.is-visible)) { transform: translateX(-80px) rotate(-6deg) }
+  .page[data-io] [data-reveal="right"]:not(:global(.is-visible)) { transform: translateX(80px) rotate(6deg) }
+  .page[data-io] [data-reveal="drop"]:not(:global(.is-visible)) { transform: translateY(-200px) }
+  .page[data-io] [data-reveal]:global(.is-visible) { transition: opacity .8s cubic-bezier(.2, .7, .2, 1), transform .8s cubic-bezier(.2, .7, .2, 1); transition-delay: var(--rd, 0s) }
+}
+
+@media (max-width: 1200px) {
+  .heroPhone { transform: scale(.66) rotate(-12deg); top: 210px }
+}
+@media (max-width: 960px) {
+  .navLinks { display: none }
+  .heroPhone { display: none }
+  .hero { height: auto; display: flex; flex-direction: column; padding-bottom: 130px }
+  .heroCopy { order: 1 }
+  .heroPile { order: 2; position: relative; right: auto; top: auto; margin: 36px auto 0; width: min(440px, 88vw) }
+  .h1 { max-width: 760px }
+  .menuBtn { display: flex }
+  .bento { grid-auto-rows: 260px }
+  .basketGrid { grid-template-columns: minmax(0, 1fr) }
+  .tcol { grid-template-columns: repeat(2, minmax(0, 1fr)) }
+  .bento { grid-template-columns: repeat(2, minmax(0, 1fr)) }
+  .tall { grid-row: auto }
+  .split, .app, .partner { grid-template-columns: minmax(0, 1fr) }
+  .footGrid { grid-template-columns: repeat(2, minmax(0, 1fr)) }
+}
+@media (max-width: 760px) {
+  .heroCopy { padding-top: 130px }
+  .stepsRow { grid-template-columns: minmax(0, 1fr) }
+  .bento { grid-template-columns: minmax(0, 1fr); grid-auto-rows: 240px }
+  .occasion { min-height: 600px }
+  .collage { height: 380px }
+  .wide { grid-column: auto }
+  .bk { width: 340px; margin-left: -170px }
+  .basketStage { height: 420px; transform: scale(.85); transform-origin: 50% 100% }
+  .hideM { display: none }
+  @supports (animation-timeline: view()) {
+    .steps { height: auto }
+    .stepsPin { position: relative; min-height: 0 }
+    .step { animation-timeline: view(); animation-range: entry 0% cover 30% }
+    .bar span { animation-timeline: view(); animation-range: entry 0% cover 50% }
+  }
+}
+/* Small phones: keep the phone mockup and stat tickets inside the viewport */
+@media (max-width: 480px) {
+  .phoneStage { height: 540px; transform: scale(.86) }
+  .tcol { gap: 12px }
+  .ticket { padding: 22px 16px 18px }
+  .footGrid { grid-template-columns: minmax(0, 1fr) }
+  .occasionGuests { left: 22px; right: auto; top: 76px }
+}
+@media (prefers-reduced-motion: reduce) {
+  .page *, .page *::before, .page *::after { animation: none !important; transition: none !important }
+  .steps, .wipe { height: auto !important }
+  .stepsPin, .wipePin { position: relative !important }
+}
