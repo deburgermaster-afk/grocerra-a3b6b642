@@ -45,18 +45,18 @@ export function Ph({ children }: { children: ReactNode }) {
  * Renders plain strings from the content files with two inline marks:
  * {{label|/href}} becomes a link and [[text]] becomes a highlighted [text] placeholder.
  */
-export function RichText({ text }: { text: string }) {
+export function RichText({ text, linkClassName }: { text: string; linkClassName?: string }) {
 	return (
 		<>
 			{text.split(/(\{\{[^}]+\}\}|\[\[[^\]]+\]\])/).map((part, i) => {
 				if (part.startsWith("{{")) {
 					const [label, href] = part.slice(2, -2).split("|");
 					return href.startsWith("/") ? (
-						<Link key={i} href={href}>
+						<Link key={i} href={href} className={linkClassName}>
 							{label}
 						</Link>
 					) : (
-						<a key={i} href={href}>
+						<a key={i} href={href} className={linkClassName}>
 							{label}
 						</a>
 					);

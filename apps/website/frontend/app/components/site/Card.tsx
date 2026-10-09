@@ -12,6 +12,8 @@ const TONES: Record<CardTone, string | undefined> = { white: undefined, tint: s.
 type CardProps = {
 	tone?: CardTone;
 	icon?: IconName;
+	/** Anything shown above the title, e.g. a team photo. */
+	media?: ReactNode;
 	title?: ReactNode;
 	children?: ReactNode;
 	/** Produce photo tucked into the bottom-right corner. */
@@ -26,7 +28,7 @@ type CardProps = {
 };
 
 /** Rounded content card. The reveal wrapper and the card are separate so the hover lift isn't overridden. */
-export default function Card({ tone = "white", icon, title, children, produce, produceWidth, minHeight, center, reveal = "zoom", delay = 0, className, style }: CardProps) {
+export default function Card({ tone = "white", icon, media, title, children, produce, produceWidth, minHeight, center, reveal = "zoom", delay = 0, className, style }: CardProps) {
 	return (
 		<Reveal variant={reveal} delay={delay} className={s.cell}>
 			<div className={cx(s.card, TONES[tone], center && s.center, className)} style={{ minHeight, ...style }}>
@@ -36,6 +38,7 @@ export default function Card({ tone = "white", icon, title, children, produce, p
 							<Icon name={icon} />
 						</div>
 					)}
+					{media}
 					{title && <h3 className={s.h3}>{title}</h3>}
 					{children}
 				</div>

@@ -1,144 +1,130 @@
 import type { Metadata } from "next";
-import Link from "next/link";
-import Header from "@/app/components/Header";
-import HowItWorks from "@/app/components/HowItWorks";
-import Footer from "@/app/components/Footer";
+import ButtonLink from "@/app/components/site/Button";
+import Card from "@/app/components/site/Card";
+import CtaBand from "@/app/components/site/CtaBand";
+import FaqList from "@/app/components/site/FaqList";
+import Marquee from "@/app/components/site/Marquee";
+import { Reveal } from "@/app/components/site/motion";
+import PageHero from "@/app/components/site/PageHero";
+import RingVisual from "@/app/components/site/RingVisual";
+import SectionHeading from "@/app/components/site/SectionHeading";
+import s from "@/app/components/site/site.module.css";
+import StepList from "@/app/components/site/StepList";
+import TextLink from "@/app/components/site/TextLink";
+import { HOW_IT_WORKS_FAQ } from "@/app/content/faq";
 
 export const metadata: Metadata = {
-  title: "How It Works | Grocerra",
-  description:
-    "Learn how Grocerra connects you with local South Asian grocery stores, butchers, and caterers with live tracking and fast delivery.",
+	title: "How it works",
+	description: "Order groceries, fresh meat and catering from independent stores near you in five simple steps — delivery or pickup, with every fee shown upfront.",
 };
 
-const TIMELINE_STEPS = [
-  {
-    step: "01",
-    title: "Find a local store",
-    desc: "Enter your delivery address to instantly see nearby South Asian grocery stores, specialty spice markets, and certified halal butchers available in your suburb.",
-    detail: "Filter by dietary needs, South Asian regional cuisines (Indian, Pakistani, Bangladeshi, Sri Lankan), or customer ratings.",
-  },
-  {
-    step: "02",
-    title: "Add items to basket",
-    desc: "Select fresh vegetables, basmati rice, lentils, imported snacks, and custom butcher meat cuts.",
-    detail: "Real-time stock indicators ensure your favorite brands are in stock before you place an order.",
-  },
-  {
-    step: "03",
-    title: "See live delivery quote",
-    desc: "Get upfront distance-based delivery calculation with no hidden surge fees before you confirm.",
-    detail: "Clear breakdown of item prices, delivery quote, and estimated arrival timeframe.",
-  },
-  {
-    step: "04",
-    title: "Pay securely",
-    desc: "Checkout using 256-bit encrypted secure payment methods including major credit cards, Apple Pay, and Google Pay.",
-    detail: "Instant order confirmation sent to your phone with digital tax invoice.",
-  },
-  {
-    step: "05",
-    title: "Track courier in real time",
-    desc: "Watch your courier on an interactive live map from the store pickup to your front doorstep.",
-    detail: "Receive live SMS and app notifications at every stage: store packing, driver assigned, and doorstep arrival.",
-  },
-];
-
 export default function HowItWorksPage() {
-  return (
-    <>
-      <Header />
+	return (
+		<>
+			<PageHero
+				crumbs={[{ label: "Home", href: "/" }, { label: "How it works" }]}
+				title="From local shelves *to your door.*"
+				sub="Order groceries, fresh meat and catering from independent stores near you — in five simple steps."
+				produce={[
+					{ name: "vine-tomato", style: { left: "7%", top: 150, width: "clamp(80px,9vw,140px)" }, py: -200, pr: -30, delay: 0.6 },
+					{ name: "lime", style: { left: "14%", bottom: 120, width: 110 }, py: -120, pr: 30, delay: 0.8, bob: 2, hideMobile: true },
+					{ name: "yellow-bell-pepper", style: { right: "7%", top: 170, width: "clamp(80px,9vw,140px)" }, py: -220, pr: 35, delay: 0.7, bob: 3 },
+					{ name: "kiwi", style: { right: "15%", bottom: 110, width: 100 }, py: -100, pr: -25, delay: 0.9, hideMobile: true },
+				]}
+			>
+				<div className={s.heroCta}>
+					<ButtonLink href="/" tone="white" arrow>
+						Start shopping
+					</ButtonLink>
+					<ButtonLink href="/help" tone="line">
+						Read the FAQ
+					</ButtonLink>
+				</div>
+			</PageHero>
 
-      <main className="min-h-screen bg-[var(--bg-main)]">
-        {/* Breadcrumb Header */}
-        <div className="border-b border-[var(--border-color)] bg-[var(--bg-card)] py-4">
-          <div className="container">
-            <nav aria-label="Breadcrumb" className="flex items-center gap-2 text-xs text-[var(--text-muted)]">
-              <Link href="/" className="hover:text-[var(--green-primary)] transition-colors">
-                Home
-              </Link>
-              <span>/</span>
-              <span className="font-semibold text-[var(--text-main)]">How It Works</span>
-            </nav>
-          </div>
-        </div>
+			<section className={s.sec}>
+				<div className={s.wrap}>
+					<SectionHeading eyebrow="For customers" title="Five steps to a *fuller fridge*" />
+					<StepList
+						steps={[
+							{ title: "Find a store", body: "Browse local grocers, halal butchers and caterers delivering to your suburb. Search for products or filter by category — meat, rice and grains, spices and more.", produce: "cabbage" },
+							{ title: "Fill your basket", body: 'Choose options like cut type (curry cut, mince, boneless) and weight (500 g, 1 kg, 2 kg or custom), and add notes such as "small pieces".', produce: "mango" },
+							{ title: "See your total upfront", body: "Choose delivery or pickup, and standard or priority delivery where available. Every fee is shown at checkout before you pay — no surprises.", produce: "lemon" },
+							{ title: "Pay securely", body: "For weight-priced items like fresh meat and fish, you're charged for the exact weight packed — any difference from the estimate is released automatically.", produce: "red-bell-pepper" },
+							{ title: "Track it live", body: 'Follow your courier in the app, chat or call them, and add a tip before or after delivery. Choose "leave at door" if you won\'t be home.', produce: "avocado" },
+						]}
+					/>
+				</div>
+			</section>
 
-        {/* Hero / Top Component: How It Works Section */}
-        <HowItWorks />
+			<Marquee items={["Browse local stores", "Choose your cut", "See fees upfront", "Track live", "Delivery or pickup"]} />
 
-        {/* Detailed Customer Timeline Section */}
-        <section className="section-padding border-t border-[var(--border-color)] bg-[var(--bg-main)]">
-          <div className="container">
-            <div className="mx-auto max-w-3xl text-center">
-              <span className="inline-flex rounded-full border border-[var(--border-color)] bg-[var(--green-soft)] px-3 py-1 text-xs font-bold uppercase tracking-wider text-[var(--green-primary)]">
-                Step-by-Step Experience
-              </span>
-              <h2 className="mt-4 text-3xl font-extrabold text-[var(--text-main)] sm:text-4xl">
-                Your journey from store shelf to kitchen counter
-              </h2>
-              <p className="mt-3 text-base text-[var(--text-muted)]">
-                Here is exactly what happens behind the scenes when you order with Grocerra.
-              </p>
-            </div>
+			<section className={s.sec}>
+				<div className={s.wrap}>
+					<SectionHeading eyebrow="Your choice" title="Delivery *or* pickup" />
+					<div className={s.grid2}>
+						<Card tone="green" icon="truck" title="Delivery" produce="watermelon" minHeight={320}>
+							<p>Delivered by trusted courier partners — currently Uber Direct and DoorDash Drive — to selected Melbourne suburbs. Add a unit number and delivery instructions at checkout.</p>
+						</Card>
+						<Card tone="black" icon="store" title="Pickup" produce="banana" minHeight={320} delay={0.1}>
+							<p>Prefer to collect? Choose pickup at checkout where the store supports it, and grab your order when it&apos;s ready.</p>
+						</Card>
+					</div>
+				</div>
+			</section>
 
-            <div className="relative mx-auto mt-12 max-w-4xl space-y-8 pl-6 sm:pl-10 lg:pl-12">
-              {/* Vertical connecting timeline bar */}
-              <div className="absolute top-4 bottom-4 left-3 w-0.5 bg-[var(--green-primary)]/30 sm:left-5 lg:left-6" />
+			<section className={`${s.sec} ${s.secGrey}`}>
+				<div className={`${s.wrap} ${s.split}`}>
+					<div>
+						<SectionHeading
+							align="left"
+							eyebrow="Catering"
+							title="Planning an event? *We've got you.*"
+							lede="Catering orders work a little differently — the caterer prepares a quote for you first."
+						/>
+						<Reveal>
+							<ul className={s.check}>
+								<li>Tell us the date, guest count and dietary needs</li>
+								<li>The caterer sends you a quote</li>
+								<li>Pay a deposit to confirm</li>
+								<li>Your food arrives on the day</li>
+							</ul>
+							<div style={{ marginTop: 32 }}>
+								<ButtonLink href="/catering" arrow>
+									Explore catering
+								</ButtonLink>
+							</div>
+						</Reveal>
+					</div>
+					<RingVisual
+						rings={[360, 240]}
+						main={{ name: "pomegranate", width: 200 }}
+						items={[
+							{ name: "orange", width: 110, style: { left: "14%", top: "18%" } },
+							{ name: "pink-lady", width: 120, style: { right: "12%", bottom: "14%" }, bob: 3 },
+						]}
+					/>
+				</div>
+			</section>
 
-              {TIMELINE_STEPS.map((item) => (
-                <div key={item.step} className="group relative flex items-start gap-4 sm:gap-6">
-                  {/* Circle Step Number indicator */}
-                  <div className="relative z-10 flex size-9 shrink-0 items-center justify-center rounded-full border-2 border-[var(--green-primary)] bg-[var(--bg-card)] text-xs font-black text-[var(--green-primary)] shadow-sm transition-transform duration-300 group-hover:scale-110">
-                    {item.step}
-                  </div>
+			<section className={s.sec}>
+				<div className={s.narrow}>
+					<SectionHeading eyebrow="Quick answers" title="Common *questions*" />
+					<FaqList items={HOW_IT_WORKS_FAQ} openFirst />
+					<p className={`${s.center} ${s.faqMore}`}>
+						<TextLink href="/help">See all FAQs →</TextLink>
+					</p>
+				</div>
+			</section>
 
-                  {/* Content Box */}
-                  <div className="flex-1 rounded-2xl border border-[var(--border-card)] bg-[var(--bg-card)] p-6 shadow-sm transition-all duration-300 hover:border-[var(--green-primary)] hover:shadow-md">
-                    <h3 className="text-xl font-bold text-[var(--text-main)]">{item.title}</h3>
-                    <p className="mt-2 text-sm leading-6 text-[var(--text-main)]">{item.desc}</p>
-                    <p className="mt-2 rounded-lg bg-[var(--bg-card-subtle)] p-3 text-xs text-[var(--text-muted)]">
-                      💡 {item.detail}
-                    </p>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        </section>
-
-        {/* Short Catering Banner */}
-        <section className="border-t border-[var(--border-color)] bg-[var(--bg-card-subtle)] py-12">
-          <div className="container flex flex-col items-center justify-between gap-6 sm:flex-row">
-            <div>
-              <span className="text-xs font-bold uppercase tracking-wider text-[var(--green-primary)]">
-                Event & Party Orders
-              </span>
-              <h3 className="mt-1 text-2xl font-extrabold text-[var(--text-main)]">
-                Ordering for an event?
-              </h3>
-              <p className="mt-1 text-sm text-[var(--text-muted)]">
-                Get custom quotes for large catering spreads, family gatherings, and bulk butcher orders.
-              </p>
-            </div>
-            <Link href="/catering/request" className="btn-pill btn-green-accent shrink-0">
-              Request Catering Quote →
-            </Link>
-          </div>
-        </section>
-
-        {/* FAQ Link Footer Section */}
-        <section className="py-12 text-center border-t border-[var(--border-color)]">
-          <div className="container">
-            <p className="text-sm text-[var(--text-muted)]">
-              Have questions about delivery fees, store hours, or minimum orders?{" "}
-              <Link href="/help/faq" className="font-bold text-[var(--green-primary)] hover:underline">
-                Visit our Help & FAQ center
-              </Link>
-            </p>
-          </div>
-        </section>
-      </main>
-
-      <Footer />
-    </>
-  );
+			<CtaBand title="Ready when *you are.*" text="Your favourite local stores, a few taps away.">
+				<ButtonLink href="/" tone="white">
+					Start shopping
+				</ButtonLink>
+				<ButtonLink href="/#app" tone="line">
+					Download the app
+				</ButtonLink>
+			</CtaBand>
+		</>
+	);
 }
