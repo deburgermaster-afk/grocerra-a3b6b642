@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 
 import '../../../core/theme/app_theme.dart';
 import '../../../core/widgets/app_insets.dart';
-import '../../../core/widgets/round_icon_button.dart';
 
 /// `C23.01 · Notifications` — the grouped notification feed (Orders /
 /// Catering / Account) entered from the Home bell.
@@ -106,10 +105,10 @@ class _NotificationScreenState extends State<NotificationScreen> {
                 children: <Widget>[
                   Row(
                     children: <Widget>[
-                      RoundIconButton(
+                      IconButton(
                         tooltip: 'Back',
-                        icon: Icons.chevron_left,
-                        onTap: () => Navigator.of(context).maybePop(),
+                        icon: const Icon(Icons.arrow_back_rounded, size: 26, color: AppColors.ink),
+                        onPressed: () => Navigator.of(context).maybePop(),
                       ),
                       const Spacer(),
                       _MarkAllRead(onTap: _markAllRead),
