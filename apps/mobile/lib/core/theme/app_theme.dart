@@ -39,6 +39,16 @@ abstract final class AppColors {
   /// Accent for inline text links (`#047a43` in Figma).
   static const Color accentLink = Color(0xFF047A43);
 
+  // ── Savings / promo banner (Figma `R4 · Components` › Savings banner) ──
+  /// Mint banner surface (`#e8f5ed`).
+  static const Color promoSurface = Color(0xFFE8F5ED);
+
+  /// Tag glyph stroke on the banner (`#0e8a4f`).
+  static const Color promoIcon = Color(0xFF0E8A4F);
+
+  /// Banner label ink (`#0a663b`).
+  static const Color promoText = Color(0xFF0A663B);
+
   static const Color danger = Color(0xFFDC2626);
 
   // ── Glass surfaces (Figma `color/glass/*`) ─────────────────────────────
