@@ -290,6 +290,9 @@ void main() {
       ),
       'basmati',
     );
+    // Debounce (300ms) then the offline mock search delay (450ms).
+    await tester.pump(const Duration(milliseconds: 300));
+    await tester.pump(const Duration(milliseconds: 450));
     await tester.pumpAndSettle();
     expect(find.text('Items (1)'), findsOneWidget);
 
@@ -297,6 +300,48 @@ void main() {
     await tester.pumpAndSettle();
     expect(find.byType(SearchOverlay), findsNothing);
     expect(find.bySemanticsLabel('Home'), findsOneWidget);
+  });
+
+  testWidgets('home search overlay shows the no-results and error states', (
+    WidgetTester tester,
+  ) async {
+    await pumpToWelcome(tester);
+    await tapText(tester, 'Explore as guest');
+    await tester.tap(find.byType(SearchPill));
+    await tester.pump(GlassTabBar.expand);
+    await tester.pumpAndSettle();
+    expect(find.byType(SearchOverlay), findsOneWidget);
+
+    final Finder field = find.descendant(
+      of: find.byType(SearchOverlay),
+      matching: find.byType(TextField),
+    );
+
+    // Gibberish resolves to the no-results empty state.
+    await tester.enterText(field, 'zzzqqq');
+    await tester.pump(const Duration(milliseconds: 300));
+    await tester.pump(const Duration(milliseconds: 450));
+    await tester.pumpAndSettle();
+    expect(find.textContaining('No results for'), findsOneWidget);
+    expect(find.text('Clear search'), findsOneWidget);
+
+    // "Clear search" returns to idle suggestions.
+    await tester.tap(find.text('Clear search'));
+    await tester.pumpAndSettle();
+    expect(find.text('Recent searches'), findsOneWidget);
+
+    // "error" fails once (error state); "Try again" re-runs and lands on
+    // no-results.
+    await tester.enterText(field, 'error');
+    await tester.pump(const Duration(milliseconds: 300));
+    await tester.pump(const Duration(milliseconds: 450));
+    await tester.pumpAndSettle();
+    expect(find.text("Couldn't load results"), findsOneWidget);
+
+    await tester.tap(find.text('Try again'));
+    await tester.pump(const Duration(milliseconds: 450));
+    await tester.pumpAndSettle();
+    expect(find.textContaining('No results for'), findsOneWidget);
   });
 
   test('no cached session means signed out at launch', () async {

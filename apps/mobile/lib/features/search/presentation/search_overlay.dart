@@ -1,9 +1,13 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 import '../../../core/theme/app_theme.dart';
+import '../../../core/widgets/app_button.dart';
 import '../../../core/widgets/app_insets.dart';
 import '../../../core/widgets/glass_tab_bar.dart';
+import '../../../core/widgets/pill_button.dart';
 import '../../home/data/catalog.dart';
 
 /// Full-page search that grows out of the bottom bar.
@@ -27,6 +31,9 @@ class SearchOverlay extends StatefulWidget {
   State<SearchOverlay> createState() => _SearchOverlayState();
 }
 
+/// The C05.01 states the overlay moves through while you type.
+enum _OverlayStatus { idle, loading, results, noResults, error }
+
 class _SearchOverlayState extends State<SearchOverlay> {
   final TextEditingController _query = TextEditingController();
   final FocusNode _focus = FocusNode();
@@ -38,34 +45,113 @@ class _SearchOverlayState extends State<SearchOverlay> {
     'Gulab jamun',
   ];
 
+  /// The C05.01 states the overlay moves through as you type.
+  _OverlayStatus _status = _OverlayStatus.idle;
+
+  /// Bumped per run so a slow response can never overwrite a newer one.
+  int _run = 0;
+
+  Timer? _debounce;
+
+  /// Result of the last resolved search (kept for the results list).
+  List<Store> _stores = <Store>[];
+  List<Product> _products = <Product>[];
+
   @override
   void initState() {
     super.initState();
-    widget.progress.addStatusListener(_status);
+    widget.progress.addStatusListener(_statusListener);
     _query.addListener(() => setState(() {}));
   }
 
-  void _status(AnimationStatus s) {
+  void _statusListener(AnimationStatus s) {
     if (s == AnimationStatus.completed) _focus.requestFocus();
     if (s == AnimationStatus.reverse) _focus.unfocus();
   }
 
   @override
   void dispose() {
-    widget.progress.removeStatusListener(_status);
+    widget.progress.removeStatusListener(_statusListener);
+    _debounce?.cancel();
     _query.dispose();
     _focus.dispose();
     super.dispose();
   }
 
-  void _search(String q) {
+  void _onChanged(String value) {
+    _debounce?.cancel();
+    final String v = value.trim();
+    if (v.isEmpty) {
+      _run++; // drop any in-flight run
+      setState(() {
+        _status = _OverlayStatus.idle;
+        _stores = <Store>[];
+        _products = <Product>[];
+      });
+      return;
+    }
+    _debounce = Timer(const Duration(milliseconds: 300), () => _search(v));
+  }
+
+  void _search(String q, {int attempt = 0}) {
     final String v = q.trim();
     if (v.isEmpty) return;
+    final int run = ++_run;
     setState(() {
+      _status = _OverlayStatus.loading;
+      _stores = <Store>[];
+      _products = <Product>[];
       _recent
         ..remove(v)
         ..insert(0, v);
       if (_recent.length > 6) _recent.removeLast();
+    });
+    // Offline demo: a short delay stands in for the network round-trip so the
+    // loading state is real, then results / no-results resolve against the
+    // local catalogue. Typing "error" fails once so the error state is
+    // reachable; "Try again" re-runs and succeeds (landing on no-results).
+    Future<void>.delayed(const Duration(milliseconds: 450), () {
+      if (!mounted || run != _run) return;
+      if (v.toLowerCase() == 'error' && attempt == 0) {
+        setState(() => _status = _OverlayStatus.error);
+        return;
+      }
+      final List<Store> s = stores
+          .where(
+            (Store x) =>
+                x.name.toLowerCase().contains(v.toLowerCase()) ||
+                x.tagline.toLowerCase().contains(v.toLowerCase()),
+          )
+          .toList();
+      final List<Product> p = products
+          .where(
+            (Product x) =>
+                x.name.toLowerCase().contains(v.toLowerCase()) ||
+                x.store.toLowerCase().contains(v.toLowerCase()),
+          )
+          .toList();
+      if (!mounted || run != _run) return;
+      setState(() {
+        _stores = s;
+        _products = p;
+        _status = (s.isEmpty && p.isEmpty)
+            ? _OverlayStatus.noResults
+            : _OverlayStatus.results;
+      });
+    });
+  }
+
+  /// Error "Try again" re-runs the query and succeeds this time.
+  void _retry() => _search(_query.text, attempt: 1);
+
+  void _clearQuery() {
+    _debounce?.cancel();
+    _run++;
+    _query.clear();
+    setState(() {
+      _status = _OverlayStatus.idle;
+      _stores = <Store>[];
+      _products = <Product>[];
     });
   }
 
@@ -73,6 +159,7 @@ class _SearchOverlayState extends State<SearchOverlay> {
     HapticFeedback.selectionClick();
     _query.text = q;
     _query.selection = TextSelection.collapsed(offset: q.length);
+    _search(q);
   }
 
   @override
@@ -212,6 +299,7 @@ class _SearchOverlayState extends State<SearchOverlay> {
                       controller: _query,
                       focusNode: _focus,
                       textInputAction: TextInputAction.search,
+                      onChanged: _onChanged,
                       onSubmitted: _search,
                       cursorColor: AppColors.accent,
                       style: TextStyle(
@@ -237,7 +325,7 @@ class _SearchOverlayState extends State<SearchOverlay> {
                   if (_query.text.isNotEmpty)
                     IconButton(
                       tooltip: 'Clear',
-                      onPressed: _query.clear,
+                      onPressed: _clearQuery,
                       icon: Icon(Icons.cancel_rounded, size: 20, color: hint),
                     ),
                 ],
@@ -250,8 +338,18 @@ class _SearchOverlayState extends State<SearchOverlay> {
   }
 
   Widget _body() {
-    final String q = _query.text.trim().toLowerCase();
-    return q.isEmpty ? _suggestions() : _results(q);
+    switch (_status) {
+      case _OverlayStatus.idle:
+        return _suggestions();
+      case _OverlayStatus.loading:
+        return _loading();
+      case _OverlayStatus.results:
+        return _results();
+      case _OverlayStatus.noResults:
+        return _noResults();
+      case _OverlayStatus.error:
+        return _error();
+    }
   }
 
   Widget _suggestions() {
@@ -295,32 +393,10 @@ class _SearchOverlayState extends State<SearchOverlay> {
     );
   }
 
-  Widget _results(String q) {
-    final List<Store> s = stores
-        .where(
-          (Store x) =>
-              x.name.toLowerCase().contains(q) ||
-              x.tagline.toLowerCase().contains(q),
-        )
-        .toList();
-    final List<Product> p = products
-        .where(
-          (Product x) =>
-              x.name.toLowerCase().contains(q) ||
-              x.store.toLowerCase().contains(q),
-        )
-        .toList();
-
-    if (s.isEmpty && p.isEmpty) {
-      return Padding(
-        padding: const EdgeInsets.all(24),
-        child: Text(
-          'No results for "${_query.text.trim()}". Try a store, '
-          'a dish or an ingredient.',
-          style: const TextStyle(fontSize: 15, color: AppColors.inkMuted),
-        ),
-      );
-    }
+  Widget _results() {
+    final List<Store> s = _stores;
+    final List<Product> p = _products;
+    final String q = _query.text.trim().toLowerCase();
 
     return ListView(
       padding: EdgeInsets.fromLTRB(
@@ -369,6 +445,173 @@ class _SearchOverlayState extends State<SearchOverlay> {
             ),
         ],
       ],
+    );
+  }
+
+  // ---- C05.01 states: loading skeleton + no-results / error empty states ----
+
+  Widget _loading() {
+    return ListView(
+      padding: EdgeInsets.fromLTRB(
+        16,
+        12,
+        16,
+        24 + MediaQuery.viewInsetsOf(context).bottom,
+      ),
+      physics: const NeverScrollableScrollPhysics(),
+      children: <Widget>[
+        for (int i = 0; i < 4; i++) ...<Widget>[
+          if (i > 0) const SizedBox(height: 4),
+          const _SkeletonRow(),
+        ],
+      ],
+    );
+  }
+
+  Widget _noResults() {
+    return _EmptyState(
+      icon: Icons.search_rounded,
+      iconColor: AppColors.inkMuted,
+      title: 'No results for "${_query.text.trim()}"',
+      subtitle: 'Try a store, a dish or an ingredient.',
+      button: PillButton(
+        label: 'Clear search',
+        fill: AppColors.surfaceAlt,
+        height: 48,
+        onPressed: _clearQuery,
+      ),
+    );
+  }
+
+  Widget _error() {
+    return _EmptyState(
+      icon: Icons.close_rounded,
+      iconColor: AppColors.ink,
+      title: "Couldn't load results",
+      subtitle: 'Check your connection and try again.',
+      subtitleColor: AppColors.danger,
+      button: AppButton(
+        label: 'Try again',
+        height: 48,
+        onPressed: _retry,
+      ),
+    );
+  }
+}
+
+/// 80px grey bubble + title / subtitle / action, centred, per C05.01.
+class _EmptyState extends StatelessWidget {
+  const _EmptyState({
+    required this.icon,
+    required this.iconColor,
+    required this.title,
+    required this.subtitle,
+    required this.button,
+    this.subtitleColor = AppColors.inkMuted,
+  });
+
+  final IconData icon;
+  final Color iconColor;
+  final String title;
+  final String subtitle;
+  final Color subtitleColor;
+  final Widget button;
+
+  @override
+  Widget build(BuildContext context) {
+    return Center(
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 24),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: <Widget>[
+            Container(
+              width: 80,
+              height: 80,
+              alignment: Alignment.center,
+              decoration: const BoxDecoration(
+                color: AppColors.surfaceAlt,
+                shape: BoxShape.circle,
+              ),
+              child: Icon(icon, size: 34, color: iconColor),
+            ),
+            const SizedBox(height: 24),
+            Text(
+              title,
+              textAlign: TextAlign.center,
+              style: const TextStyle(
+                fontSize: 20,
+                fontWeight: FontWeight.w700,
+                letterSpacing: -0.3,
+                color: AppColors.ink,
+              ),
+            ),
+            const SizedBox(height: 12),
+            Text(
+              subtitle,
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                fontSize: 15,
+                fontWeight: FontWeight.w500,
+                color: subtitleColor,
+              ),
+            ),
+            const SizedBox(height: 24),
+            SizedBox(width: 180, child: button),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+/// Grey rounded placeholder block for the loading skeleton.
+class _SkeletonBox extends StatelessWidget {
+  const _SkeletonBox({required this.width, required this.height, this.radius = 6});
+
+  final double width;
+  final double height;
+  final double radius;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: width,
+      height: height,
+      decoration: BoxDecoration(
+        color: AppColors.surfaceAlt,
+        borderRadius: BorderRadius.circular(radius),
+      ),
+    );
+  }
+}
+
+/// One 64px thumbnail + three text lines, matching a result row while loading.
+class _SkeletonRow extends StatelessWidget {
+  const _SkeletonRow();
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 8),
+      child: Row(
+        children: <Widget>[
+          const _SkeletonBox(width: 64, height: 64, radius: 12),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: <Widget>[
+                const _SkeletonBox(width: 150, height: 14),
+                const SizedBox(height: 8),
+                const _SkeletonBox(width: 110, height: 12),
+                const SizedBox(height: 8),
+                const _SkeletonBox(width: 80, height: 12),
+              ],
+            ),
+          ),
+        ],
+      ),
     );
   }
 }

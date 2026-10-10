@@ -105,7 +105,14 @@ class LegalScreen extends StatelessWidget {
       children: <Widget>[
         Text('Account', style: Theme.of(context).textTheme.titleLarge),
         const SizedBox(height: 8),
-        PillButton(label: 'Sign out', height: 56, onPressed: () {}),
+        // Figma `Sign out` (`1:2553`) is a `#f3f3f3` fill, no stroke. Without
+      // the fill this pill defaults to white-on-white and disappears.
+      PillButton(
+        label: 'Sign out',
+        fill: AppColors.surfaceAlt,
+        height: 56,
+        onPressed: () {},
+      ),
       ],
     );
   }
