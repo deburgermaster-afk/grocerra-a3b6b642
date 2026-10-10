@@ -519,47 +519,48 @@ class _EmptyState extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Center(
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 24),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: <Widget>[
-            Container(
-              width: 80,
-              height: 80,
-              alignment: Alignment.center,
-              decoration: const BoxDecoration(
-                color: AppColors.surfaceAlt,
-                shape: BoxShape.circle,
-              ),
-              child: Icon(icon, size: 34, color: iconColor),
+    // Top-aligned like the loading / results lists (which start from the top
+    // under the field) rather than floating in the vertical centre. The 48px
+    // top gap mirrors the Figma frame's spacing under the search field.
+    return SingleChildScrollView(
+      padding: const EdgeInsets.fromLTRB(24, 48, 24, 24),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: <Widget>[
+          Container(
+            width: 80,
+            height: 80,
+            alignment: Alignment.center,
+            decoration: const BoxDecoration(
+              color: AppColors.surfaceAlt,
+              shape: BoxShape.circle,
             ),
-            const SizedBox(height: 24),
-            Text(
-              title,
-              textAlign: TextAlign.center,
-              style: const TextStyle(
-                fontSize: 20,
-                fontWeight: FontWeight.w700,
-                letterSpacing: -0.3,
-                color: AppColors.ink,
-              ),
+            child: Icon(icon, size: 34, color: iconColor),
+          ),
+          const SizedBox(height: 24),
+          Text(
+            title,
+            textAlign: TextAlign.center,
+            style: const TextStyle(
+              fontSize: 20,
+              fontWeight: FontWeight.w700,
+              letterSpacing: -0.3,
+              color: AppColors.ink,
             ),
-            const SizedBox(height: 12),
-            Text(
-              subtitle,
-              textAlign: TextAlign.center,
-              style: TextStyle(
-                fontSize: 15,
-                fontWeight: FontWeight.w500,
-                color: subtitleColor,
-              ),
+          ),
+          const SizedBox(height: 12),
+          Text(
+            subtitle,
+            textAlign: TextAlign.center,
+            style: TextStyle(
+              fontSize: 15,
+              fontWeight: FontWeight.w500,
+              color: subtitleColor,
             ),
-            const SizedBox(height: 24),
-            SizedBox(width: 180, child: button),
-          ],
-        ),
+          ),
+          const SizedBox(height: 24),
+          SizedBox(width: 180, child: button),
+        ],
       ),
     );
   }
