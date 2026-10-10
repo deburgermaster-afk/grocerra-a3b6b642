@@ -135,8 +135,8 @@ class WelcomeScreen extends StatelessWidget {
                           ).push(AuthRoute<void>(page: const SignUpScreen())),
                         ),
                       ),
-                      // Demo builds only (no Supabase config): walk the app
-                      // without an account. Never shown once auth is wired.
+                      // Demo builds only (GROCERRA_DEMO_MODE): walk the app
+                      // without an account. Hidden once demo mode is off.
                       if (AppConfig.bypassAuthentication)
                         Center(
                           child: Pressable(

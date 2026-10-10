@@ -2,6 +2,7 @@
   "GROCERRA_API_BASE_URL": "https://dfktgmjkgspljdpsvbcl.supabase.co",
   "GROCERRA_SUPABASE_ANON_KEY": "sb_publishable_pCOxXjzQEg2uDG02tGLIsQ_-cdURr6F",
   "GROCERRA_OAUTH_ENABLED": "false",
+  "GROCERRA_DEMO_MODE": "true",
   "GROCERRA_APP_URL": "https://grocerra-app.vercel.app",
   "GROCERRA_SITE_URL": "https://grocerra.com.au"
 }

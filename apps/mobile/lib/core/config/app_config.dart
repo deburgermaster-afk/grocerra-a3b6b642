@@ -49,14 +49,17 @@ abstract final class AppConfig {
 
   /// Development / demo bypass for the Sign In screen.
   ///
-  /// The production Supabase auth backend is not configured yet, so while the
-  /// UI is being built this flag lets the primary "Sign In" button continue to
-  /// the next approved screen without valid credentials, keeping the whole flow
-  /// navigable in Chrome.
+  /// While the UI is being built this flag lets the primary "Sign In" button
+  /// continue to the next approved screen without valid credentials, keeping
+  /// the whole flow navigable in Chrome. It applies to **every** build by
+  /// default — including the Vercel preview, which compiles the Supabase keys
+  /// from config/vercel.defines.json in — so localhost and the deployed URL
+  /// walk through sign-in identically.
   ///
   /// It is **not** a production authentication feature: it only short-circuits
   /// the sign-in step, it never mints a session, and it must be turned off for
-  /// any real build with `--dart-define=GROCERRA_DEMO_MODE=false`. The real
+  /// any real build with `--dart-define=GROCERRA_DEMO_MODE=false` (or by
+  /// flipping GROCERRA_DEMO_MODE in config/vercel.defines.json). The real
   /// Supabase implementation in [signIn] stays intact and is used whenever this
   /// flag is off, so nothing has to be rebuilt to restore it.
   static const bool demoMode = bool.fromEnvironment(
@@ -71,5 +74,11 @@ abstract final class AppConfig {
       apiBaseUrl.isNotEmpty && supabaseAnonKey.isNotEmpty;
 
   /// True when Sign In should skip the real credential check and continue.
-  static bool get bypassAuthentication => demoMode && !isSupabaseConfigured;
+  ///
+  /// Driven purely by [demoMode] — NOT by the presence of Supabase keys.
+  /// Keying off `isSupabaseConfigured` made the Vercel preview (which
+  /// compiles config/vercel.defines.json in) enforce real credentials while
+  /// a plain local `flutter run` walked through, so the two builds showed
+  /// different sign-in flows. Both now follow [demoMode].
+  static bool get bypassAuthentication => demoMode;
 }
