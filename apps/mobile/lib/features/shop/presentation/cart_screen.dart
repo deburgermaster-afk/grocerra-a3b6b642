@@ -327,8 +327,11 @@ class CartScreen extends StatelessWidget {
   }
 
   Widget _buildOffersSection() {
+    // Only the heading keeps the 16px right gutter; the carousel itself runs
+    // to the true screen edge so the next card clips flush against the edge
+    // (a natural bleed) instead of floating above a dead strip of background.
     return Padding(
-      padding: const EdgeInsets.fromLTRB(16, 20, 16, 20),
+      padding: const EdgeInsets.fromLTRB(16, 20, 0, 20),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
@@ -346,7 +349,9 @@ class CartScreen extends StatelessWidget {
             height: 243,
             child: ListView.separated(
               scrollDirection: Axis.horizontal,
-              padding: EdgeInsets.zero,
+              // Trailing space lives inside the scroll content, so the last
+              // card still lands on the 16px gutter when scrolled to the end.
+              padding: const EdgeInsets.only(right: 16),
               itemCount: _offers.length,
               separatorBuilder: (_, _) => const SizedBox(width: 12),
               itemBuilder: (context, index) =>
