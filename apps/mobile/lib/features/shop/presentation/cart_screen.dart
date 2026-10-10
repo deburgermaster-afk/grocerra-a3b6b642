@@ -4,6 +4,7 @@ import 'package:flutter/services.dart';
 import '../../../core/cart/cart_controller.dart';
 import '../../../core/cart/cart_item.dart';
 import '../../../core/theme/app_theme.dart';
+import '../../../core/widgets/app_icon.dart';
 import '../../../core/widgets/app_insets.dart';
 import '../../../core/widgets/tag_pill.dart';
 
@@ -422,14 +423,15 @@ class CartScreen extends StatelessWidget {
               ],
             ),
           ),
-          // Savings banner 390×38 #f3f3f3, square corners.
+          // Savings banner 390×38 mint `#e8f5ed` (Figma `R4` › Savings
+          // banner): green tag `#0e8a4f`, dark-green label `#0a663b`.
           Container(
             height: 38,
-            color: AppColors.surfaceAlt,
+            color: AppColors.promoSurface,
             padding: const EdgeInsets.symmetric(horizontal: 16),
             child: const Row(
               children: <Widget>[
-                Icon(Icons.local_offer, size: 18, color: AppColors.ink),
+                AppIcon('tag', size: 18, color: AppColors.promoIcon),
                 SizedBox(width: 10),
                 Text(
                   'Saving \$2.50 with offers',
@@ -437,7 +439,7 @@ class CartScreen extends StatelessWidget {
                     fontSize: 14,
                     height: 17 / 14,
                     fontWeight: FontWeight.w500,
-                    color: AppColors.ink,
+                    color: AppColors.promoText,
                   ),
                 ),
               ],
