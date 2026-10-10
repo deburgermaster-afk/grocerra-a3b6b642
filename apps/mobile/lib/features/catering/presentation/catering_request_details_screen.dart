@@ -287,7 +287,7 @@ class CateringRequestDetailsScreen extends StatelessWidget {
                           style: OutlinedButton.styleFrom(
                             foregroundColor: AppColors.ink,
                             padding: const EdgeInsets.symmetric(vertical: 14),
-                            side: const BorderSide(color: Color(0xFFE4E4E7)),
+                            side: const BorderSide(color: AppColors.outline),
                             shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
                           ),
                           child: const Text('Contact caterer', style: TextStyle(fontWeight: FontWeight.w700, fontSize: 13)),
@@ -304,7 +304,7 @@ class CateringRequestDetailsScreen extends StatelessWidget {
                           style: OutlinedButton.styleFrom(
                             foregroundColor: AppColors.ink,
                             padding: const EdgeInsets.symmetric(vertical: 14),
-                            side: const BorderSide(color: Color(0xFFE4E4E7)),
+                            side: const BorderSide(color: AppColors.outline),
                             shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
                           ),
                           child: const Text('View quote', style: TextStyle(fontWeight: FontWeight.w700, fontSize: 13)),
@@ -325,7 +325,7 @@ class CateringRequestDetailsScreen extends StatelessWidget {
                           style: OutlinedButton.styleFrom(
                             foregroundColor: AppColors.ink,
                             padding: const EdgeInsets.symmetric(vertical: 14),
-                            side: const BorderSide(color: Color(0xFFE4E4E7)),
+                            side: const BorderSide(color: AppColors.outline),
                             shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
                           ),
                           child: const Text('Request changes', style: TextStyle(fontWeight: FontWeight.w700, fontSize: 13)),
@@ -340,7 +340,7 @@ class CateringRequestDetailsScreen extends StatelessWidget {
                           style: OutlinedButton.styleFrom(
                             foregroundColor: AppColors.ink,
                             padding: const EdgeInsets.symmetric(vertical: 14),
-                            side: const BorderSide(color: Color(0xFFE4E4E7)),
+                            side: const BorderSide(color: AppColors.outline),
                             shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
                           ),
                           child: const Text('Report an issue', style: TextStyle(fontWeight: FontWeight.w700, fontSize: 13)),

@@ -22,8 +22,17 @@ abstract final class AppColors {
   /// Input fills, segmented-control track and nav indicators (`#f3f3f3`).
   static const Color surfaceAlt = Color(0xFFF3F3F3);
 
-  /// Hairline strokes - button outlines and dividers (`#e6e6e6`).
+  /// Hairline strokes - dividers (`#e6e6e6`).
   static const Color hairline = Color(0xFFE6E6E6);
+
+  /// Secondary button outline (`#cfcfcf` - Figma `Button · Back to home`
+  /// and the `Secondary actions` pills).
+  static const Color outline = Color(0xFFCFCFCF);
+
+  /// Semantic green for unread / success markers (`#047a43` - the C23.01
+  /// unread dot).
+  static const Color success = Color(0xFF047A43);
+
   static const Color danger = Color(0xFFDC2626);
 }
 
@@ -69,6 +78,24 @@ abstract final class AppTheme {
           backgroundColor: AppColors.ink,
           foregroundColor: AppColors.surface,
           minimumSize: const Size.fromHeight(56),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(28),
+          ),
+          textStyle: const TextStyle(
+            fontSize: 16,
+            fontWeight: FontWeight.w600,
+          ),
+        ),
+      ),
+      // Secondary buttons (`Button · Back to home`, C13.01): transparent fill,
+      // 1px `#cfcfcf` outline, r28, ink 16/600 label. `minimumSize` stays off
+      // the theme so compact outlined variants (grid actions, chips) keep
+      // their own heights - full-width secondaries use `SecondaryButton`.
+      outlinedButtonTheme: OutlinedButtonThemeData(
+        style: OutlinedButton.styleFrom(
+          foregroundColor: AppColors.ink,
+          side: const BorderSide(color: AppColors.outline),
+          padding: const EdgeInsets.symmetric(horizontal: 24),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(28),
           ),

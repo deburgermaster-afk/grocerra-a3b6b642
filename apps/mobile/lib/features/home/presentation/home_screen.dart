@@ -178,7 +178,8 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
             IconButton(
               tooltip: 'Notifications',
-              onPressed: () {},
+              onPressed: () =>
+                  Navigator.of(context).pushNamed('/notifications'),
               icon: const Badge(
                 smallSize: 8,
                 child: Icon(Icons.notifications_none_rounded, size: 26),

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../../core/theme/app_theme.dart';
+import '../../../core/widgets/secondary_button.dart';
 import 'catering_request_details_screen.dart';
 
 /// Figma `C4 · Quote request sent` (390×844)
@@ -112,27 +113,18 @@ class CateringConfirmationScreen extends StatelessWidget {
                 },
                 style: FilledButton.styleFrom(
                   backgroundColor: AppColors.ink,
-                  minimumSize: const Size(double.infinity, 52),
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(26)),
+                  minimumSize: const Size(double.infinity, 56),
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(28)),
                 ),
                 child: const Text(
                   'View request',
-                  style: TextStyle(fontWeight: FontWeight.w700, fontSize: 16),
+                  style: TextStyle(fontWeight: FontWeight.w600, fontSize: 16),
                 ),
               ),
               const SizedBox(height: 12),
-              OutlinedButton(
+              SecondaryButton(
                 onPressed: () => Navigator.of(context).popUntil((Route<dynamic> r) => r.isFirst),
-                style: OutlinedButton.styleFrom(
-                  foregroundColor: AppColors.ink,
-                  minimumSize: const Size(double.infinity, 52),
-                  side: const BorderSide(color: Color(0xFFE4E4E7)),
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(26)),
-                ),
-                child: const Text(
-                  'Back to home',
-                  style: TextStyle(fontWeight: FontWeight.w700, fontSize: 16),
-                ),
+                label: 'Back to home',
               ),
             ],
           ),
