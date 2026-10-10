@@ -5,6 +5,7 @@ import '../../../core/cart/cart_controller.dart';
 import '../../../core/cart/cart_item.dart';
 import '../../../core/theme/app_theme.dart';
 import '../../../core/widgets/app_insets.dart';
+import '../../shop/domain/product_ref.dart';
 import '../data/catalog.dart';
 
 /// Home, laid out like a dense marketplace feed (reference: Uber Eats):
@@ -650,7 +651,17 @@ class _ProductCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return _Tap(
-      onTap: () => Navigator.of(context).pushNamed('/product'),
+      onTap: () => Navigator.of(context).pushNamed(
+        '/product',
+        arguments: ProductRef(
+          id: product.name.toLowerCase().replaceAll(' ', '-'),
+          name: product.name,
+          price: product.price / 100,
+          emoji: product.emoji,
+          tint: product.tint,
+          storeName: product.store,
+        ),
+      ),
       child: SizedBox(
         width: 124,
         child: Column(

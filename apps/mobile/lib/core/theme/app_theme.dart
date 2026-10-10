@@ -16,6 +16,9 @@ abstract final class AppColors {
   /// Secondary text, field labels and placeholders (`#6b6b6b` in Figma).
   static const Color inkMuted = Color(0xFF6B6B6B);
 
+  /// Tertiary text / disabled glyphs (`#8a8a8a` in Figma).
+  static const Color inkFaint = Color(0xFF8A8A8A);
+
   static const Color canvas = Color(0xFFF7F7F8);
   static const Color surface = Color(0xFFFFFFFF);
 
@@ -33,7 +36,51 @@ abstract final class AppColors {
   /// unread dot).
   static const Color success = Color(0xFF047A43);
 
+  /// Accent for inline text links (`#047a43` in Figma).
+  static const Color accentLink = Color(0xFF047A43);
+
   static const Color danger = Color(0xFFDC2626);
+
+  // ── Glass surfaces (Figma `color/glass/*`) ─────────────────────────────
+  /// Glass bars at 80% white (`#ffffffcc` - delete-account / legal bars).
+  static const Color glassBar = Color(0xCCFFFFFF);
+
+  /// Hairline stroke for [glassBar] (`#ffffff8c`).
+  static const Color glassBarStroke = Color(0x8CFFFFFF);
+
+  /// Glass controls at 68% white (`#ffffffad` - B3/B4 glass headers,
+  /// glass `+` buttons, product bottom bar).
+  static const Color glassControl = Color(0xADFFFFFF);
+
+  /// Hairline stroke for [glassControl] (`#ffffff80`).
+  static const Color glassControlStroke = Color(0x80FFFFFF);
+
+  /// Muted glass bubbles over imagery (`#ffffff29` - B2 Browse photo
+  /// bubbles without a caption).
+  static const Color glassBubbleMuted = Color(0x29FFFFFF);
+
+  // ── Overlays ───────────────────────────────────────────────────────────
+  /// Soft `6%` black wash (B4 segmented pills, store back fill).
+  static const Color overlaySoft = Color(0x0F000000);
+
+  /// `8%` black indicator wash (selected rows, steppers).
+  static const Color overlayIndicator = Color(0x14000000);
+
+  /// `12%` black track under progress bars (C15 orders).
+  static const Color progressTrack = Color(0x1F000000);
+
+  /// Full `50%` black scrim behind modal sheets.
+  static const Color scrim = Color(0x80000000);
+
+  // ── Map colours (C14 tracking) ─────────────────────────────────────────
+  static const Color mapCanvas = Color(0xFFF8F8F8);
+  static const Color mapBlock = Color(0xFFE8E8E8);
+  static const Color mapBlockBlue = Color(0xFFDBE5F2);
+  static const Color mapBlockGreen = Color(0xFFDBEDDB);
+
+  /// Live courier dot (`#1f70f0`) and its 18% halo.
+  static const Color liveDot = Color(0xFF1F70F0);
+  static const Color liveDotHalo = Color(0x2E1F70F0);
 }
 
 abstract final class AppTheme {
@@ -239,9 +286,14 @@ abstract final class AppTheme {
   }
 }
 
-/// Figma effect styles `Elevation - 1/2/3` (drop shadows, applied as box
+/// Figma effect styles `Elevation - 0/1/2/3` (drop shadows, applied as box
 /// shadows so they can sit on frames that are not `Card`s).
 abstract final class AppShadows {
+  /// Selected segmented-control pill - 0 1 4 rgba(0,0,0,0.10).
+  static const List<BoxShadow> e0 = <BoxShadow>[
+    BoxShadow(color: Color(0x1A000000), offset: Offset(0, 1), blurRadius: 4),
+  ];
+
   /// `Elevation - 1` - 0 4 16 rgba(0,0,0,0.08).
   static const List<BoxShadow> e1 = <BoxShadow>[
     BoxShadow(color: Color(0x14000000), offset: Offset(0, 4), blurRadius: 16),
@@ -261,6 +313,26 @@ abstract final class AppShadows {
   /// 0 -4 16 rgba(0,0,0,0.06).
   static const List<BoxShadow> topBar = <BoxShadow>[
     BoxShadow(color: Color(0x0F000000), offset: Offset(0, -4), blurRadius: 16),
+  ];
+
+  /// `Edit pin` pill over the B6 map - 0 2 8 rgba(0,0,0,0.18).
+  static const List<BoxShadow> pinPill = <BoxShadow>[
+    BoxShadow(color: Color(0x2E000000), offset: Offset(0, 2), blurRadius: 8),
+  ];
+
+  /// C14 map controls (close / share / Help) - 0 2 8 rgba(0,0,0,0.12).
+  static const List<BoxShadow> mapControl = <BoxShadow>[
+    BoxShadow(color: Color(0x1F000000), offset: Offset(0, 2), blurRadius: 8),
+  ];
+
+  /// C14 locate button and `1 min` ETA bubble - 0 2 8 rgba(0,0,0,0.15).
+  static const List<BoxShadow> mapBubble = <BoxShadow>[
+    BoxShadow(color: Color(0x26000000), offset: Offset(0, 2), blurRadius: 8),
+  ];
+
+  /// C14 tracking sheet - 0 -6 20 rgba(0,0,0,0.12).
+  static const List<BoxShadow> sheetTop = <BoxShadow>[
+    BoxShadow(color: Color(0x1F000000), offset: Offset(0, -6), blurRadius: 20),
   ];
 }
 

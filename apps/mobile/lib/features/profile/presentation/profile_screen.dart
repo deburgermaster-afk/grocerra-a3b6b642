@@ -87,7 +87,7 @@ class ProfileScreen extends StatelessWidget {
           _Row(
             icon: Icons.receipt_long_outlined,
             title: 'Orders',
-            onTap: () => _soon(context, 'Order history'),
+            onTap: () => Navigator.of(context).pushNamed('/orders'),
           ),
           _Row(
             icon: Icons.location_on_outlined,
@@ -102,17 +102,25 @@ class ProfileScreen extends StatelessWidget {
           _Row(
             icon: Icons.favorite_border_rounded,
             title: 'Favourites',
-            onTap: () => _soon(context, 'Favourites'),
+            onTap: () =>
+                Navigator.of(context).pushNamed('/profile/favourites'),
+          ),
+          _Row(
+            icon: Icons.local_offer_outlined,
+            title: 'Promotions',
+            onTap: () => Navigator.of(context).pushNamed(
+              '/profile/promotions',
+            ),
           ),
           _Row(
             icon: Icons.help_outline_rounded,
             title: 'Help & support',
-            onTap: () => _soon(context, 'Help & support'),
+            onTap: () => Navigator.of(context).pushNamed('/profile/help'),
           ),
           _Row(
             icon: Icons.shield_outlined,
             title: 'Privacy & terms',
-            onTap: () => _soon(context, 'Privacy & terms'),
+            onTap: () => Navigator.of(context).pushNamed('/profile/legal'),
           ),
           if (account != null) ...<Widget>[
             const SizedBox(height: 12),

@@ -18,9 +18,13 @@ import '../../search/presentation/search_overlay.dart';
 /// The bar floats over content; scrolling screens pad by
 /// `AppInsets.tabBar`.
 class HomeShell extends StatefulWidget {
-  const HomeShell({super.key});
+  const HomeShell({super.key, this.initialIndex = 0});
 
   static const String routeName = '/home';
+
+  /// Opens the shell on a specific tab (deep links, tab-bar taps on pushed
+  /// screens such as Store).
+  final int initialIndex;
 
   @override
   State<HomeShell> createState() => _HomeShellState();
@@ -28,7 +32,7 @@ class HomeShell extends StatefulWidget {
 
 class _HomeShellState extends State<HomeShell>
     with SingleTickerProviderStateMixin {
-  int _index = 0;
+  late int _index = widget.initialIndex;
 
   /// Search pill stretched across the bar.
   bool _stretched = false;

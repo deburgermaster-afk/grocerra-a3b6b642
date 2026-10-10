@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 
 import '../../../core/theme/app_theme.dart';
 
@@ -17,6 +16,7 @@ class SearchField extends StatelessWidget {
     this.controller,
     this.autofocus = false,
     this.iconSize = 24,
+    this.gap = 8,
     this.focusNode,
     this.onChanged,
     this.prefixIcon,
@@ -27,6 +27,10 @@ class SearchField extends StatelessWidget {
   final TextEditingController? controller;
   final bool autofocus;
   final double iconSize;
+
+  /// Space between the glyph and the placeholder text (Figma B1 uses 8,
+  /// B2 Browse uses 10).
+  final double gap;
   final FocusNode? focusNode;
   final ValueChanged<String>? onChanged;
   final Widget? prefixIcon;
@@ -40,7 +44,7 @@ class SearchField extends StatelessWidget {
         const SizedBox(width: 16),
         prefixIcon ??
             Icon(Icons.search, size: iconSize, color: AppColors.inkMuted),
-        const SizedBox(width: 8),
+        SizedBox(width: gap),
         Expanded(
           child: live
               ? TextField(

@@ -7,6 +7,7 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import 'core/config/app_config.dart';
 import 'core/services/supabase_service.dart';
 import 'core/theme/app_theme.dart';
+import 'features/account/presentation/account_extra_routes.dart';
 import 'features/account/presentation/account_routes.dart';
 import 'features/auth/presentation/delivery_address_screen.dart';
 import 'features/auth/presentation/forgot_password_screen.dart';
@@ -19,6 +20,7 @@ import 'features/auth/presentation/sign_in_screen.dart';
 import 'features/auth/presentation/sign_up_screen.dart';
 import 'features/auth/presentation/splash_screen.dart';
 import 'features/auth/presentation/welcome_screen.dart';
+import 'features/browse/presentation/browse_routes.dart';
 import 'features/catering/presentation/catering_routes.dart';
 import 'features/search/presentation/search_routes.dart';
 import 'features/shell/presentation/home_shell.dart';
@@ -126,6 +128,8 @@ class _GrocerraAppState extends State<GrocerraApp> {
             ...searchRoutes,
             ...supportRoutes,
             ...accountRoutes,
+            ...accountExtraRoutes,
+            ...browseRoutes,
           },
         );
 
