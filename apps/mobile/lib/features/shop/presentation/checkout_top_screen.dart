@@ -1,13 +1,23 @@
 import 'package:flutter/material.dart';
 
+import '../../../core/cart/cart_controller.dart';
+import '../../../core/cart/cart_item.dart';
 import '../../../core/theme/app_theme.dart';
 import '../../../core/widgets/app_insets.dart';
+import '../../../core/widgets/grocerra_map.dart';
+import '../../home/data/catalog.dart';
+import 'checkout_totals.dart';
 
-/// Figma `B6 · Checkout v2 · Top` — exact 390×844 frame port.
+/// Checkout step 3 — the reference `Checkout` screen.
 ///
-/// Scrollable screen with fixed glass header (back, title) and a bottom
-/// action bar. The floating tab bar is owned by `HomeShell`; we pad the
-/// bottom by `AppInsets.tabBar`.
+/// One long scroll under a pinned action bar, in the reference order:
+/// map + address, delivery options, the live order summary, the fee
+/// breakdown, payment and the email-offers opt-in; the savings banner and
+/// `Next` stay pinned at the bottom.
+///
+/// Items and money read [CartStore] through [CheckoutTotals], so a
+/// quantity change in the cart or an upsell add flows straight into the
+/// summary and the payable total. Offline demo state only.
 class CheckoutTopScreen extends StatefulWidget {
   const CheckoutTopScreen();
 
@@ -18,8 +28,50 @@ class CheckoutTopScreen extends StatefulWidget {
 }
 
 class _CheckoutTopScreenState extends State<CheckoutTopScreen> {
-  int _mode = 0; // 0 = Delivery, 1 = Pickup
-  int _selectedTimeOption = 1; // 0=Priority, 1=Standard, 2=Schedule
+  /// Delivery option: 0 Priority, 1 Standard (default), 2 Schedule.
+  int _selected = 1;
+
+  bool _emailOffers = false;
+
+  /// Section heading — `App / Bold / 20`.
+  static const TextStyle _h3 = TextStyle(
+    fontSize: 20,
+    height: 24 / 20,
+    fontWeight: FontWeight.w700,
+    color: AppColors.ink,
+  );
+
+  /// Row title — `App / Semi Bold / 16`.
+  static const TextStyle _rowTitle = TextStyle(
+    fontSize: 16,
+    height: 19 / 16,
+    fontWeight: FontWeight.w600,
+    color: AppColors.ink,
+  );
+
+  /// Row caption — `App / Regular / 13`, `#6b6b6b`.
+  static const TextStyle _rowCaption = TextStyle(
+    fontSize: 13,
+    height: 16 / 13,
+    fontWeight: FontWeight.w400,
+    color: AppColors.inkMuted,
+  );
+
+  /// Screen title — `App / Bold / 30`.
+  static const TextStyle _h30 = TextStyle(
+    fontSize: 30,
+    height: 36 / 30,
+    letterSpacing: -0.6,
+    fontWeight: FontWeight.w700,
+    color: AppColors.ink,
+  );
+
+  void _select(int option) {
+    setState(() {
+      _selected = option;
+      CheckoutTotals.priority = option == 0;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -27,56 +79,274 @@ class _CheckoutTopScreenState extends State<CheckoutTopScreen> {
 
     return Scaffold(
       backgroundColor: AppColors.surface,
-      body: SingleChildScrollView(
-        padding: EdgeInsets.fromLTRB(0, topInset, 0, AppInsets.tabBar),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: <Widget>[
-            _buildHeader(),
-            _buildModeSelector(),
-            _buildMap(),
-            _buildDetailsSection(),
-            _buildDeliveryTime(),
-            _buildTimeOptions(),
-            _buildBottomActionBar(),
-          ],
-        ),
+      body: ListenableBuilder(
+        listenable: CartStore.instance,
+        builder: (BuildContext context, Widget? _) {
+          return Stack(
+            children: <Widget>[
+              SingleChildScrollView(
+                padding: EdgeInsets.fromLTRB(0, topInset, 0, 150),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: <Widget>[
+                    _buildHeader(),
+                    _buildMap(),
+                    _buildAddress(),
+                    _buildDeliveryOptions(),
+                    _buildOrderSummary(),
+                    _buildFees(),
+                    _buildPayment(),
+                    _buildEmailOffers(),
+                  ],
+                ),
+              ),
+              Positioned(
+                left: 0,
+                right: 0,
+                bottom: 0,
+                child: _buildBottomBar(context),
+              ),
+            ],
+          );
+        },
       ),
     );
   }
 
+  /// Header — plain back arrow like the reference flow, title below.
   Widget _buildHeader() {
     return Container(
-      height: 112,
-      padding: const EdgeInsets.fromLTRB(16, 8, 16, 0),
+      height: 104,
+      padding: const EdgeInsets.fromLTRB(8, 4, 16, 0),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
-          // Back button 40×40 #f3f3f3
-          Align(
-            alignment: Alignment.centerLeft,
-            child: Container(
-              width: 40,
-              height: 40,
-              decoration: BoxDecoration(
-                color: AppColors.surfaceAlt,
-                borderRadius: BorderRadius.circular(20),
-              ),
-              child: IconButton(
-                padding: EdgeInsets.zero,
-                icon: const Icon(Icons.arrow_back, size: 24, color: AppColors.ink),
-                onPressed: () => Navigator.of(context).maybePop(),
-              ),
+          IconButton(
+            tooltip: 'Back',
+            onPressed: () => Navigator.of(context).maybePop(),
+            icon: const Icon(
+              Icons.arrow_back_rounded,
+              size: 26,
+              color: AppColors.ink,
             ),
           ),
+          const Padding(
+            padding: EdgeInsets.symmetric(horizontal: 8),
+            child: Text('Checkout', style: _h30),
+          ),
+        ],
+      ),
+    );
+  }
+
+  /// The demo delivery address — 12 Queen St, Melbourne (the same one the
+  /// Carts card and order receipt use).
+  static const double _lat = -37.8143;
+  static const double _lng = 144.9553;
+
+  /// Map card — MapLibre GL with CARTO positron (the engine and default
+  /// style behind mapcn), centred on the delivery address. The pin, `Edit
+  /// pin` pill and attribution render in the map's DOM layer; the strip's
+  /// width stretches with the screen and the map is non-interactive so the
+  /// checkout page keeps scrolling over it.
+  Widget _buildMap() {
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(16, 0, 16, 0),
+      child: SizedBox(
+        height: 127,
+        width: double.infinity,
+        child: buildGrocerraMap(lat: _lat, lng: _lng, zoom: 16),
+      ),
+    );
+  }
+
+  /// Address and dropoff rows under the map (reference: `Home`, then
+  /// `Leave at reception`).
+  Widget _buildAddress() {
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(16, 8, 16, 0),
+      child: Column(
+        children: <Widget>[
+          _DetailRow(
+            icon: Icons.home,
+            title: 'Home',
+            subtitle: '12 Queen St, Melbourne, VIC 3000',
+            onTap: () => Navigator.of(context).pushNamed('/delivery-address'),
+          ),
+          _buildDivider(),
+          _DetailRow(
+            icon: Icons.business,
+            title: 'Leave at reception',
+            subtitle: 'Please leave it at reception.',
+            onTap: () => ScaffoldMessenger.of(context)
+              ..hideCurrentSnackBar()
+              ..showSnackBar(
+                const SnackBar(
+                  behavior: SnackBarBehavior.floating,
+                  backgroundColor: AppColors.ink,
+                  shape: RoundedRectangleBorder(
+                    borderRadius:
+                        BorderRadius.all(Radius.circular(AppRadius.lg)),
+                  ),
+                  content: Text(
+                    'Dropoff options are coming soon',
+                    style: TextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w500,
+                      color: AppColors.surface,
+                    ),
+                  ),
+                ),
+              ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  /// `Delivery Options`: three full-width radio cards, selected one outlined
+  /// in black as in the reference. Priority adds its surcharge to the total.
+  Widget _buildDeliveryOptions() {
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(16, 20, 16, 0),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: <Widget>[
+          const Text('Delivery Options', style: _h3),
           const SizedBox(height: 12),
-          Text(
-            'Checkout',
-            style: const TextStyle(
-              fontSize: 30,
-              height: 36 / 30,
-              fontWeight: FontWeight.w700,
-              color: AppColors.ink,
+          _DeliveryOption(
+            icon: Icons.bolt,
+            iconColor: AppColors.accent,
+            title: 'Priority',
+            caption: '10–15 min(s) · Delivered directly to you',
+            price: '+${CheckoutTotals.usd(CheckoutTotals.priorityFee)}',
+            selected: _selected == 0,
+            onTap: () => _select(0),
+          ),
+          const SizedBox(height: 8),
+          _DeliveryOption(
+            icon: Icons.electric_scooter,
+            title: 'Standard',
+            caption: '10–20 min(s)',
+            selected: _selected == 1,
+            onTap: () => _select(1),
+          ),
+          const SizedBox(height: 8),
+          _DeliveryOption(
+            icon: Icons.schedule,
+            title: 'Schedule',
+            caption: 'Select a time',
+            selected: _selected == 2,
+            onTap: () => _select(2),
+          ),
+        ],
+      ),
+    );
+  }
+
+  /// `Order summary`: the store row, the live cart lines, and the promotion
+  /// row (reference panels 3–4).
+  Widget _buildOrderSummary() {
+    final Store store =
+        stores.firstWhere((Store s) => s.name == 'Madina Halal Meats');
+    final List<CartItem> items = CartStore.instance.items;
+    final int count = CartStore.instance.itemCount;
+
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(16, 24, 16, 0),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: <Widget>[
+          const Text('Order summary', style: _h3),
+          const SizedBox(height: 8),
+          // Store row: 48 emoji circle, name + live count, collapse chevron.
+          Padding(
+            padding: const EdgeInsets.symmetric(vertical: 12),
+            child: Row(
+              children: <Widget>[
+                Container(
+                  width: 48,
+                  height: 48,
+                  decoration: BoxDecoration(
+                    color: store.tint,
+                    shape: BoxShape.circle,
+                  ),
+                  alignment: Alignment.center,
+                  child: Text(store.art.first, style: const TextStyle(fontSize: 22)),
+                ),
+                const SizedBox(width: 14),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: <Widget>[
+                      Text(
+                        store.name,
+                        style: const TextStyle(
+                          fontSize: 17,
+                          height: 21 / 17,
+                          fontWeight: FontWeight.w600,
+                          color: AppColors.ink,
+                        ),
+                      ),
+                      const SizedBox(height: 2),
+                      Text(
+                        '$count ${count == 1 ? 'item' : 'items'}',
+                        style: _rowCaption,
+                      ),
+                    ],
+                  ),
+                ),
+                const Icon(
+                  Icons.expand_more,
+                  size: 20,
+                  color: AppColors.inkMuted,
+                ),
+              ],
+            ),
+          ),
+          const _FullDivider(),
+          for (final CartItem item in items) _SummaryLine(item: item),
+          const _FullDivider(),
+          // Promotion row (reference: tag bubble + conditions caption).
+          Padding(
+            padding: const EdgeInsets.symmetric(vertical: 12),
+            child: Row(
+              children: <Widget>[
+                Container(
+                  width: 48,
+                  height: 48,
+                  decoration: const BoxDecoration(
+                    color: AppColors.surfaceAlt,
+                    shape: BoxShape.circle,
+                  ),
+                  alignment: Alignment.center,
+                  child: const Icon(
+                    Icons.local_offer,
+                    size: 24,
+                    color: AppColors.ink,
+                  ),
+                ),
+                const SizedBox(width: 14),
+                const Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: <Widget>[
+                      Text('One promotion applied', style: _rowTitle),
+                      SizedBox(height: 2),
+                      Text(
+                        'May exclude alcohol or other regulated items',
+                        style: _rowCaption,
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(width: 14),
+                const Icon(
+                  Icons.chevron_right,
+                  size: 20,
+                  color: AppColors.inkMuted,
+                ),
+              ],
             ),
           ),
         ],
@@ -84,136 +354,133 @@ class _CheckoutTopScreenState extends State<CheckoutTopScreen> {
     );
   }
 
-  Widget _buildModeSelector() {
+  /// Subtotal / Promotion / Delivery fee / Taxes & Other Fees / Total —
+  /// every figure derived from [CheckoutTotals].
+  Widget _buildFees() {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16),
-      child: Container(
-        height: 48,
-        decoration: BoxDecoration(
-          color: AppColors.surfaceAlt,
-          borderRadius: BorderRadius.circular(24),
-        ),
-        child: Row(
-          children: <Widget>[
-            // Delivery segment
-            Expanded(
-              child: _ModeSegment(
-                label: 'Delivery',
-                selected: _mode == 0,
-                onTap: () => setState(() => _mode = 0),
-              ),
-            ),
-            // Pickup segment
-            Expanded(
-              child: _ModeSegment(
-                label: 'Pickup',
-                selected: _mode == 1,
-                onTap: () => setState(() => _mode = 1),
-              ),
-            ),
-          ],
-        ),
+      padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
+      child: Column(
+        children: <Widget>[
+          _FeeRow(
+            label: 'Subtotal',
+            values: <Widget>[
+              Text(CheckoutTotals.usd(CheckoutTotals.subtotal)),
+            ],
+          ),
+          _FeeRow(
+            label: 'Promotion',
+            values: <Widget>[
+              Text('-${CheckoutTotals.usd(CheckoutTotals.promo)}'),
+            ],
+          ),
+          _FeeRow(
+            label: 'Delivery fee',
+            info: true,
+            wasLabel: CheckoutTotals.usd(CheckoutTotals.deliveryWas),
+            wasValue: CheckoutTotals.usd(CheckoutTotals.delivery),
+          ),
+          _FeeRow(
+            label: 'Taxes & Other Fees',
+            info: true,
+            values: <Widget>[
+              Text(CheckoutTotals.usd(CheckoutTotals.taxes)),
+            ],
+          ),
+          _FeeRow(
+            total: true,
+            label: 'Total',
+            wasLabel: CheckoutTotals.usd(CheckoutTotals.wasTotal),
+            wasValue: CheckoutTotals.usd(CheckoutTotals.total),
+          ),
+        ],
       ),
     );
   }
 
-  Widget _buildMap() {
+  /// Payment row — reference: Mastercard with its last four, chevron right.
+  Widget _buildPayment() {
     return Padding(
-      padding: const EdgeInsets.fromLTRB(16, 16, 16, 0),
-      child: Container(
-        width: 358,
-        height: 168,
-        decoration: BoxDecoration(
-          color: const Color(0xFFEAEAEA),
-          borderRadius: BorderRadius.circular(AppRadius.xl),
-        ),
-        child: Stack(
-          children: <Widget>[
-            // Map placeholder visual
-            Center(
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: <Widget>[
-                  Container(
-                    width: 36,
-                    height: 36,
-                    decoration: const BoxDecoration(
-                      color: AppColors.ink,
-                      shape: BoxShape.circle,
-                    ),
-                    child: Center(
-                      child: Container(
-                        width: 10,
-                        height: 10,
-                        decoration: const BoxDecoration(
-                          color: AppColors.surface,
-                          shape: BoxShape.circle,
-                        ),
-                      ),
+      padding: const EdgeInsets.fromLTRB(16, 0, 16, 0),
+      child: Column(
+        children: <Widget>[
+          _buildDivider(),
+          _DetailRow(
+            icon: Icons.credit_card,
+            title: 'Mastercard ••••4320',
+            subtitle: 'Payment method',
+            onTap: () => ScaffoldMessenger.of(context)
+              ..hideCurrentSnackBar()
+              ..showSnackBar(
+                const SnackBar(
+                  behavior: SnackBarBehavior.floating,
+                  backgroundColor: AppColors.ink,
+                  shape: RoundedRectangleBorder(
+                    borderRadius:
+                        BorderRadius.all(Radius.circular(AppRadius.lg)),
+                  ),
+                  content: Text(
+                    'Payment methods are coming soon',
+                    style: TextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w500,
+                      color: AppColors.surface,
                     ),
                   ),
-                  const SizedBox(height: 4),
-                  Container(
-                    width: 4,
-                    height: 12,
-                    color: AppColors.ink,
-                  ),
-                ],
-              ),
-            ),
-            // "Edit pin" button
-            Positioned(
-              bottom: 12,
-              left: 133.5,
-              child: Container(
-                width: 91,
-                height: 38,
-                decoration: BoxDecoration(
-                  color: AppColors.surface,
-                  borderRadius: BorderRadius.circular(19),
                 ),
-                alignment: Alignment.center,
-                child: const Text(
-                  'Edit pin',
+              ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  /// Email-offers opt-in with the privacy caption (reference panel 4).
+  Widget _buildEmailOffers() {
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(16, 8, 16, 32),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: <Widget>[
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: <Widget>[
+                const Text(
+                  'Sign up to receive email offers and news from '
+                  'Madina Halal Meats',
                   style: TextStyle(
                     fontSize: 15,
                     height: 18 / 15,
-                    fontWeight: FontWeight.w600,
+                    fontWeight: FontWeight.w500,
                     color: AppColors.ink,
                   ),
                 ),
-              ),
+                const SizedBox(height: 6),
+                const Text(
+                  'Privacy Notice: By checking this box, you agree to '
+                  "Grocerra's Terms & Conditions and that your data may "
+                  'be used as described in our Privacy Notice.',
+                  style: TextStyle(
+                    fontSize: 12,
+                    height: 15 / 12,
+                    fontWeight: FontWeight.w400,
+                    color: AppColors.inkMuted,
+                  ),
+                ),
+              ],
             ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildDetailsSection() {
-    return Padding(
-      padding: const EdgeInsets.fromLTRB(16, 16, 16, 0),
-      child: Column(
-        children: <Widget>[
-          _DetailRow(
-            icon: Icons.location_on,
-            title: '24 Maple Street, Apt 3B',
-            subtitle: 'Melbourne VIC 3000',
-            onTap: () => Navigator.of(context).pushNamed('/delivery-address'),
           ),
-          _buildDivider(),
-          _DetailRow(
-            icon: Icons.home,
-            title: 'Meet at my door',
-            subtitle: 'Add delivery instructions',
-            onTap: () {},
-          ),
-          _buildDivider(),
-          _DetailRow(
-            icon: Icons.phone,
-            title: 'Sara Ahmed · 0412 345 678',
-            subtitle: 'Courier will call on arrival',
-            onTap: () {},
+          const SizedBox(width: 12),
+          Checkbox(
+            value: _emailOffers,
+            onChanged: (bool? v) =>
+                setState(() => _emailOffers = v ?? false),
+            materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+            visualDensity: VisualDensity.compact,
+            side: const BorderSide(color: AppColors.hairline),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(6),
+            ),
           ),
         ],
       ),
@@ -221,106 +488,29 @@ class _CheckoutTopScreenState extends State<CheckoutTopScreen> {
   }
 
   Widget _buildDivider() {
+    return Container(height: 1, color: AppColors.hairline);
+  }
+
+  /// Pinned bar: savings banner + Total column + `Next` into the tip step.
+  Widget _buildBottomBar(BuildContext context) {
     return Container(
-      height: 1,
-      color: AppColors.hairline,
-      margin: const EdgeInsets.symmetric(horizontal: 16),
-    );
-  }
-
-  Widget _buildDeliveryTime() {
-    return Padding(
-      padding: const EdgeInsets.fromLTRB(16, 16, 16, 0),
-      child: Row(
-        children: <Widget>[
-          const Icon(Icons.access_time, size: 24, color: AppColors.ink),
-          const SizedBox(width: 14),
-          const Text(
-            'Delivery time',
-            style: TextStyle(
-              fontSize: 16,
-              height: 19 / 16,
-              fontWeight: FontWeight.w600,
-              color: AppColors.ink,
-            ),
-          ),
-          Spacer(),
-          Text(
-            '7:31–7:54 PM',
-            style: const TextStyle(
-              fontSize: 16,
-              height: 19 / 16,
-              fontWeight: FontWeight.w400,
-              color: AppColors.inkMuted,
-            ),
-          ),
-        ],
+      decoration: const BoxDecoration(
+        color: AppColors.surface,
+        boxShadow: AppShadows.topBar,
       ),
-    );
-  }
-
-  Widget _buildTimeOptions() {
-    return Padding(
-      padding: const EdgeInsets.fromLTRB(16, 16, 16, 0),
-      child: Row(
-        children: <Widget>[
-          Expanded(
-            child: _TimeOptionCard(
-              label: 'Priority',
-              time: '7:26–7:43 PM',
-              description: 'Direct to you. Top-rated couriers',
-              surcharge: '+\$4.49',
-              selected: _selectedTimeOption == 0,
-              onTap: () => setState(() => _selectedTimeOption = 0),
-            ),
-          ),
-          const SizedBox(width: 12),
-          Expanded(
-            child: _TimeOptionCard(
-              label: 'Standard',
-              time: '7:31–7:54 PM',
-              description: 'Included with your order',
-              surcharge: null,
-              selected: _selectedTimeOption == 1,
-              onTap: () => setState(() => _selectedTimeOption = 1),
-            ),
-          ),
-          const SizedBox(width: 12),
-          Expanded(
-            child: _TimeOptionCard(
-              label: 'Schedule',
-              time: 'Earliest: 8:00 PM',
-              description: 'Pick a time that works for you',
-              surcharge: null,
-              selected: _selectedTimeOption == 2,
-              onTap: () => setState(() => _selectedTimeOption = 2),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildBottomActionBar() {
-    return Container(
-      width: 390,
-      color: AppColors.surface,
-      padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
       child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        mainAxisSize: MainAxisSize.min,
         children: <Widget>[
-          // Savings banner 390×38 #f3f3f3
           Container(
             height: 38,
-            decoration: BoxDecoration(
-              color: AppColors.surfaceAlt,
-              borderRadius: BorderRadius.circular(19),
-            ),
+            color: AppColors.surfaceAlt,
             padding: const EdgeInsets.symmetric(horizontal: 16),
-            child: Row(
+            child: const Row(
               children: <Widget>[
-                const Icon(Icons.local_offer, size: 18, color: AppColors.ink),
-                const SizedBox(width: 12),
-                const Text(
+                Icon(Icons.local_offer, size: 18, color: AppColors.ink),
+                SizedBox(width: 10),
+                Text(
                   'Saving \$2.50 with promotions',
                   style: TextStyle(
                     fontSize: 14,
@@ -332,54 +522,48 @@ class _CheckoutTopScreenState extends State<CheckoutTopScreen> {
               ],
             ),
           ),
-          const SizedBox(height: 10),
-          // Place order button 358×56 black
-          Row(
-            children: <Widget>[
-              // Total column
-              SizedBox(
-                width: 71,
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: <Widget>[
-                    const Text(
-                      'Total',
-                      style: TextStyle(
-                        fontSize: 12,
-                        height: 15 / 12,
-                        fontWeight: FontWeight.w500,
-                        color: AppColors.inkMuted,
+          Padding(
+            padding: const EdgeInsets.fromLTRB(16, 12, 16, 28),
+            child: Row(
+              children: <Widget>[
+                SizedBox(
+                  width: 71,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: <Widget>[
+                      const Text(
+                        'Total',
+                        style: TextStyle(
+                          fontSize: 12,
+                          height: 15 / 12,
+                          fontWeight: FontWeight.w500,
+                          color: AppColors.inkMuted,
+                        ),
                       ),
-                    ),
-                    const SizedBox(height: 4),
-                    const Text(
-                      '\$62.36',
-                      style: TextStyle(
-                        fontSize: 20,
-                        height: 24 / 20,
-                        fontWeight: FontWeight.w700,
-                        color: AppColors.ink,
+                      Text(
+                        CheckoutTotals.usd(CheckoutTotals.total),
+                        softWrap: false,
+                        overflow: TextOverflow.visible,
+                        style: const TextStyle(
+                          fontSize: 20,
+                          height: 24 / 20,
+                          fontWeight: FontWeight.w700,
+                          color: AppColors.ink,
+                        ),
                       ),
-                    ),
-                  ],
-                ),
-              ),
-              const SizedBox(width: 16),
-              // Place order button
-              Expanded(
-                child: FilledButton(
-                  onPressed: () => Navigator.of(context).pushNamed('/checkout/summary'),
-                  child: const Text(
-                    'Place order',
-                    style: TextStyle(
-                      fontSize: 16,
-                      height: 19 / 16,
-                      fontWeight: FontWeight.w600,
-                    ),
+                    ],
                   ),
                 ),
-              ),
-            ],
+                const SizedBox(width: 16),
+                Expanded(
+                  child: FilledButton(
+                    onPressed: () =>
+                        Navigator.of(context).pushNamed('/checkout/tip'),
+                    child: const Text('Next'),
+                  ),
+                ),
+              ],
+            ),
           ),
         ],
       ),
@@ -387,14 +571,204 @@ class _CheckoutTopScreenState extends State<CheckoutTopScreen> {
   }
 }
 
-class _ModeSegment extends StatelessWidget {
-  const _ModeSegment({
+/// 358×1 hairline between summary rows.
+class _FullDivider extends StatelessWidget {
+  const _FullDivider();
+
+  @override
+  Widget build(BuildContext context) =>
+      Container(height: 1, color: AppColors.hairline);
+}
+
+/// One cart line in the order summary: quantity, name, variant caption and
+/// the live line total on the right.
+class _SummaryLine extends StatelessWidget {
+  const _SummaryLine({required this.item});
+
+  final CartItem item;
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 12),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: <Widget>[
+          SizedBox(
+            width: 18,
+            child: Text(
+              '${item.quantity}',
+              style: const TextStyle(
+                fontSize: 15,
+                height: 18 / 15,
+                fontWeight: FontWeight.w500,
+                color: AppColors.ink,
+              ),
+            ),
+          ),
+          const SizedBox(width: 8),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: <Widget>[
+                Text(
+                  item.name,
+                  style: const TextStyle(
+                    fontSize: 16,
+                    height: 19 / 16,
+                    fontWeight: FontWeight.w600,
+                    color: AppColors.ink,
+                  ),
+                ),
+                if (item.detail != null) ...<Widget>[
+                  const SizedBox(height: 2),
+                  Text(
+                    item.detail!,
+                    style: const TextStyle(
+                      fontSize: 13,
+                      height: 16 / 13,
+                      fontWeight: FontWeight.w400,
+                      color: AppColors.inkMuted,
+                    ),
+                  ),
+                ],
+              ],
+            ),
+          ),
+          const SizedBox(width: 12),
+          Text(
+            CheckoutTotals.usd(item.lineTotal),
+            style: const TextStyle(
+              fontSize: 15,
+              height: 18 / 15,
+              fontWeight: FontWeight.w600,
+              color: AppColors.ink,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+/// One fee line: muted label left, value(s) right. The `total` variant is
+/// larger and bold; `wasLabel` draws the struck-through original before
+/// the live value.
+class _FeeRow extends StatelessWidget {
+  const _FeeRow({
     required this.label,
-    required this.selected,
-    required this.onTap,
+    this.values = const <Widget>[],
+    this.total = false,
+    this.info = false,
+    this.wasLabel,
+    this.wasValue,
   });
 
   final String label;
+  final List<Widget> values;
+  final bool total;
+  final bool info;
+
+  /// Struck original (e.g. full-price delivery), shown before the value.
+  final String? wasLabel;
+
+  /// Value to show after the strike when [wasLabel] is set (the delivery
+  /// fee reuses the row for `was → now`).
+  final String? wasValue;
+
+  @override
+  Widget build(BuildContext context) {
+    const TextStyle valueStyle = TextStyle(
+      fontSize: 16,
+      height: 19 / 16,
+      fontWeight: FontWeight.w400,
+      color: AppColors.ink,
+    );
+    const TextStyle wasStyle = TextStyle(
+      fontSize: 15,
+      height: 18 / 15,
+      fontWeight: FontWeight.w400,
+      color: AppColors.inkMuted,
+      decoration: TextDecoration.lineThrough,
+    );
+
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 6),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: <Widget>[
+          Row(
+            children: <Widget>[
+              Text(
+                label,
+                style: total
+                    ? const TextStyle(
+                        fontSize: 20,
+                        height: 24 / 20,
+                        fontWeight: FontWeight.w700,
+                        color: AppColors.ink,
+                      )
+                    : const TextStyle(
+                        fontSize: 16,
+                        height: 19 / 16,
+                        fontWeight: FontWeight.w400,
+                        color: AppColors.inkMuted,
+                      ),
+              ),
+              if (info) ...<Widget>[
+                const SizedBox(width: 5),
+                const Icon(
+                  Icons.info_outline,
+                  size: 15,
+                  color: AppColors.inkMuted,
+                ),
+              ],
+            ],
+          ),
+          if (wasLabel != null)
+            Row(
+              children: <Widget>[
+                Text(wasLabel!, style: wasStyle),
+                const SizedBox(width: 6),
+                Text(
+                  wasValue!,
+                  style: total
+                      ? const TextStyle(
+                          fontSize: 20,
+                          height: 24 / 20,
+                          fontWeight: FontWeight.w700,
+                          color: AppColors.ink,
+                        )
+                      : valueStyle,
+                ),
+              ],
+            )
+          else
+            Row(children: values),
+        ],
+      ),
+    );
+  }
+}
+
+/// A delivery option card: icon, title, caption, optional surcharge, and
+/// the reference's black outline when selected.
+class _DeliveryOption extends StatelessWidget {
+  const _DeliveryOption({
+    required this.icon,
+    required this.title,
+    required this.caption,
+    required this.selected,
+    required this.onTap,
+    this.iconColor,
+    this.price,
+  });
+
+  final IconData icon;
+  final Color? iconColor;
+  final String title;
+  final String caption;
+  final String? price;
   final bool selected;
   final VoidCallback onTap;
 
@@ -403,27 +777,64 @@ class _ModeSegment extends StatelessWidget {
     return GestureDetector(
       onTap: onTap,
       child: Container(
-        height: 40,
-        margin: const EdgeInsets.all(4),
-        alignment: Alignment.center,
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
         decoration: BoxDecoration(
-          color: selected ? AppColors.surface : Colors.transparent,
-          borderRadius: BorderRadius.circular(20),
-        ),
-        child: Text(
-          label,
-          style: TextStyle(
-            fontSize: 15,
-            height: 18 / 15,
-            fontWeight: selected ? FontWeight.w600 : FontWeight.w500,
-            color: selected ? AppColors.ink : AppColors.inkMuted,
+          color: AppColors.surface,
+          borderRadius: BorderRadius.circular(AppRadius.xl),
+          border: Border.all(
+            color: selected ? AppColors.ink : AppColors.hairline,
+            width: selected ? 1.5 : 1,
           ),
+        ),
+        child: Row(
+          children: <Widget>[
+            Icon(icon, size: 22, color: iconColor ?? AppColors.ink),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: <Widget>[
+                  Text(
+                    title,
+                    style: const TextStyle(
+                      fontSize: 16,
+                      height: 19 / 16,
+                      fontWeight: FontWeight.w600,
+                      color: AppColors.ink,
+                    ),
+                  ),
+                  const SizedBox(height: 2),
+                  Text(
+                    caption,
+                    style: const TextStyle(
+                      fontSize: 13,
+                      height: 16 / 13,
+                      fontWeight: FontWeight.w400,
+                      color: AppColors.inkMuted,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            if (price != null)
+              Text(
+                price!,
+                style: const TextStyle(
+                  fontSize: 13,
+                  height: 16 / 13,
+                  fontWeight: FontWeight.w600,
+                  color: AppColors.ink,
+                ),
+              ),
+          ],
         ),
       ),
     );
   }
 }
 
+/// Icon-bubble detail row (address, dropoff, payment): 48 `#f3f3f3`
+/// circle, title + caption, chevron.
 class _DetailRow extends StatelessWidget {
   const _DetailRow({
     required this.icon,
@@ -446,10 +857,11 @@ class _DetailRow extends StatelessWidget {
           Container(
             width: 48,
             height: 48,
-            decoration: BoxDecoration(
+            decoration: const BoxDecoration(
               color: AppColors.surfaceAlt,
-              borderRadius: BorderRadius.circular(24),
+              shape: BoxShape.circle,
             ),
+            alignment: Alignment.center,
             child: Icon(icon, size: 24, color: AppColors.ink),
           ),
           const SizedBox(width: 14),
@@ -483,7 +895,11 @@ class _DetailRow extends StatelessWidget {
               ],
             ),
           ),
-          const Icon(Icons.chevron_right, size: 20, color: AppColors.ink),
+          const Icon(
+            Icons.chevron_right,
+            size: 20,
+            color: AppColors.inkMuted,
+          ),
         ],
       ),
     );
@@ -492,90 +908,5 @@ class _DetailRow extends StatelessWidget {
       return InkWell(onTap: onTap, child: row);
     }
     return row;
-  }
-}
-
-class _TimeOptionCard extends StatelessWidget {
-  const _TimeOptionCard({
-    required this.label,
-    required this.time,
-    required this.description,
-    required this.surcharge,
-    required this.selected,
-    required this.onTap,
-  });
-
-  final String label;
-  final String time;
-  final String description;
-  final String? surcharge;
-  final bool selected;
-  final VoidCallback onTap;
-
-  @override
-  Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: onTap,
-      child: Container(
-        height: 150,
-        padding: const EdgeInsets.all(16),
-        decoration: BoxDecoration(
-          color: selected ? const Color(0xFFD6EBD6) : AppColors.surfaceAlt,
-          borderRadius: BorderRadius.circular(AppRadius.xl),
-          border: Border.all(
-            color: selected ? const Color(0xFF05944F) : Colors.transparent,
-            width: selected ? 2 : 0,
-          ),
-        ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: <Widget>[
-            Text(
-              label,
-              style: const TextStyle(
-                fontSize: 14,
-                height: 19 / 14,
-                fontWeight: FontWeight.w600,
-                color: AppColors.ink,
-              ),
-            ),
-            const SizedBox(height: 6),
-            Text(
-              time,
-              style: const TextStyle(
-                fontSize: 13,
-                height: 16 / 13,
-                fontWeight: FontWeight.w400,
-                color: AppColors.inkMuted,
-              ),
-            ),
-            const SizedBox(height: 6),
-            Text(
-              description,
-              maxLines: 2,
-              overflow: TextOverflow.ellipsis,
-              style: const TextStyle(
-                fontSize: 13,
-                height: 16 / 13,
-                fontWeight: FontWeight.w400,
-                color: AppColors.inkMuted,
-              ),
-            ),
-            if (surcharge != null) ...<Widget>[
-              Spacer(),
-              Text(
-                surcharge!,
-                style: const TextStyle(
-                  fontSize: 13,
-                  height: 16 / 13,
-                  fontWeight: FontWeight.w400,
-                  color: AppColors.inkMuted,
-                ),
-              ),
-            ],
-          ],
-        ),
-      ),
-    );
   }
 }

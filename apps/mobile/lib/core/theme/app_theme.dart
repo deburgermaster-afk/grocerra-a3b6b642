@@ -229,6 +229,12 @@ abstract final class AppShadows {
   static const List<BoxShadow> e3 = <BoxShadow>[
     BoxShadow(color: Color(0x29000000), offset: Offset(0, 8), blurRadius: 32),
   ];
+
+  /// Upward lift for bars pinned to the bottom edge (place-order bar) -
+  /// 0 -4 16 rgba(0,0,0,0.06).
+  static const List<BoxShadow> topBar = <BoxShadow>[
+    BoxShadow(color: Color(0x0F000000), offset: Offset(0, -4), blurRadius: 16),
+  ];
 }
 
 /// Figma `GROCERRA - Radius` and the radii that appear on the approved user

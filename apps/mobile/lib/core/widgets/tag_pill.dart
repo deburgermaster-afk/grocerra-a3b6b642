@@ -9,12 +9,16 @@ class TagPill extends StatelessWidget {
     this.background = const Color(0xFFF3F3F3),
     this.foreground = const Color(0xFF000000),
     this.fontSize = 11,
+    this.radius = 10.5,
   });
 
   final String label;
   final Color background;
   final Color foreground;
   final double fontSize;
+
+  /// Corner radius; 10.5 is the 21px-tall pill, promo tags use 6.
+  final double radius;
 
   @override
   Widget build(BuildContext context) {
@@ -24,7 +28,7 @@ class TagPill extends StatelessWidget {
       alignment: Alignment.center,
       decoration: BoxDecoration(
         color: background,
-        borderRadius: BorderRadius.circular(10.5),
+        borderRadius: BorderRadius.circular(radius),
       ),
       child: Text(
         label,

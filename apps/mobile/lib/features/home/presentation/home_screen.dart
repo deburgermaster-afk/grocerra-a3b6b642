@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
+import '../../../core/cart/cart_controller.dart';
+import '../../../core/cart/cart_item.dart';
 import '../../../core/theme/app_theme.dart';
 import '../../../core/widgets/app_insets.dart';
 import '../data/catalog.dart';
@@ -24,7 +26,6 @@ enum _Filter { pickup, offers, freeDelivery, under30, topRated }
 class _HomeScreenState extends State<HomeScreen> {
   String _mode = modes.first;
   final Set<_Filter> _filters = <_Filter>{};
-  int _cart = 3;
 
   static const Map<String, StoreKind?> _modeKinds = <String, StoreKind?>{
     'All': null,
@@ -54,7 +55,17 @@ class _HomeScreenState extends State<HomeScreen> {
 
   void _add(Product p) {
     HapticFeedback.lightImpact();
-    setState(() => _cart++);
+    // Add to the shared cart so the badge, Carts list and Cart screen all
+    // update together.
+    CartStore.instance.add(
+      CartItem(
+        id: p.name.toLowerCase().replaceAll(' ', '-'),
+        name: p.name,
+        price: p.price / 100,
+        emoji: p.emoji,
+        detail: p.size,
+      ),
+    );
     ScaffoldMessenger.of(context)
       ..hideCurrentSnackBar()
       ..showSnackBar(
@@ -175,11 +186,14 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
             IconButton(
               tooltip: 'Cart',
-              onPressed: () => Navigator.of(context).pushNamed('/cart'),
-              icon: Badge.count(
-                count: _cart,
-                backgroundColor: AppColors.accent,
-                child: const Icon(Icons.shopping_bag_outlined, size: 26),
+              onPressed: () => Navigator.of(context).pushNamed('/carts'),
+              icon: ListenableBuilder(
+                listenable: CartStore.instance,
+                builder: (BuildContext context, _) => Badge.count(
+                  count: CartStore.instance.itemCount,
+                  backgroundColor: AppColors.accent,
+                  child: const Icon(Icons.shopping_bag_outlined, size: 26),
+                ),
               ),
             ),
           ],

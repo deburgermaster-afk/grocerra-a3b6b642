@@ -34,6 +34,68 @@
 <!-- Matches the dark splash so the page never flashes white while the app loads. -->
   <meta name="theme-color" content="#0A0B0A">
   <style>html, body { background: #0A0B0A; margin: 0; }</style>
+
+  <!-- Inter for the DOM-layer checkout map overlays (the pill). -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+  <!-- MapLibre GL — the engine mapcn's React map is built on — for the
+       checkout map strip. -->
+  <link href="https://unpkg.com/maplibre-gl@5/dist/maplibre-gl.css" rel="stylesheet" />
+  <style>
+    /* The checkout map strip's overlays live in the map's DOM layer, above
+       the MapLibre canvas (Flutter widgets can't paint over platform views). */
+    .grocerra-map-view {
+      position: relative;
+      border-radius: 20px; /* AppRadius.xl */
+      overflow: hidden;
+      pointer-events: none; /* the page keeps scrolling over the map */
+    }
+    .grocerra-map-pin {
+      position: absolute;
+      left: 0;
+      /* Rotated -45°, the tip lands exactly on the wrapper's bottom-centre,
+         so lift the box to keep the pin standing on its point. */
+      bottom: 5.4px;
+      width: 26px;
+      height: 26px;
+      background: #000;
+      border-radius: 50% 50% 50% 0;
+      transform: rotate(-45deg);
+      box-shadow: 0 1px 3px rgba(0, 0, 0, .35);
+    }
+    .grocerra-map-pin::after {
+      content: '';
+      position: absolute;
+      inset: 8px;
+      background: #fff;
+      border-radius: 50%;
+    }
+    .grocerra-map-pill {
+      position: absolute;
+      left: 50%;
+      bottom: 10px;
+      transform: translateX(-50%);
+      display: flex;
+      align-items: center;
+      height: 38px;
+      padding: 0 20px;
+      background: #fff;
+      border-radius: 19px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, .12);
+      font: 600 15px 'Inter', system-ui, sans-serif;
+      color: #000;
+      white-space: nowrap;
+    }
+    .grocerra-map-attrib {
+      position: absolute;
+      right: 6px;
+      bottom: 3px;
+      font: 400 9px 'Inter', system-ui, sans-serif;
+      color: #6b6b6b;
+    }
+  </style>
 </head>
 <body>
   <!--
@@ -68,6 +130,54 @@
         window.visualViewport.addEventListener('scroll', settle);
       }
     })();
+  </script>
+  <script src="https://unpkg.com/maplibre-gl@5/dist/maplibre-gl.js"></script>
+  <script>
+    // Boots the checkout map strip: MapLibre GL with CARTO positron (free
+    // vector tiles — mapcn's default basemap) plus the reference's black
+    // pin, "Edit pin" pill and attribution, all inside the strip's DOM.
+    // Waits for the platform view to take layout; non-interactive so the
+    // checkout page keeps scrolling over it.
+    window.grocerraInitMap = function (container, lng, lat, zoom) {
+      var tries = 0;
+      (function wait() {
+        if (container.clientHeight > 0 || tries++ > 80) {
+          var map = new maplibregl.Map({
+            container: container,
+            style: 'https://basemaps.cartocdn.com/gl/positron-gl-style/style.json',
+            center: [lng, lat],
+            zoom: zoom,
+            interactive: false,
+            attributionControl: false,
+            dragRotate: false,
+            pitchWithRotate: false,
+          });
+          // MapLibre writes its positioning transform straight onto the
+          // marker element, which would clobber the pin's rotation — so
+          // the marker gets a plain wrapper and the rotated pin lives
+          // inside it, where MapLibre can't reach it.
+          var pinWrap = document.createElement('div');
+          pinWrap.style.width = '26px';
+          pinWrap.style.height = '26px';
+          var pin = document.createElement('div');
+          pin.className = 'grocerra-map-pin';
+          pinWrap.appendChild(pin);
+          new maplibregl.Marker({ element: pinWrap, anchor: 'bottom' })
+            .setLngLat([lng, lat])
+            .addTo(map);
+          var pill = document.createElement('div');
+          pill.className = 'grocerra-map-pill';
+          pill.textContent = 'Edit pin';
+          container.appendChild(pill);
+          var attrib = document.createElement('div');
+          attrib.className = 'grocerra-map-attrib';
+          attrib.textContent = '© OpenStreetMap contributors © CARTO';
+          container.appendChild(attrib);
+        } else {
+          setTimeout(wait, 50);
+        }
+      })();
+    };
   </script>
   <script src="flutter_bootstrap.js" async></script>
 </body>
