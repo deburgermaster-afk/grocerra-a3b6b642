@@ -95,40 +95,66 @@ class _GrocerraAppState extends State<GrocerraApp> {
       startRoute = startRoute.substring(1); // '#/home' -> '/home'
     }
 
-    return MaterialApp(
-      title: AppConfig.appName,
-      debugShowCheckedModeBanner: false,
-      theme: AppTheme.light(),
-      navigatorKey: _navigator,
-      initialRoute: startRoute,
-      routes: <String, WidgetBuilder>{
-        // Flutter stacks every prefix of a deep link, so `/` is always
-        // built even when the URL is `/auth`. Only render the
-        // auto-advancing splash when it is the genuine entry point,
-        // otherwise a deep link flashes the splash and then navigates
-        // away from the screen that was requested.
-        SplashScreen.routeName: _scoped(
-          startRoute == SplashScreen.routeName
-              ? const SplashScreen()
-              : const ColoredBox(color: Color(0xFF0A0B0A)),
-        ),
-        OnboardingScreen.routeName: _scoped(const OnboardingScreen()),
-        WelcomeScreen.routeName: _scoped(const WelcomeScreen()),
-        SignInScreen.routeName: _scoped(const SignInScreen()),
-        SignUpScreen.routeName: _scoped(const SignUpScreen()),
-        ForgotPasswordScreen.routeName: _scoped(const ForgotPasswordScreen()),
-        NewPasswordScreen.routeName: _scoped(const NewPasswordScreen()),
-        LocationPermissionScreen.routeName: (_) =>
-            const LocationPermissionScreen(),
-        DeliveryAddressScreen.routeName: (_) => const DeliveryAddressScreen(),
-        HomeShell.routeName: (_) => const HomeShell(),
-        // Per-section routes. Each section owns its own map so the screen
-        // passes can be built independently without editing this file.
-        ...shopRoutes,
-        ...cateringRoutes,
-        ...searchRoutes,
-        ...supportRoutes,
-        ...accountRoutes,
+    return LayoutBuilder(
+      builder: (BuildContext context, BoxConstraints constraints) {
+        final bool isPhone = constraints.maxWidth <= 414;
+
+        final Widget app = MaterialApp(
+          title: AppConfig.appName,
+          debugShowCheckedModeBanner: false,
+          theme: AppTheme.light(),
+          navigatorKey: _navigator,
+          initialRoute: startRoute,
+          routes: <String, WidgetBuilder>{
+            SplashScreen.routeName: _scoped(
+              startRoute == SplashScreen.routeName
+                  ? const SplashScreen()
+                  : const ColoredBox(color: Color(0xFF0A0B0A)),
+            ),
+            OnboardingScreen.routeName: _scoped(const OnboardingScreen()),
+            WelcomeScreen.routeName: _scoped(const WelcomeScreen()),
+            SignInScreen.routeName: _scoped(const SignInScreen()),
+            SignUpScreen.routeName: _scoped(const SignUpScreen()),
+            ForgotPasswordScreen.routeName: _scoped(const ForgotPasswordScreen()),
+            NewPasswordScreen.routeName: _scoped(const NewPasswordScreen()),
+            LocationPermissionScreen.routeName: (_) =>
+                const LocationPermissionScreen(),
+            DeliveryAddressScreen.routeName: (_) => const DeliveryAddressScreen(),
+            HomeShell.routeName: (_) => const HomeShell(),
+            ...shopRoutes,
+            ...cateringRoutes,
+            ...searchRoutes,
+            ...supportRoutes,
+            ...accountRoutes,
+          },
+        );
+
+        if (isPhone) return app;
+
+        // Desktop: center a phone-sized viewport so the design renders at
+        // exact Figma proportions regardless of monitor size.
+        return ColoredBox(
+          color: const Color(0xFF1A1A1A),
+          child: Center(
+            child: Container(
+              width: 390,
+              height: 844,
+              decoration: BoxDecoration(
+                color: AppColors.surface,
+                borderRadius: BorderRadius.circular(40),
+                boxShadow: const <BoxShadow>[
+                  BoxShadow(
+                    color: Color(0x66000000),
+                    blurRadius: 60,
+                    offset: Offset(0, 20),
+                  ),
+                ],
+              ),
+              clipBehavior: Clip.antiAlias,
+              child: app,
+            ),
+          ),
+        );
       },
     );
   }
