@@ -84,20 +84,25 @@ class _CheckoutTopScreenState extends State<CheckoutTopScreen> {
         builder: (BuildContext context, Widget? _) {
           return Stack(
             children: <Widget>[
-              SingleChildScrollView(
-                padding: EdgeInsets.fromLTRB(0, topInset, 0, 150),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: <Widget>[
-                    _buildHeader(),
-                    _buildMap(),
-                    _buildAddress(),
-                    _buildDeliveryOptions(),
-                    _buildOrderSummary(),
-                    _buildFees(),
-                    _buildPayment(),
-                    _buildEmailOffers(),
-                  ],
+              // Positioned.fill keeps the Stack full-height (the Scaffold's
+              // body constraints are loose), so the pinned bar below always
+              // sits at the bottom of the screen.
+              Positioned.fill(
+                child: SingleChildScrollView(
+                  padding: EdgeInsets.fromLTRB(0, topInset, 0, 150),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: <Widget>[
+                      _buildHeader(),
+                      _buildMap(),
+                      _buildAddress(),
+                      _buildDeliveryOptions(),
+                      _buildOrderSummary(),
+                      _buildFees(),
+                      _buildPayment(),
+                      _buildEmailOffers(),
+                    ],
+                  ),
                 ),
               ),
               Positioned(
@@ -185,8 +190,9 @@ class _CheckoutTopScreenState extends State<CheckoutTopScreen> {
                   behavior: SnackBarBehavior.floating,
                   backgroundColor: AppColors.ink,
                   shape: RoundedRectangleBorder(
-                    borderRadius:
-                        BorderRadius.all(Radius.circular(AppRadius.lg)),
+                    borderRadius: BorderRadius.all(
+                      Radius.circular(AppRadius.lg),
+                    ),
                   ),
                   content: Text(
                     'Dropoff options are coming soon',
@@ -247,8 +253,9 @@ class _CheckoutTopScreenState extends State<CheckoutTopScreen> {
   /// `Order summary`: the store row, the live cart lines, and the promotion
   /// row (reference panels 3–4).
   Widget _buildOrderSummary() {
-    final Store store =
-        stores.firstWhere((Store s) => s.name == 'Madina Halal Meats');
+    final Store store = stores.firstWhere(
+      (Store s) => s.name == 'Madina Halal Meats',
+    );
     final List<CartItem> items = CartStore.instance.items;
     final int count = CartStore.instance.itemCount;
 
@@ -272,7 +279,10 @@ class _CheckoutTopScreenState extends State<CheckoutTopScreen> {
                     shape: BoxShape.circle,
                   ),
                   alignment: Alignment.center,
-                  child: Text(store.art.first, style: const TextStyle(fontSize: 22)),
+                  child: Text(
+                    store.art.first,
+                    style: const TextStyle(fontSize: 22),
+                  ),
                 ),
                 const SizedBox(width: 14),
                 Expanded(
@@ -363,9 +373,7 @@ class _CheckoutTopScreenState extends State<CheckoutTopScreen> {
         children: <Widget>[
           _FeeRow(
             label: 'Subtotal',
-            values: <Widget>[
-              Text(CheckoutTotals.usd(CheckoutTotals.subtotal)),
-            ],
+            values: <Widget>[Text(CheckoutTotals.usd(CheckoutTotals.subtotal))],
           ),
           _FeeRow(
             label: 'Promotion',
@@ -382,9 +390,7 @@ class _CheckoutTopScreenState extends State<CheckoutTopScreen> {
           _FeeRow(
             label: 'Taxes & Other Fees',
             info: true,
-            values: <Widget>[
-              Text(CheckoutTotals.usd(CheckoutTotals.taxes)),
-            ],
+            values: <Widget>[Text(CheckoutTotals.usd(CheckoutTotals.taxes))],
           ),
           _FeeRow(
             total: true,
@@ -415,8 +421,9 @@ class _CheckoutTopScreenState extends State<CheckoutTopScreen> {
                   behavior: SnackBarBehavior.floating,
                   backgroundColor: AppColors.ink,
                   shape: RoundedRectangleBorder(
-                    borderRadius:
-                        BorderRadius.all(Radius.circular(AppRadius.lg)),
+                    borderRadius: BorderRadius.all(
+                      Radius.circular(AppRadius.lg),
+                    ),
                   ),
                   content: Text(
                     'Payment methods are coming soon',
@@ -473,8 +480,7 @@ class _CheckoutTopScreenState extends State<CheckoutTopScreen> {
           const SizedBox(width: 12),
           Checkbox(
             value: _emailOffers,
-            onChanged: (bool? v) =>
-                setState(() => _emailOffers = v ?? false),
+            onChanged: (bool? v) => setState(() => _emailOffers = v ?? false),
             materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
             visualDensity: VisualDensity.compact,
             side: const BorderSide(color: AppColors.hairline),
@@ -895,11 +901,7 @@ class _DetailRow extends StatelessWidget {
               ],
             ),
           ),
-          const Icon(
-            Icons.chevron_right,
-            size: 20,
-            color: AppColors.inkMuted,
-          ),
+          const Icon(Icons.chevron_right, size: 20, color: AppColors.inkMuted),
         ],
       ),
     );

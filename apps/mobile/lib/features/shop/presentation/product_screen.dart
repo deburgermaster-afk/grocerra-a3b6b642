@@ -25,7 +25,12 @@ class _ProductScreenState extends State<ProductScreen> {
   int _quantity = 1;
 
   static const List<String> _cuts = <String>['Curry cut', 'Mince', 'Boneless'];
-  static const List<String> _weights = <String>['500 g', '1 kg', '2 kg', 'Custom'];
+  static const List<String> _weights = <String>[
+    '500 g',
+    '1 kg',
+    '2 kg',
+    'Custom',
+  ];
 
   @override
   Widget build(BuildContext context) {
@@ -35,143 +40,154 @@ class _ProductScreenState extends State<ProductScreen> {
       backgroundColor: AppColors.surface,
       body: Stack(
         children: <Widget>[
-          SingleChildScrollView(
-            padding: EdgeInsets.fromLTRB(0, topInset, 0, AppInsets.tabBar + 92),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: <Widget>[
-                // Hero image 390×380
-                Container(
-                  width: 390,
-                  height: 380,
-                  color: AppColors.surfaceAlt,
-                ),
-                // Sheet content
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 16),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: <Widget>[
-                      const SizedBox(height: 24),
-                      // Product name 26/700
-                      Text(
-                        'Goat Curry Cut',
-                        style: const TextStyle(
-                          fontSize: 26,
-                          height: 31 / 26,
-                          fontWeight: FontWeight.w700,
-                          color: AppColors.ink,
-                        ),
-                      ),
-                      const SizedBox(height: 12),
-                      // Pills row: Halal certified + Chilled
-                      Row(
-                        children: <Widget>[
-                          TagPill(
-                            label: 'Halal certified',
-                            background: AppColors.surfaceAlt,
-                            foreground: const Color(0xFF05944F),
-                            fontSize: 12,
+          // Positioned.fill keeps the Stack full-height (the Scaffold's body
+          // constraints are loose), so the glass bars pinned below always sit
+          // at the true top/bottom of the screen.
+          Positioned.fill(
+            child: SingleChildScrollView(
+              padding: EdgeInsets.fromLTRB(
+                0,
+                topInset,
+                0,
+                AppInsets.tabBar + 92,
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: <Widget>[
+                  // Hero image 390×380
+                  Container(
+                    width: 390,
+                    height: 380,
+                    color: AppColors.surfaceAlt,
+                  ),
+                  // Sheet content
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 16),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: <Widget>[
+                        const SizedBox(height: 24),
+                        // Product name 26/700
+                        Text(
+                          'Goat Curry Cut',
+                          style: const TextStyle(
+                            fontSize: 26,
+                            height: 31 / 26,
+                            fontWeight: FontWeight.w700,
+                            color: AppColors.ink,
                           ),
-                          const SizedBox(width: 8),
-                          TagPill(
-                            label: 'Chilled',
-                            background: AppColors.surfaceAlt,
-                            foreground: AppColors.ink,
-                            fontSize: 12,
+                        ),
+                        const SizedBox(height: 12),
+                        // Pills row: Halal certified + Chilled
+                        Row(
+                          children: <Widget>[
+                            TagPill(
+                              label: 'Halal certified',
+                              background: AppColors.surfaceAlt,
+                              foreground: const Color(0xFF05944F),
+                              fontSize: 12,
+                            ),
+                            const SizedBox(width: 8),
+                            TagPill(
+                              label: 'Chilled',
+                              background: AppColors.surfaceAlt,
+                              foreground: AppColors.ink,
+                              fontSize: 12,
+                            ),
+                            const SizedBox(width: 8),
+                            TagPill(
+                              label: 'In stock',
+                              background: AppColors.surfaceAlt,
+                              foreground: const Color(0xFF05944F),
+                              fontSize: 12,
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 12),
+                        // Price 22/600
+                        Text(
+                          '\$16.99 / kg',
+                          style: const TextStyle(
+                            fontSize: 22,
+                            height: 27 / 22,
+                            fontWeight: FontWeight.w600,
+                            color: AppColors.ink,
                           ),
-                          const SizedBox(width: 8),
-                          TagPill(
-                            label: 'In stock',
-                            background: AppColors.surfaceAlt,
-                            foreground: const Color(0xFF05944F),
-                            fontSize: 12,
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 12),
-                      // Price 22/600
-                      Text(
-                        '\$16.99 / kg',
-                        style: const TextStyle(
-                          fontSize: 22,
-                          height: 27 / 22,
-                          fontWeight: FontWeight.w600,
-                          color: AppColors.ink,
                         ),
-                      ),
-                      const SizedBox(height: 12),
-                      // Description 14/400 #6b6b6b
-                      Text(
-                        'Bone-in pieces from young goat, cut small for curries. '
-                        'Packed fresh and sealed on the day.',
-                        style: const TextStyle(
-                          fontSize: 14,
-                          height: 17 / 14,
-                          fontWeight: FontWeight.w400,
-                          color: AppColors.inkMuted,
-                        ),
-                      ),
-                      const SizedBox(height: 24),
-                      // Cut selector
-                      _buildSectionLabel('Cut'),
-                      const SizedBox(height: 8),
-                      _buildSegmentedRow(_cuts, _selectedCut, (v) {
-                        setState(() => _selectedCut = v);
-                      }),
-                      const SizedBox(height: 24),
-                      // Weight selector
-                      _buildSectionLabel('Weight'),
-                      const SizedBox(height: 8),
-                      _buildSegmentedRow(_weights, _selectedWeight, (v) {
-                        setState(() => _selectedWeight = v);
-                      }),
-                      const SizedBox(height: 24),
-                      // Instructions field
-                      Container(
-                        width: 358,
-                        height: 40,
-                        padding: const EdgeInsets.symmetric(horizontal: 12),
-                        decoration: BoxDecoration(
-                          color: AppColors.surfaceAlt,
-                          borderRadius: BorderRadius.circular(AppRadius.lg),
-                        ),
-                        child: TextField(
+                        const SizedBox(height: 12),
+                        // Description 14/400 #6b6b6b
+                        Text(
+                          'Bone-in pieces from young goat, cut small for curries. '
+                          'Packed fresh and sealed on the day.',
                           style: const TextStyle(
                             fontSize: 14,
                             height: 17 / 14,
-                            color: AppColors.ink,
+                            fontWeight: FontWeight.w400,
+                            color: AppColors.inkMuted,
                           ),
-                          decoration: const InputDecoration(
-                            isDense: true,
-                            hintText: 'Special instructions (e.g. small pieces)',
-                            hintStyle: TextStyle(
+                        ),
+                        const SizedBox(height: 24),
+                        // Cut selector
+                        _buildSectionLabel('Cut'),
+                        const SizedBox(height: 8),
+                        _buildSegmentedRow(_cuts, _selectedCut, (v) {
+                          setState(() => _selectedCut = v);
+                        }),
+                        const SizedBox(height: 24),
+                        // Weight selector
+                        _buildSectionLabel('Weight'),
+                        const SizedBox(height: 8),
+                        _buildSegmentedRow(_weights, _selectedWeight, (v) {
+                          setState(() => _selectedWeight = v);
+                        }),
+                        const SizedBox(height: 24),
+                        // Instructions field
+                        Container(
+                          width: 358,
+                          height: 40,
+                          padding: const EdgeInsets.symmetric(horizontal: 12),
+                          decoration: BoxDecoration(
+                            color: AppColors.surfaceAlt,
+                            borderRadius: BorderRadius.circular(AppRadius.lg),
+                          ),
+                          child: TextField(
+                            style: const TextStyle(
                               fontSize: 14,
                               height: 17 / 14,
-                              fontWeight: FontWeight.w400,
-                              color: AppColors.inkMuted,
+                              color: AppColors.ink,
                             ),
-                            filled: false,
-                            contentPadding: EdgeInsets.zero,
-                            border: InputBorder.none,
+                            decoration: const InputDecoration(
+                              isDense: true,
+                              hintText:
+                                  'Special instructions (e.g. small pieces)',
+                              hintStyle: TextStyle(
+                                fontSize: 14,
+                                height: 17 / 14,
+                                fontWeight: FontWeight.w400,
+                                color: AppColors.inkMuted,
+                              ),
+                              filled: false,
+                              contentPadding: EdgeInsets.zero,
+                              border: InputBorder.none,
+                            ),
                           ),
                         ),
-                      ),
-                      const SizedBox(height: 8),
-                      // Disclaimer
-                      Text(
-                        'Final price is set at packing, based on actual weight.',
-                        style: const TextStyle(
-                          fontSize: 12,
-                          height: 15 / 12,
-                          fontWeight: FontWeight.w400,
-                          color: AppColors.inkMuted,
+                        const SizedBox(height: 8),
+                        // Disclaimer
+                        Text(
+                          'Final price is set at packing, based on actual weight.',
+                          style: const TextStyle(
+                            fontSize: 12,
+                            height: 15 / 12,
+                            fontWeight: FontWeight.w400,
+                            color: AppColors.inkMuted,
+                          ),
                         ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
           ),
           // Top bar: back, store name, close
@@ -192,7 +208,11 @@ class _ProductScreenState extends State<ProductScreen> {
                     ),
                     child: IconButton(
                       padding: EdgeInsets.zero,
-                      icon: const Icon(Icons.arrow_back, size: 24, color: AppColors.ink),
+                      icon: const Icon(
+                        Icons.arrow_back,
+                        size: 24,
+                        color: AppColors.ink,
+                      ),
                       onPressed: () => Navigator.of(context).maybePop(),
                     ),
                   ),
@@ -230,7 +250,11 @@ class _ProductScreenState extends State<ProductScreen> {
                     ),
                     child: IconButton(
                       padding: EdgeInsets.zero,
-                      icon: const Icon(Icons.close, size: 24, color: AppColors.ink),
+                      icon: const Icon(
+                        Icons.close,
+                        size: 24,
+                        color: AppColors.ink,
+                      ),
                       onPressed: () => Navigator.of(context).maybePop(),
                     ),
                   ),
@@ -271,7 +295,9 @@ class _ProductScreenState extends State<ProductScreen> {
                             child: Icon(
                               Icons.remove,
                               size: 20,
-                              color: _quantity > 1 ? AppColors.ink : AppColors.inkMuted,
+                              color: _quantity > 1
+                                  ? AppColors.ink
+                                  : AppColors.inkMuted,
                             ),
                           ),
                         ),
@@ -289,7 +315,11 @@ class _ProductScreenState extends State<ProductScreen> {
                           onTap: () => setState(() => _quantity++),
                           child: const Padding(
                             padding: EdgeInsets.all(8),
-                            child: Icon(Icons.add, size: 20, color: AppColors.ink),
+                            child: Icon(
+                              Icons.add,
+                              size: 20,
+                              color: AppColors.ink,
+                            ),
                           ),
                         ),
                       ],
@@ -302,7 +332,9 @@ class _ProductScreenState extends State<ProductScreen> {
                       onPressed: () {
                         ScaffoldMessenger.of(context).showSnackBar(
                           SnackBar(
-                            content: Text('Added $_quantity x $_selectedCut, $_selectedWeight'),
+                            content: Text(
+                              'Added $_quantity x $_selectedCut, $_selectedWeight',
+                            ),
                             behavior: SnackBarBehavior.floating,
                           ),
                         );

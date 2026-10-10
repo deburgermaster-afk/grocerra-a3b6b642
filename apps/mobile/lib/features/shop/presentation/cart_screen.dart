@@ -36,30 +36,35 @@ class CartScreen extends StatelessWidget {
           final bool empty = CartStore.instance.isEmpty;
           return Stack(
             children: <Widget>[
-              SingleChildScrollView(
-                padding: EdgeInsets.fromLTRB(
-                  0,
-                  topInset,
-                  0,
-                  empty ? 32 : _barHeight + 16,
-                ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: <Widget>[
-                    _buildHeader(context),
-                    if (empty)
-                      _buildEmptyState(context)
-                    else ...<Widget>[
-                      _buildStoreHeader(),
-                      _buildItems(),
-                      _buildAddItemsRow(context),
-                      _buildGiftRow(context),
+              // Positioned.fill keeps the Stack full-height (the Scaffold's
+              // body constraints are loose), so the pinned bar below always
+              // sits at the bottom of the screen.
+              Positioned.fill(
+                child: SingleChildScrollView(
+                  padding: EdgeInsets.fromLTRB(
+                    0,
+                    topInset,
+                    0,
+                    empty ? 32 : _barHeight + 16,
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: <Widget>[
+                      _buildHeader(context),
+                      if (empty)
+                        _buildEmptyState(context)
+                      else ...<Widget>[
+                        _buildStoreHeader(),
+                        _buildItems(),
+                        _buildAddItemsRow(context),
+                        _buildGiftRow(context),
+                      ],
+                      _buildSectionBreak(),
+                      _buildOffersSection(),
+                      _buildSectionBreak(),
+                      _buildOptionsSection(),
                     ],
-                    _buildSectionBreak(),
-                    _buildOffersSection(),
-                    _buildSectionBreak(),
-                    _buildOptionsSection(),
-                  ],
+                  ),
                 ),
               ),
               if (!empty)
@@ -95,10 +100,9 @@ class CartScreen extends StatelessWidget {
               // Home so back never strands the shopper.
               final bool popped = await Navigator.of(context).maybePop();
               if (!popped && context.mounted) {
-                Navigator.of(context).pushNamedAndRemoveUntil(
-                  '/home',
-                  (Route<dynamic> _) => false,
-                );
+                Navigator.of(
+                  context,
+                ).pushNamedAndRemoveUntil('/home', (Route<dynamic> _) => false);
               }
             },
           ),
@@ -270,11 +274,7 @@ class CartScreen extends StatelessWidget {
                   ],
                 ),
               ),
-              Icon(
-                Icons.chevron_right,
-                size: 20,
-                color: AppColors.inkMuted,
-              ),
+              Icon(Icons.chevron_right, size: 20, color: AppColors.inkMuted),
             ],
           ),
         ),
@@ -323,10 +323,7 @@ class CartScreen extends StatelessWidget {
   }
 
   Widget _buildSectionBreak() {
-    return Container(
-      height: 8,
-      color: AppColors.surfaceAlt,
-    );
+    return Container(height: 8, color: AppColors.surfaceAlt);
   }
 
   Widget _buildOffersSection() {
@@ -798,11 +795,7 @@ class _OfferCard extends StatelessWidget {
 }
 
 class _OptionRow extends StatelessWidget {
-  const _OptionRow({
-    required this.icon,
-    required this.label,
-    this.trailing,
-  });
+  const _OptionRow({required this.icon, required this.label, this.trailing});
 
   final IconData icon;
   final String label;

@@ -137,9 +137,10 @@ class _TipScreenState extends State<TipScreen> {
     // Order confirmed: empty the demo cart and land on the receipt screen
     // with no way back into the checkout stack.
     CartStore.instance.clear();
-    Navigator.of(
-      context,
-    ).pushNamedAndRemoveUntil('/order-confirmation', (Route<dynamic> _) => false);
+    Navigator.of(context).pushNamedAndRemoveUntil(
+      '/order-confirmation',
+      (Route<dynamic> _) => false,
+    );
   }
 
   @override
@@ -150,16 +151,21 @@ class _TipScreenState extends State<TipScreen> {
       backgroundColor: AppColors.surface,
       body: Stack(
         children: <Widget>[
-          SingleChildScrollView(
-            padding: EdgeInsets.fromLTRB(0, topInset, 0, 150),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: <Widget>[
-                _buildHeader(context),
-                _buildIllustration(),
-                _buildCopy(),
-                _buildChips(),
-              ],
+          // Positioned.fill keeps the Stack full-height (the Scaffold's body
+          // constraints are loose), so the pinned bar below always sits at
+          // the bottom of the screen even when the content is short.
+          Positioned.fill(
+            child: SingleChildScrollView(
+              padding: EdgeInsets.fromLTRB(0, topInset, 0, 150),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: <Widget>[
+                  _buildHeader(context),
+                  _buildIllustration(),
+                  _buildCopy(),
+                  _buildChips(),
+                ],
+              ),
             ),
           ),
           Positioned(
@@ -174,9 +180,7 @@ class _TipScreenState extends State<TipScreen> {
               padding: const EdgeInsets.fromLTRB(16, 12, 16, 28),
               child: FilledButton(
                 onPressed: _order,
-                child: Text(
-                  'Order and Pay · ${CheckoutTotals.usd(_payTotal)}',
-                ),
+                child: Text('Order and Pay · ${CheckoutTotals.usd(_payTotal)}'),
               ),
             ),
           ),
@@ -234,9 +238,21 @@ class _TipScreenState extends State<TipScreen> {
         child: Stack(
           children: <Widget>[
             const Center(child: Text('🛵', style: TextStyle(fontSize: 68))),
-            const Positioned(left: 44, bottom: 34, child: Text('🛍️', style: TextStyle(fontSize: 30))),
-            const Positioned(right: 52, top: 36, child: Text('📍', style: TextStyle(fontSize: 26))),
-            const Positioned(left: 78, top: 30, child: Text('💨', style: TextStyle(fontSize: 22))),
+            const Positioned(
+              left: 44,
+              bottom: 34,
+              child: Text('🛍️', style: TextStyle(fontSize: 30)),
+            ),
+            const Positioned(
+              right: 52,
+              top: 36,
+              child: Text('📍', style: TextStyle(fontSize: 26)),
+            ),
+            const Positioned(
+              left: 78,
+              top: 30,
+              child: Text('💨', style: TextStyle(fontSize: 22)),
+            ),
           ],
         ),
       ),
@@ -425,8 +441,9 @@ class _OtherAmountSheetState extends State<_OtherAmountSheet> {
                 controller: _controller,
                 autofocus: true,
                 onChanged: onChanged,
-                keyboardType:
-                    const TextInputType.numberWithOptions(decimal: true),
+                keyboardType: const TextInputType.numberWithOptions(
+                  decimal: true,
+                ),
                 inputFormatters: <TextInputFormatter>[
                   FilteringTextInputFormatter.allow(RegExp(r'^\d*\.?\d{0,2}')),
                 ],

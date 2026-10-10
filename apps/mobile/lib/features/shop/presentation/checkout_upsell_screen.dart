@@ -89,33 +89,38 @@ class _CheckoutUpsellScreenState extends State<CheckoutUpsellScreen> {
       backgroundColor: AppColors.surface,
       body: Stack(
         children: <Widget>[
-          SingleChildScrollView(
-            padding: EdgeInsets.fromLTRB(0, topInset, 0, 116),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: <Widget>[
-                _buildHeader(context),
-                Padding(
-                  padding: const EdgeInsets.fromLTRB(16, 8, 16, 0),
-                  child: Column(
-                    children: <Widget>[
-                      _ProductCard(
-                        product: _first,
-                        added: _added.contains(_first.name),
-                        actionLabel: 'Add to basket',
-                        onAction: () => _addToBasket(_first),
-                      ),
-                      const SizedBox(height: 12),
-                      _ProductCard(
-                        product: _second,
-                        added: _added.contains(_second.name),
-                        actionLabel: 'Choose',
-                        onAction: () => _addToBasket(_second),
-                      ),
-                    ],
+          // Positioned.fill keeps the Stack full-height (the Scaffold's body
+          // constraints are loose), so the pinned bar below always sits at
+          // the bottom of the screen even when the content is short.
+          Positioned.fill(
+            child: SingleChildScrollView(
+              padding: EdgeInsets.fromLTRB(0, topInset, 0, 116),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: <Widget>[
+                  _buildHeader(context),
+                  Padding(
+                    padding: const EdgeInsets.fromLTRB(16, 8, 16, 0),
+                    child: Column(
+                      children: <Widget>[
+                        _ProductCard(
+                          product: _first,
+                          added: _added.contains(_first.name),
+                          actionLabel: 'Add to basket',
+                          onAction: () => _addToBasket(_first),
+                        ),
+                        const SizedBox(height: 12),
+                        _ProductCard(
+                          product: _second,
+                          added: _added.contains(_second.name),
+                          actionLabel: 'Choose',
+                          onAction: () => _addToBasket(_second),
+                        ),
+                      ],
+                    ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
           ),
           // Pinned `No, thanks` - the reference's exit from the upsell.
