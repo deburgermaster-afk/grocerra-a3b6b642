@@ -19,7 +19,11 @@ class SearchField extends StatelessWidget {
     this.gap = 8,
     this.focusNode,
     this.onChanged,
+    this.onSubmitted,
     this.prefixIcon,
+    this.suffix,
+    this.hintTextStyle,
+    this.textStyle,
   });
 
   final String? hintText;
@@ -33,7 +37,17 @@ class SearchField extends StatelessWidget {
   final double gap;
   final FocusNode? focusNode;
   final ValueChanged<String>? onChanged;
+  final ValueChanged<String>? onSubmitted;
   final Widget? prefixIcon;
+
+  /// Optional trailing widget inside the pill (the C05.01 clear `x`).
+  final Widget? suffix;
+
+  /// Overrides the default placeholder style (C05.01 is 14/400).
+  final TextStyle? hintTextStyle;
+
+  /// Overrides the default typed-text style (C05.01 query is 15/600).
+  final TextStyle? textStyle;
 
   @override
   Widget build(BuildContext context) {
@@ -52,20 +66,23 @@ class SearchField extends StatelessWidget {
                   focusNode: focusNode,
                   autofocus: autofocus,
                   onChanged: onChanged,
-                  style: const TextStyle(
-                    fontSize: 15,
-                    height: 18 / 15,
-                    color: AppColors.ink,
-                  ),
+                  onSubmitted: onSubmitted,
+                  style: textStyle ??
+                      const TextStyle(
+                        fontSize: 15,
+                        height: 18 / 15,
+                        color: AppColors.ink,
+                      ),
                   decoration: InputDecoration(
                     isDense: true,
                     hintText: hintText,
-                    hintStyle: const TextStyle(
-                      fontSize: 15,
-                      height: 18 / 15,
-                      fontWeight: FontWeight.w400,
-                      color: AppColors.inkMuted,
-                    ),
+                    hintStyle: hintTextStyle ??
+                        const TextStyle(
+                          fontSize: 15,
+                          height: 18 / 15,
+                          fontWeight: FontWeight.w400,
+                          color: AppColors.inkMuted,
+                        ),
                     filled: false,
                     contentPadding: EdgeInsets.zero,
                     border: InputBorder.none,
@@ -75,14 +92,16 @@ class SearchField extends StatelessWidget {
                   hintText ?? '',
                   maxLines: 1,
                   overflow: TextOverflow.clip,
-                  style: const TextStyle(
-                    fontSize: 15,
-                    height: 18 / 15,
-                    fontWeight: FontWeight.w400,
-                    color: AppColors.inkMuted,
-                  ),
+                  style: hintTextStyle ??
+                      const TextStyle(
+                        fontSize: 15,
+                        height: 18 / 15,
+                        fontWeight: FontWeight.w400,
+                        color: AppColors.inkMuted,
+                      ),
                 ),
         ),
+        if (suffix != null) ...<Widget>[const SizedBox(width: 8), suffix!],
         const SizedBox(width: 16),
       ],
     );

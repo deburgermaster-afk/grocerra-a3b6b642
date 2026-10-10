@@ -10,7 +10,6 @@ import 'package:grocerra_customer/features/catering/presentation/catering_routes
 import 'package:grocerra_customer/features/catering/presentation/catering_screen.dart';
 import 'package:grocerra_customer/features/catering/presentation/custom_menu_screen.dart';
 import 'package:grocerra_customer/features/catering/presentation/quote_event_screen.dart';
-import 'package:grocerra_customer/features/home/presentation/home_screen.dart';
 import 'package:grocerra_customer/features/search/presentation/filter_modal_sheet.dart';
 import 'package:grocerra_customer/features/search/presentation/search_routes.dart';
 import 'package:grocerra_customer/features/search/presentation/search_results_screen.dart';
@@ -33,9 +32,58 @@ void main() {
       await tester.pumpWidget(_wrap(const SearchScreen()));
       await tester.pumpAndSettle();
 
-      expect(find.text('Recent Searches'), findsOneWidget);
-      expect(find.text('Explore by Category'), findsOneWidget);
-      expect(find.text('Halal Meat'), findsOneWidget);
+      expect(find.text('Recent searches'), findsOneWidget);
+      expect(find.text('Browse categories'), findsOneWidget);
+      expect(find.text('Meat'), findsOneWidget);
+    });
+
+    testWidgets('Search shows the loading frame while resolving', (WidgetTester tester) async {
+      await tester.pumpWidget(_wrap(const SearchScreen()));
+      await tester.pumpAndSettle();
+
+      await tester.enterText(find.byType(TextField), 'goat');
+      // Fire the 300ms debounce (starts the search -> loading frame).
+      await tester.pump(const Duration(milliseconds: 320));
+
+      // Loading (`1:1671`): the filter chip row is up, but neither the
+      // results count nor the empty state has resolved yet.
+      expect(find.text('All'), findsOneWidget);
+      expect(find.text('Groceries'), findsOneWidget);
+      expect(find.textContaining('No matches'), findsNothing);
+      expect(find.textContaining('results for'), findsNothing);
+
+      // Let the 450ms mock response land so no timer is left pending.
+      await tester.pump(const Duration(milliseconds: 500));
+    });
+
+    testWidgets('Search no-results frame offers Clear filters', (WidgetTester tester) async {
+      await tester.pumpWidget(_wrap(const SearchScreen()));
+      await tester.pumpAndSettle();
+
+      await tester.enterText(find.byType(TextField), 'zzzzz');
+      await tester.pump(const Duration(milliseconds: 320)); // debounce
+      await tester.pump(const Duration(milliseconds: 500)); // response
+
+      expect(find.textContaining('No matches for'), findsOneWidget);
+      expect(find.text('Clear filters'), findsOneWidget);
+    });
+
+    testWidgets('Search error frame retries into no results', (WidgetTester tester) async {
+      await tester.pumpWidget(_wrap(const SearchScreen()));
+      await tester.pumpAndSettle();
+
+      await tester.enterText(find.byType(TextField), 'error');
+      await tester.pump(const Duration(milliseconds: 320)); // debounce
+      await tester.pump(const Duration(milliseconds: 500)); // response throws
+
+      expect(find.textContaining('load results'), findsOneWidget);
+      expect(find.text('Try again'), findsOneWidget);
+
+      // Retry re-runs the same query; it succeeds and - nothing matches
+      // "error" - lands on the no-results frame.
+      await tester.tap(find.text('Try again'));
+      await tester.pump(const Duration(milliseconds: 500)); // response
+      expect(find.textContaining('No matches for'), findsOneWidget);
     });
 
     testWidgets('SearchResultsScreen displays products and tab toggle', (WidgetTester tester) async {

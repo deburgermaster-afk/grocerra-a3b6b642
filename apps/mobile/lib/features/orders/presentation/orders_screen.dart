@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../../../core/navigation/app_nav.dart';
 import '../../../core/theme/app_theme.dart';
 import '../../../core/widgets/app_button.dart';
 import '../../../core/widgets/app_icon.dart';
@@ -30,6 +31,20 @@ class OrdersScreen extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
+            // Plain back control (the app's standing back-button treatment).
+            // C15.01 is a tab frame with no back node; this app pushes Orders
+            // from Profile, so it needs a way back.
+            IconButton(
+              padding: EdgeInsets.zero,
+              constraints: const BoxConstraints.tightFor(
+                width: 40,
+                height: 40,
+              ),
+              icon: const Icon(Icons.arrow_back_rounded, size: 24),
+              onPressed: () => popOrFallback(context, '/profile'),
+              tooltip: 'Back',
+            ),
+            const SizedBox(height: 4),
             Text(
               'Orders',
               style: Theme.of(context).textTheme.headlineMedium?.copyWith(
