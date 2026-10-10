@@ -34,9 +34,15 @@ class GlassTabBar extends StatefulWidget {
 
   /// Geometry shared with the search overlay so it can take off from
   /// exactly where the bar sits.
-  static const double height = 64;
-  static const double side = 12;
-  static const double bottom = 11;
+  static const double height = 58;
+  static const double side = 16;
+
+  /// Base bottom offset (Figma); [bottomInset] adds the safe-area inset.
+  static const double bottom = 5;
+
+  /// Distance from the screen bottom to the bar, safe-area included.
+  static double bottomInset(BuildContext context) =>
+      bottom + MediaQuery.viewPaddingOf(context).bottom;
 
   /// How long the search pill takes to stretch across the bar.
   static const Duration expand = Duration(milliseconds: 340);
@@ -66,15 +72,17 @@ abstract final class BarColors {
 }
 
 abstract final class _Geo {
-  static const double gap = 10;
-  static const double inset = 6;
-  static const double narrow = 50;
+  /// Gap between the nav pill and the search pill.
+  static const double gap = 11;
 
-  /// How much wider the selected tab is than the others.
-  static const double extra = 22;
+  /// Inner padding of the nav pill (209 = 4 + 3×67 + 4).
+  static const double inset = 4;
+
+  /// Each nav slot is a fixed 67×50 (50 tall = 58 pill − 2×4 padding).
+  static const double narrow = 67;
 
   static double get tabsWidth =>
-      inset * 2 + narrow * GlassTabBar.tabs.length + extra;
+      inset * 2 + narrow * GlassTabBar.tabs.length;
 }
 
 class _GlassTabBarState extends State<GlassTabBar>
@@ -126,7 +134,7 @@ class _GlassTabBarState extends State<GlassTabBar>
     return Positioned(
       left: GlassTabBar.side,
       right: GlassTabBar.side,
-      bottom: GlassTabBar.bottom,
+      bottom: GlassTabBar.bottomInset(context),
       height: GlassTabBar.height,
       child: Stack(
         children: <Widget>[
@@ -200,50 +208,46 @@ class _GlassTabBarState extends State<GlassTabBar>
     final int n = GlassTabBar.tabs.length;
     return Padding(
       padding: const EdgeInsets.all(_Geo.inset),
-      child: AnimatedBuilder(
-        animation: _slot,
-        builder: (BuildContext context, Widget? _) {
-          // Slot widths and the pill position read the same spring value,
-          // so the slots breathe in step with the gliding pill.
-          final double s = _slot.value;
-          double weight(int i) => (1 - (s - i).abs()).clamp(0.0, 1.0);
-          return Stack(
-            children: <Widget>[
-              Positioned(
-                left: s * _Geo.narrow,
-                top: 0,
-                bottom: 0,
-                width: _Geo.narrow + _Geo.extra,
-                child: Container(
-                  decoration: BoxDecoration(
-                    color: BarColors.selected,
-                    borderRadius: BorderRadius.circular(GlassTabBar.height / 2),
-                    boxShadow: const <BoxShadow>[
-                      BoxShadow(
-                        color: Color(0x143B2F25),
-                        blurRadius: 12,
-                        offset: Offset(0, 3),
-                      ),
-                    ],
-                  ),
+      child: Stack(
+        children: <Widget>[
+          // The white highlight fills a whole 67×50 slot and glides between
+          // them on a spring.
+          AnimatedBuilder(
+            animation: _slot,
+            builder: (BuildContext context, Widget? _) => Positioned(
+              left: _slot.value * _Geo.narrow,
+              top: 0,
+              bottom: 0,
+              width: _Geo.narrow,
+              child: Container(
+                decoration: BoxDecoration(
+                  color: BarColors.selected,
+                  borderRadius: BorderRadius.circular(GlassTabBar.height / 2),
+                  boxShadow: const <BoxShadow>[
+                    BoxShadow(
+                      color: Color(0x143B2F25),
+                      blurRadius: 12,
+                      offset: Offset(0, 3),
+                    ),
+                  ],
                 ),
               ),
-              Row(
-                children: <Widget>[
-                  for (int i = 0; i < n; i++)
-                    SizedBox(
-                      width: _Geo.narrow + _Geo.extra * weight(i),
-                      child: _TabButton(
-                        spec: GlassTabBar.tabs[i],
-                        selected: i == widget.index,
-                        onTap: () => _select(i),
-                      ),
-                    ),
-                ],
-              ),
+            ),
+          ),
+          Row(
+            children: <Widget>[
+              for (int i = 0; i < n; i++)
+                SizedBox(
+                  width: _Geo.narrow,
+                  child: _TabButton(
+                    spec: GlassTabBar.tabs[i],
+                    selected: i == widget.index,
+                    onTap: () => _select(i),
+                  ),
+                ),
             ],
-          );
-        },
+          ),
+        ],
       ),
     );
   }
@@ -281,11 +285,11 @@ class SearchPill extends StatelessWidget {
         onTap: onTap ?? () {},
         child: Container(
           decoration: decoration,
-          padding: const EdgeInsets.only(left: 18, right: 12),
+          padding: const EdgeInsets.only(left: 20, right: 12),
           child: const Row(
             children: <Widget>[
-              Icon(Icons.search_rounded, size: 24, color: Colors.white),
-              SizedBox(width: 8),
+              Icon(Icons.search_rounded, size: 22, color: Colors.white),
+              SizedBox(width: 10),
               Expanded(
                 child: Text(
                   'Search',
@@ -336,8 +340,8 @@ class _TabButton extends StatelessWidget {
             builder: (BuildContext context, Color? color, Widget? _) =>
                 SvgPicture.asset(
                   spec.iconAsset,
-                  width: 26,
-                  height: 26,
+                  width: 22,
+                  height: 22,
                   colorFilter: ColorFilter.mode(color!, BlendMode.srcIn),
                 ),
           ),

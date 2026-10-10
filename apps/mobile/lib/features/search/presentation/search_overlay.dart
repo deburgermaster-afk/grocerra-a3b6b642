@@ -168,7 +168,7 @@ class _SearchOverlayState extends State<SearchOverlay> {
     final double top = AppInsets.statusBar(context);
     final Rect from = Rect.fromLTWH(
       GlassTabBar.side,
-      screen.height - GlassTabBar.bottom - GlassTabBar.height,
+      screen.height - GlassTabBar.bottomInset(context) - GlassTabBar.height,
       screen.width - GlassTabBar.side * 2,
       GlassTabBar.height,
     );

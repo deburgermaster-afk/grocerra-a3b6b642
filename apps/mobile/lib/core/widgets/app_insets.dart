@@ -10,7 +10,8 @@ abstract final class AppInsets {
   static double statusBar(BuildContext context) =>
       math.max(MediaQuery.of(context).padding.top, 12);
 
-  /// Clearance for the floating 64px tab bar (Figma: y769, 11px from the
-  /// bottom), so scrolling content ends underneath it instead of behind it.
-  static const double tabBar = 88;
+  /// Clearance for the floating 58px tab bar (Figma: 5px from the bottom,
+  /// +13px breathing room), so scrolling content ends underneath it instead
+  /// of behind it.
+  static const double tabBar = 76;
 }
